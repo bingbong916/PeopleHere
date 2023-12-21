@@ -1,21 +1,28 @@
 package peoplehere.peoplehere.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 @Entity
-@Getter
+@Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Language extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Language(String name) {
+        this.name = name;
+    }
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "language_id")
     private Long id;
 
     private String name;
 
-    private String status;
+    @ColumnDefault("'일반'")
+    private String status = "일반";
+
 }
