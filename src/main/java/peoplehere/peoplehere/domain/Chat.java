@@ -5,6 +5,9 @@ import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 public class Chat extends BaseTimeEntity {
@@ -14,13 +17,17 @@ public class Chat extends BaseTimeEntity {
     @Column(name = "chat_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
+    private List<Message> messages = new ArrayList<>();
+
 
     @ColumnDefault("'일반'")
     private String status = "일반";
