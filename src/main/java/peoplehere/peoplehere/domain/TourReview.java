@@ -1,9 +1,12 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
+@Entity
+@Getter
 public class TourReview extends BaseTimeEntity {
 
     @Id
@@ -11,11 +14,11 @@ public class TourReview extends BaseTimeEntity {
     @Column(name = "language_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

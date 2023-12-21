@@ -6,6 +6,8 @@ import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,18 +21,34 @@ public class Tour extends BaseTimeEntity {
 
     private int budget;
 
-    private Date start_date;
+    private Date startDate;
 
     private int time;
 
-    private String image_url;
+    private String imageUrl;
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<Category> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<TourReview> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<TourHistory> tourHistories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<Chat> chats = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<Place> places = new ArrayList<>();
+
     @ColumnDefault("'닫힘'")
     private String status = "닫힘";
+
 }

@@ -1,10 +1,13 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 //TODO: 사용할 데이터 넣어서 완성시키기
+@Entity
+@Getter
 public class Place extends BaseTimeEntity {
 
     @Id
@@ -18,7 +21,7 @@ public class Place extends BaseTimeEntity {
 
     private String address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
