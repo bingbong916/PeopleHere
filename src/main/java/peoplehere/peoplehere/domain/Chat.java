@@ -28,8 +28,18 @@ public class Chat extends BaseTimeEntity {
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
-
     @ColumnDefault("'일반'")
     private String status = "일반";
+
+    //==연관관계 편의 메서드==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getChats().add(this);
+    }
+
+    public void setTour(Tour tour) {
+        this.tour = tour;
+        tour.getChats().add(this);
+    }
 
 }

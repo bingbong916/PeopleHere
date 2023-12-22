@@ -26,4 +26,15 @@ public class Message extends BaseTimeEntity {
 
     @ColumnDefault("'일반'")
     private String status = "일반";
+
+    //==연관관계 편의 메서드==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getMessages().add(this);
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+        chat.getMessages().add(this);
+    }
 }

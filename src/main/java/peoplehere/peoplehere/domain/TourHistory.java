@@ -22,4 +22,15 @@ public class TourHistory extends BaseTimeEntity {
 
     @ColumnDefault("'예약중'")
     private String status = "예약중";
+
+    //==연관관계 편의 메서드==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getTourHistories().add(this);
+    }
+
+    public void setTour(Tour tour) {
+        this.tour = tour;
+        tour.getTourHistories().add(this);
+    }
 }

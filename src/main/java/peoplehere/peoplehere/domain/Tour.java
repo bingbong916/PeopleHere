@@ -34,7 +34,7 @@ public class Tour extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<Category> categories = new ArrayList<>();
+    private List<TourCategory> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<TourReview> reviews = new ArrayList<>();
@@ -50,5 +50,12 @@ public class Tour extends BaseTimeEntity {
 
     @ColumnDefault("'닫힘'")
     private String status = "닫힘";
+
+    //==연관관계 편의 메서드==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getTours().add(this);
+    }
+
 
 }

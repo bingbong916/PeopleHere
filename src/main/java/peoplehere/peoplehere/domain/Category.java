@@ -5,6 +5,9 @@ import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 public class Category extends BaseTimeEntity {
@@ -15,6 +18,9 @@ public class Category extends BaseTimeEntity {
     private Long id;
 
     private String name;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<TourCategory> tourCategories = new ArrayList<>();
 
     @ColumnDefault("'일반'")
     private String status = "일반";

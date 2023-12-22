@@ -28,4 +28,14 @@ public class TourReview extends BaseTimeEntity {
 
     @ColumnDefault("'일반'")
     private String status = "일반";
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getTourReviews().add(this);
+    }
+
+    public void setTour(Tour tour) {
+        this.tour= tour;
+        tour.getReviews().add(this);
+    }
 }

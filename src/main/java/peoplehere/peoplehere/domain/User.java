@@ -46,9 +46,8 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TourReview> tourReviews = new ArrayList<>();
 
-//    //필요하려나..?
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<Message> messages = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Message> messages = new ArrayList<>();
 
 
     @ColumnDefault("'일반'")
