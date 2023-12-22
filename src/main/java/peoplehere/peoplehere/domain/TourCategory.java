@@ -28,7 +28,7 @@ public class TourCategory extends BaseTimeEntity {
     //==연관관계 편의 메서드==//
     public void setTour(Tour tour) {
         this.tour = tour;
-        tour.getCategories().add(this);
+        tour.getTourCategories().add(this);
     }
 
     public void setCategory(Category category) {

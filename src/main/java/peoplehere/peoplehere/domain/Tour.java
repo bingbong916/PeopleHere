@@ -34,7 +34,7 @@ public class Tour extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<TourCategory> categories = new ArrayList<>();
+    private List<TourCategory> tourCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<TourReview> reviews = new ArrayList<>();

@@ -2,6 +2,7 @@ package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
@@ -10,7 +11,12 @@ import java.util.List;
 
 @Entity
 @Getter
+@RequiredArgsConstructor
 public class Category extends BaseTimeEntity {
+
+    public Category(String name) {
+        this.name = name;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
