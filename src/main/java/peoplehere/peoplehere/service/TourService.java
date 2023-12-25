@@ -31,4 +31,12 @@ public class TourService {
         return tourRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Tour> findAllToursByCategory(List<Category> categories) {
+        List<Tour> byCategoryIn = tourRepository.findByCategoryIn(categories);
+        System.out.println("byCategoryIn = " + byCategoryIn.get(0));
+        return byCategoryIn;
+    }
+
+
 }

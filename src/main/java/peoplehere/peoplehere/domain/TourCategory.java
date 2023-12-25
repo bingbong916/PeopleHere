@@ -2,16 +2,23 @@ package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class TourCategory extends BaseTimeEntity {
+
+    public TourCategory(Tour tour, Category category) {
+        this.tour = tour;
+        this.category = category;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "language_id")
+    @Column(name = "tour_category_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
