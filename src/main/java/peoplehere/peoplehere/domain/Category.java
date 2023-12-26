@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class Category extends BaseTimeEntity {
 
     private String name;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<TourCategory> tourCategories = new ArrayList<>();
 

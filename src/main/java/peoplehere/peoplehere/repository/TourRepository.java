@@ -8,6 +8,6 @@ import peoplehere.peoplehere.domain.Tour;
 import java.util.List;
 
 public interface TourRepository extends JpaRepository<Tour, Long> {
-    @Query("SELECT t FROM Tour t JOIN t.tourCategories tc JOIN tc.category c WHERE c IN :categories")
+    @Query("SELECT t FROM Tour t LEFT JOIN t.tourCategories tc LEFT JOIN tc.category c WHERE c IN :categories")
     List<Tour> findByCategoryIn(List<Category> categories);
 }

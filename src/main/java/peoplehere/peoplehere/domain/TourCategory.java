@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class TourCategory extends BaseTimeEntity {
     public TourCategory(Tour tour, Category category) {
         this.tour = tour;
         this.category = category;
+        this.categoryName = category.getName();
     }
 
     @Id
@@ -21,13 +23,17 @@ public class TourCategory extends BaseTimeEntity {
     @Column(name = "tour_category_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    private String categoryName;
 
     @ColumnDefault("'일반'")
     private String status = "일반";
