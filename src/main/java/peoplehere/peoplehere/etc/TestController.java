@@ -1,6 +1,7 @@
 package peoplehere.peoplehere.etc;
 
 import lombok.RequiredArgsConstructor;
+<<<<<<< Updated upstream
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.domain.*;
@@ -17,6 +18,13 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+=======
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import peoplehere.peoplehere.service.TourService;
+
+@Controller
+>>>>>>> Stashed changes
 @RequiredArgsConstructor
 @RequestMapping("/test")
 public class TestController {
