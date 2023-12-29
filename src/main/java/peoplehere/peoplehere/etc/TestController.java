@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.domain.*;
-import peoplehere.peoplehere.dto.tour.TourCreateDto;
+import peoplehere.peoplehere.controller.dto.tour.TourCreateDto;
 import peoplehere.peoplehere.repository.CategoryRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
 import peoplehere.peoplehere.repository.TourRepository;

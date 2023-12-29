@@ -1,7 +1,9 @@
 package peoplehere.peoplehere.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.response.BaseResponse;
@@ -9,6 +11,7 @@ import peoplehere.peoplehere.controller.dto.tour.GetToursResponse;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.service.TourService;
+import peoplehere.peoplehere.util.BindingResultUtils;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -21,14 +24,22 @@ public class TourController {
     private final TourService tourService;
 
     @PostMapping("/new")
-    public BaseResponse<GetToursResponse> addTour(@RequestBody PostTourRequest request) {
+    public BaseResponse<GetToursResponse> addTour(@Valid @RequestBody PostTourRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessages = BindingResultUtils.getErrorMessages(bindingResult);
+            throw new TourException(INVALID_TOUR_VALUE, errorMessages);
+        }
         log.info("Create tour request: {}", request.getName());
         // TODO: 투어 생성 로직 구현 예정
         return new BaseResponse<>(new GetToursResponse());
     }
 
     @PutMapping("/{id}")
-    public BaseResponse<GetToursResponse> updateTour(@PathVariable Long id, @RequestBody PutTourRequest request) {
+    public BaseResponse<GetToursResponse> updateTour(@PathVariable Long id, @Valid @RequestBody PutTourRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessages = BindingResultUtils.getErrorMessages(bindingResult);
+            throw new TourException(INVALID_TOUR_VALUE, errorMessages);
+        }
         log.info("Update tour request for ID: {}, {}", id, request.getName());
         // TODO: 투어 수정 로직 구현 예정
         return new BaseResponse<>(new GetToursResponse());

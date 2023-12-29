@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.domain.*;
-import peoplehere.peoplehere.dto.tour.TourCreateDto;
+import peoplehere.peoplehere.controller.dto.tour.TourCreateDto;
 import peoplehere.peoplehere.dto.tour.TourModifyDto;
 import peoplehere.peoplehere.etc.DtoConverter;
 import peoplehere.peoplehere.repository.CategoryRepository;

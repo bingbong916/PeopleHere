@@ -1,7 +1,7 @@
-package peoplehere.peoplehere.dto.tour;
+package peoplehere.peoplehere.controller.dto.tour;
 
 import lombok.Getter;
-import peoplehere.peoplehere.dto.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 
 import java.util.List;
 

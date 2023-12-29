@@ -3,9 +3,12 @@ package peoplehere.peoplehere.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import peoplehere.peoplehere.common.exception.ChatException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.chat.*;
+import peoplehere.peoplehere.util.BindingResultUtils;
 import peoplehere.peoplehere.service.ChatService;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
@@ -19,7 +22,11 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/new")
-    public BaseResponse<GetChatResponse> createChat(@RequestBody PostChatRequest request) {
+    public BaseResponse<GetChatResponse> createChat(@Valid @RequestBody PostChatRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessages = BindingResultUtils.getErrorMessages(bindingResult);
+            throw new ChatException(INVALID_CHAT_VALUE, errorMessages);
+        }
         log.info("Create chat request: {}", request.getTourId());
         // TODO: 채팅방 생성 로직 구현 예정
         return new BaseResponse<>(null);

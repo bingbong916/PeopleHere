@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostPlaceRequest {
+public class PostPlaceRequest { // 구글맵 API 특성상 제약조건 불필요
     private String content;
     private String imageUrl;
     private String address;
