@@ -40,7 +40,17 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     // Review 오류
     REVIEW_NOT_FOUND(8000, HttpStatus.NOT_FOUND.value(), "리뷰를 찾을 수 없습니다."),
     INVALID_REVIEW_VALUE(8001, HttpStatus.BAD_REQUEST.value(), "리뷰 요청 데이터가 유효하지 않습니다."),
-    DUPLICATE_REVIEW(8002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 리뷰입니다.");
+    DUPLICATE_REVIEW(8002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 리뷰입니다."),
+
+    // Message 오류
+    MESSAGE_NOT_FOUND(9000, HttpStatus.NOT_FOUND.value(), "메시지를 찾을 수 없습니다."),
+    INVALID_MESSAGE_VALUE(9001, HttpStatus.BAD_REQUEST.value(), "메시지 요청 데이터가 유효하지 않습니다."),
+    CHAT_NOT_FOUND_FOR_MESSAGE(9002, HttpStatus.BAD_REQUEST.value(), "메시지에 해당하는 채팅방을 찾을 수 없습니다."),
+
+    // Chat 오류
+    CHAT_NOT_FOUND(10000, HttpStatus.NOT_FOUND.value(), "채팅방을 찾을 수 없습니다."),
+    INVALID_CHAT_VALUE(10001, HttpStatus.BAD_REQUEST.value(), "채팅방 요청 데이터가 유효하지 않습니다."),
+    USER_NOT_IN_CHAT(10002, HttpStatus.BAD_REQUEST.value(), "사용자가 채팅방에 존재하지 않습니다.");
 
 
     private final int code;

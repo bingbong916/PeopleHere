@@ -1,4 +1,4 @@
-package peoplehere.peoplehere.controller.dto;
+package peoplehere.peoplehere.controller.dto.tour;
 
 import lombok.Getter;
 import peoplehere.peoplehere.domain.User;

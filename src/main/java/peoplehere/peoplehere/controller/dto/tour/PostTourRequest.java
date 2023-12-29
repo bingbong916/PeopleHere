@@ -3,7 +3,7 @@ package peoplehere.peoplehere.controller.dto.tour;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 
 import java.util.List;
 
@@ -17,6 +17,5 @@ public class PostTourRequest {
     private int time;
     private String imageUrl;
     private String content;
-    private List<PostPlaceResponse> PostPlaceResponse;
-    // private List<> places;
+    private List<PlaceInfoDto> places;
 }
