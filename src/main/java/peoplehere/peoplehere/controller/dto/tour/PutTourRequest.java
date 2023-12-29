@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PutTourRequest {
+    private Long tourId;
     private String name;
     private int budget;
     private String startDate;

@@ -66,14 +66,14 @@ public class UserController {
 
     @GetMapping("/{id}/tours")
     public BaseResponse<GetToursResponse> getUserTours(@PathVariable Long id, @RequestParam String option) {
-        log.info("Get tours for user ID: {}, Option: {}", id, option);
+        log.info("Get tours for user ID: {}, Option: {}", id, option); // option값: created, attended
         // TODO: 유저가 만든 또는 이용한 투어 조회 로직 구현 예정
         return new BaseResponse<>(new GetToursResponse());
     }
 
     @GetMapping("/{id}/chats")
     public BaseResponse<GetUserChatsResponse> getUserChats(@PathVariable Long id, @RequestParam String option) {
-        log.info("Get chats for user ID: {}, Option: {}", id, option);
+        log.info("Get chats for user ID: {}, Option: {}", id, option); // option값: traveler, leader
         // TODO: 유저 채팅 조회 로직 구현 예정
         return new BaseResponse<>(new GetUserChatsResponse());
     }
