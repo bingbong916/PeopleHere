@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PostLogoutRequest {
-    private String email; // 또는 userId 등 로그아웃에 필요한 식별 정보
+    private String email;
+    // TODO: 인증 방식 선정 후 삭제 예정
 }

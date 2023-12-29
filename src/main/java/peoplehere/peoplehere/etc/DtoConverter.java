@@ -2,8 +2,8 @@ package peoplehere.peoplehere.etc;
 
 import peoplehere.peoplehere.domain.Place;
 import peoplehere.peoplehere.domain.Tour;
-import peoplehere.peoplehere.dto.PlaceInfoDto;
-import peoplehere.peoplehere.dto.tour.TourCreateDto;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.tour.TourCreateDto;
 
 import java.util.ArrayList;
 import java.util.List;
