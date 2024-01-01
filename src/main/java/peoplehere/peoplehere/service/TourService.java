@@ -28,6 +28,16 @@ public class TourService {
     private final TourCategoryRepository tourCategoryRepository;
 
     /**
+     * 모든 투어 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Tour> findAllTours() {
+        return tourRepository.findAll();
+    }
+
+
+    /**
+     * 특정 투어 조회
      * 카테고리로 투어 검색
      */
     @Transactional(readOnly = true)
