@@ -1,14 +1,24 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 //TODO: 사용할 데이터 넣어서 완성시키기
 @Entity
 @Getter
+@RequiredArgsConstructor
 public class Place extends BaseTimeEntity {
+
+    public Place(String content, String image_url, String address) {
+        this.content = content;
+        this.image_url = image_url;
+        this.address = address;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
