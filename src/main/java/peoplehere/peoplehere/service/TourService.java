@@ -90,7 +90,7 @@ public class TourService {
      */
     public void deleteTour(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow();
-        tour.changeStatusToDelete();
+        tour.setStatus("삭제");
     }
 
 
