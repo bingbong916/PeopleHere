@@ -74,8 +74,8 @@ public class Tour extends BaseTimeEntity {
         this.places = places;
     }
 
-    public void changeStatusToDelete() {
-        this.status = "삭제";
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     //TODO: 타워 update 구현
