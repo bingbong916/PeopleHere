@@ -1,24 +1,18 @@
 package peoplehere.peoplehere.etc;
 
+import peoplehere.peoplehere.controller.dto.user.GetUserResponse;
 import peoplehere.peoplehere.domain.Place;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.tour.TourCreateDto;
+import peoplehere.peoplehere.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DtoConverter {
 
-    public Tour tourDtoConverter(TourCreateDto tourCreateDto) {
-        return new Tour(
-                tourCreateDto.getName(),
-                tourCreateDto.getBudget(),
-                tourCreateDto.getTime(),
-                tourCreateDto.getImageUrl(),
-                tourCreateDto.getContent()
-        );
-    }
+
 
     public List<Place> placeDtoConverter(List<PlaceInfoDto> places) {
         ArrayList<Place> placeList = new ArrayList<>();
@@ -31,4 +25,5 @@ public class DtoConverter {
 //        }
         return placeList;
     }
+
 }
