@@ -31,6 +31,9 @@ public class PostTourRequest {
     @Size(max = 500, message = "소개글은 최대 500자까지 가능합니다.")
     private String content;
 
+    //TODO: 예외처리 필요
+    private List<String> categoryNames;
+
     // TODO: notice 필드 추가 필요.
 
     private List<PlaceInfoDto> places;

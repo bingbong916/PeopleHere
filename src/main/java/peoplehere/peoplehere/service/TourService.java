@@ -4,15 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
+import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.*;
-import peoplehere.peoplehere.controller.dto.tour.TourCreateDto;
 import peoplehere.peoplehere.dto.tour.TourModifyDto;
-import peoplehere.peoplehere.etc.DtoConverter;
 import peoplehere.peoplehere.repository.CategoryRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
 import peoplehere.peoplehere.repository.TourRepository;
 import peoplehere.peoplehere.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +31,16 @@ public class TourService {
     private final TourCategoryRepository tourCategoryRepository;
 
     /**
+     * 모든 투어 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Tour> findAllTours() {
+        return tourRepository.findAll();
+    }
+
+
+    /**
+     * 특정 투어 조회
      * 카테고리로 투어 검색
      */
     @Transactional(readOnly = true)
@@ -47,16 +60,21 @@ public class TourService {
     /**
      * 투어 생성
      */
-    public Tour createTour(TourCreateDto tourCreateDto) {
-        DtoConverter dtoConverter = new DtoConverter();
-        Tour tour = dtoConverter.tourDtoConverter(tourCreateDto);
-        User user = userRepository.findById(tourCreateDto.getUserId()).orElseThrow();
+    public Tour createTour(PostTourRequest postTourRequest) {
+        Tour tour = TourDtoConverter.postTourRequestToTour(postTourRequest);
+        User user = userRepository.findById(postTourRequest.getUserId()).orElseThrow();
         tour.setUser(user);
-        List<Place> places = dtoConverter.placeDtoConverter(tourCreateDto.getPlaces());
+        List<Place> places = new ArrayList<>();
+        List<PlaceInfoDto> placeInfoDtos = postTourRequest.getPlaces();
+        for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
+            Place place = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
+            place.setTour(tour);
+            places.add(place);
+        }
         tour.setPlace(places);
         tourRepository.save(tour);
 
-        List<String> categoryNames = tourCreateDto.getCategoryNames();
+        List<String> categoryNames = postTourRequest.getCategoryNames();
         for (String categoryName : categoryNames) {
             Category findCategory = categoryRepository.findByName(categoryName);
             TourCategory tourCategory = new TourCategory(tour, findCategory);
@@ -80,7 +98,7 @@ public class TourService {
      */
     public void deleteTour(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow();
-        tour.changeStatusToDelete();
+        tour.setStatus("삭제");
     }
 
 

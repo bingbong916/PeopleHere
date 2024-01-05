@@ -52,4 +52,8 @@ public class User extends BaseTimeEntity {
 
     @ColumnDefault("'일반'")
     private String status = "일반";
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
