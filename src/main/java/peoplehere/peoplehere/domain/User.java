@@ -1,7 +1,10 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
@@ -10,13 +13,14 @@ import java.util.List;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    //TODO: 인증 단계 필요
     private String email;
     private String password;
 
@@ -29,6 +33,16 @@ public class User extends BaseTimeEntity {
     private String imageUrl;
 
     private String content;
+
+    public User(String email, String password, String name, String gender, boolean leader, String imageUrl, String content) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.gender = gender;
+        this.leader = leader;
+        this.imageUrl = imageUrl;
+        this.content = content;
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserLanguage> languages = new ArrayList<>();

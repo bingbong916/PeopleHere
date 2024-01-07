@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
+import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.*;
-import peoplehere.peoplehere.dto.tour.TourModifyDto;
 import peoplehere.peoplehere.repository.CategoryRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
 import peoplehere.peoplehere.repository.TourRepository;
@@ -38,14 +38,25 @@ public class TourService {
         return tourRepository.findAll();
     }
 
-
     /**
      * 특정 투어 조회
-     * 카테고리로 투어 검색
      */
     @Transactional(readOnly = true)
-    public List<Tour> findAllToursByCategory(List<Category> categories) {
-        List<Tour> findTours = tourRepository.findByCategoryIn(categories);
+    public Tour findTourById(Long id) {
+        return tourRepository.findById(id).orElseThrow();
+    }
+
+
+    /**
+     * 특정 카테고리에 해당하는 투어 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Tour> findAllToursByCategory(List<String> categories) {
+        List<Category> categoryList = new ArrayList<>();
+        for (String category : categories) {
+            categoryList.add(categoryRepository.findByName(category));
+        }
+        List<Tour> findTours = tourRepository.findByCategoryIn(categoryList);
         return findTours;
     }
 
@@ -87,9 +98,10 @@ public class TourService {
     /**
      * 투어 수정
      */
-    public Tour modifyTour(Long id, TourModifyDto tourModifyDto) {
+    public Tour modifyTour(Long id, PutTourRequest putTourRequest) {
         Tour tour = tourRepository.findById(id).orElseThrow();
-        tour.update(tourModifyDto);
+        tour.update(putTourRequest);
+        tourRepository.save(tour);
         return tour;
     }
 
@@ -99,6 +111,7 @@ public class TourService {
     public void deleteTour(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow();
         tour.setStatus("삭제");
+        tourRepository.save(tour);
     }
 
 

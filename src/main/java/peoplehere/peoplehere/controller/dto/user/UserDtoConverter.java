@@ -19,5 +19,12 @@ public class UserDtoConverter {
         return getUserResponse;
     }
 
+    public static User postUserRequestToUser(PostUserRequest postUserRequest) {
+
+       return new User(postUserRequest.getEmail(),postUserRequest.getPassword(),postUserRequest.getName(),
+                postUserRequest.getGender(),false,postUserRequest.getImageUrl(),postUserRequest.getContent());
+
+    }
+
 
 }
