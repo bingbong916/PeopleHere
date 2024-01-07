@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.controller.dto.user.GetUserResponse;
+import peoplehere.peoplehere.controller.dto.user.PostLoginRequest;
 import peoplehere.peoplehere.controller.dto.user.PostUserRequest;
 import peoplehere.peoplehere.controller.dto.user.UserDtoConverter;
 import peoplehere.peoplehere.domain.Tour;
@@ -26,8 +27,10 @@ public class UserService {
     /**
      * 회원 가입
      */
-    public void createUser(PostUserRequest postUserRequest) {
-
+    public User createUser(PostUserRequest postUserRequest) {
+        User user = UserDtoConverter.postUserRequestToUser(postUserRequest);
+        userRepository.save(user);
+        return user;
     }
 
     /**
@@ -41,7 +44,14 @@ public class UserService {
     /**
      * 로그인
      */
+    public void login(PostLoginRequest postLoginRequest) {
+        User findUser = userRepository.findByEmail(postLoginRequest.getEmail());
+        if (findUser.getPassword() == postLoginRequest.getPassword()) {
 
+        }
+
+
+    }
 
     /**
      * 로그아웃

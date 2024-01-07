@@ -21,7 +21,7 @@ public class PostUserRequest {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Length(min = 8, max = 20, message = "비밀번호는 8 ~ 20자 사이여야 합니다.")
-    @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,20}",
+    @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=]).{8,20}",
             message = "비밀번호는 대문자, 소문자, 특수문자를 포함해야 합니다.")
     private String password;
 
@@ -31,7 +31,7 @@ public class PostUserRequest {
     private String gender;
 
     @Nullable
-    private String profileImage;
+    private String imageUrl;
 
     @Nullable
     @Length(max = 500, message = "500자 이내로 작성해주세요.")

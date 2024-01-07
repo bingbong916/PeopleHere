@@ -9,6 +9,7 @@ import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
+import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.service.UserService;
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
 import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
@@ -27,8 +28,8 @@ public class UserController {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         log.info("User sign-up request: {}", request.getEmail());
-        // TODO: 회원가입 로직 구현 예정
-        return new BaseResponse<>(new PostUserResponse(1));
+        User user = userService.createUser(request);
+        return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
     @PatchMapping("/{id}")
