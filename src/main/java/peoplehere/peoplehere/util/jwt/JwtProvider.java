@@ -73,4 +73,5 @@ public class JwtProvider {
             throw new JwtInvalidTokenException(JWT_INVALID_TOKEN);
         }
     }
+
 }
