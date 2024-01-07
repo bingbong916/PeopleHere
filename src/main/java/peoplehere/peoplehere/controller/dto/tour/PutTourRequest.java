@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public class PutTourRequest {
     @Min(value = 0, message = "예산은 0 이상이어야 합니다.")
     private int budget;
 
-    private String startDate;
+    private Date startDate;
 
     @Min(value = 0, message = "시간은 0 이상이어야 합니다.")
     private int time;

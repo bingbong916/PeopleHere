@@ -3,11 +3,10 @@ package peoplehere.peoplehere.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
-import peoplehere.peoplehere.dto.tour.TourModifyDto;
 
 import java.util.Date;
 import java.util.ArrayList;
@@ -79,7 +78,13 @@ public class Tour extends BaseTimeEntity {
     }
 
     //TODO: 타워 update 구현
-    public Tour update(TourModifyDto tourModifyDto) {
+    public Tour update(PutTourRequest putTourRequest) {
+        this.name = putTourRequest.getName();
+        this.budget = putTourRequest.getBudget();
+        this.startDate = putTourRequest.getStartDate();
+        this.time = putTourRequest.getTime();
+        this.imageUrl = putTourRequest.getImageUrl();
+        this.content = putTourRequest.getContent();
         return this;
     }
 
