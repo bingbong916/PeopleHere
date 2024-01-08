@@ -12,6 +12,7 @@ import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.repository.UserRepository;
+import peoplehere.peoplehere.util.jwt.JwtProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
     /**
      * 회원 가입
@@ -44,13 +46,13 @@ public class UserService {
     /**
      * 로그인
      */
-    public void login(PostLoginRequest postLoginRequest) {
-        User findUser = userRepository.findByEmail(postLoginRequest.getEmail());
-        if (findUser.getPassword() == postLoginRequest.getPassword()) {
-
+    public String login(PostLoginRequest postLoginRequest) {
+        User findUser = userRepository.findByEmail(postLoginRequest.getEmail()).orElseThrow();
+        if (findUser.getPassword().equals(postLoginRequest.getPassword())) {
+            return jwtProvider.createAccessToken(findUser.getId());
         }
-
-
+        //TODO: 패스워드 예외처리
+        return "패스워드가 틀렸습니다.";
     }
 
     /**
