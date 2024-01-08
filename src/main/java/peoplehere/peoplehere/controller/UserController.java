@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.common.response.BaseResponse;
+import peoplehere.peoplehere.controller.dto.jwt.ResponseJwtToken;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.User;
@@ -22,7 +23,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/new")
+    @PostMapping("/signup")
     public BaseResponse<PostUserResponse> signUp(@Validated @RequestBody PostUserRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
@@ -45,10 +46,10 @@ public class UserController {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         log.info("User login request: {}", request.getEmail());
+        String jwt = userService.login(request);
         // TODO: 추후에 인증 방식을 변경하면 수정 필요.
         // TODO: 로그인 로직 구현 예정
-        return new BaseResponse<>(null);
-//        return new BaseResponse<>(new PostLoginResponse(1));
+        return new BaseResponse<>(new PostLoginResponse(jwt));
     }
 
     @PostMapping("/logout")
