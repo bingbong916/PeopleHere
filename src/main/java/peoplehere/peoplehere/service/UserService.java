@@ -38,7 +38,7 @@ public class UserService {
     /**
      * 회원 탈퇴
      */
-    public void deleteUser(Long userId) {
+    public void deactivateUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         user.setStatus("삭제"); //TODO: userStatus 코드 상수화 시키기
     }

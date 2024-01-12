@@ -8,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
@@ -34,6 +36,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims claims = jwtProvider.parseToken(accessToken); // 토큰 파싱
                 String userId = claims.getSubject();
                 request.setAttribute("userId", userId);
+                Authentication authentication = jwtProvider.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException e) {
                 log.info("Invalid JWT token: {}", e.getMessage());
             }
