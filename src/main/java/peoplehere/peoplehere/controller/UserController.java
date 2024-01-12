@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.common.response.BaseResponse;
-import peoplehere.peoplehere.controller.dto.jwt.ResponseJwtToken;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.User;
@@ -36,7 +35,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public BaseResponse<Void> deactivateUser(@PathVariable Long id) {
         log.info("Deactivate user request for ID: {}", id);
-        // TODO: 회원탈퇴 로직 구현 예정
+        userService.deactivateUser(id);
         return new BaseResponse<>(null);
     }
 
@@ -47,8 +46,6 @@ public class UserController {
         }
         log.info("User login request: {}", request.getEmail());
         String jwt = userService.login(request);
-        // TODO: 추후에 인증 방식을 변경하면 수정 필요.
-        // TODO: 로그인 로직 구현 예정
         return new BaseResponse<>(new PostLoginResponse(jwt));
     }
 
