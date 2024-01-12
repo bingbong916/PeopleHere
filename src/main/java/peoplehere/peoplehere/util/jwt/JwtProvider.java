@@ -1,19 +1,27 @@
 package peoplehere.peoplehere.util.jwt;
 
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import peoplehere.peoplehere.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtMalformedTokenException;
 import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtExpiredTokenException;
+import peoplehere.peoplehere.service.UserDetailsServiceImpl;
 
 import java.util.Date;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
+
+    private final UserDetailsServiceImpl userDetailsServiceimpl;
 
     @Value("${secret.jwt-secret-key}")
     private String jwtSecretKey;
@@ -72,6 +80,11 @@ public class JwtProvider {
         } catch (JwtException e) {
             throw new JwtInvalidTokenException(JWT_INVALID_TOKEN);
         }
+    }
+
+    public Authentication getAuthentication(String accessToken) {
+        UserDetails userDetails = userDetailsServiceimpl.loadUserByUsername(parseToken(accessToken).getSubject());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
 }
