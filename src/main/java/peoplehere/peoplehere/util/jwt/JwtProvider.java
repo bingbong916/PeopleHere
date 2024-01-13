@@ -1,6 +1,8 @@
 package peoplehere.peoplehere.util.jwt;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +15,8 @@ import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtInvalidTokenEx
 import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtExpiredTokenException;
 import peoplehere.peoplehere.service.UserDetailsServiceImpl;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
@@ -47,11 +51,14 @@ public class JwtProvider {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
 
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        Key key = Keys.hmacShaKeyFor(keyBytes);
+
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 

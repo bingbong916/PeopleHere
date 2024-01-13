@@ -2,20 +2,30 @@ package peoplehere.peoplehere.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
+import peoplehere.peoplehere.common.exception.UserException;
+import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.GetUserResponse;
 import peoplehere.peoplehere.controller.dto.user.PostLoginRequest;
 import peoplehere.peoplehere.controller.dto.user.PostUserRequest;
 import peoplehere.peoplehere.controller.dto.user.UserDtoConverter;
+import peoplehere.peoplehere.domain.JwtBlackList;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
+import peoplehere.peoplehere.repository.JwtBlackListRepository;
 import peoplehere.peoplehere.repository.UserRepository;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.DUPLICATE_EMAIL;
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.PASSWORD_NO_MATCH;
 
 @Slf4j
 @Service
@@ -25,14 +35,33 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtBlackListRepository jwtBlackListRepository;
 
     /**
      * 회원 가입
      */
     public User createUser(PostUserRequest postUserRequest) {
+        log.info("[UserService.createUser]");
+
+        // 이메일 중복 검사
+        validateEmail(postUserRequest.getEmail());
+
+        //패스워드 암호화
+        String encodedPassword = passwordEncoder.encode(postUserRequest.getPassword());
+        postUserRequest.resetPassword(encodedPassword);
+
+        //DB 저장
         User user = UserDtoConverter.postUserRequestToUser(postUserRequest);
         userRepository.save(user);
+
         return user;
+    }
+
+    private void validateEmail(String email) {
+        if(userRepository.findByEmail(email).isPresent()){
+            throw new UserException(DUPLICATE_EMAIL);
+        }
     }
 
     /**
@@ -46,18 +75,31 @@ public class UserService {
     /**
      * 로그인
      */
-    public String login(PostLoginRequest postLoginRequest) {
+    public JwtTokenResponse login(PostLoginRequest postLoginRequest) {
         User findUser = userRepository.findByEmail(postLoginRequest.getEmail()).orElseThrow();
-        if (findUser.getPassword().equals(postLoginRequest.getPassword())) {
-            return jwtProvider.createAccessToken(findUser.getId());
+        validatePassword(postLoginRequest.getPassword(),findUser.getPassword());
+        String accessToken = jwtProvider.createAccessToken(findUser.getId());
+        String refreshToken = jwtProvider.createRefreshToken(findUser.getId());
+        return new JwtTokenResponse("Bearer", accessToken, refreshToken);
+    }
+
+    private void validatePassword(String password, String encodedPassword) {
+        log.info("password: " + password);
+        log.info("encodedPassword: " + encodedPassword);
+        if (!passwordEncoder.matches(password, encodedPassword)) {
+            throw new UserException(PASSWORD_NO_MATCH);
         }
-        //TODO: 패스워드 예외처리
-        return "패스워드가 틀렸습니다.";
     }
 
     /**
      * 로그아웃
      */
+    public void logout(String token) {
+        JwtBlackList blackList = jwtBlackListRepository.findByToken(token);
+        if (blackList == null) {
+            jwtBlackListRepository.save(new JwtBlackList(token));
+        }
+    }
 
 
     /**
