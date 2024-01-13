@@ -37,4 +37,8 @@ public class PostUserRequest {
     @Length(max = 500, message = "500자 이내로 작성해주세요.")
     private String content; // 사용자의 자기소개나 추가 정보
 
+    public void resetPassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.common.response.BaseResponse;
+import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.User;
@@ -45,8 +46,8 @@ public class UserController {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         log.info("User login request: {}", request.getEmail());
-        String jwt = userService.login(request);
-        return new BaseResponse<>(new PostLoginResponse(jwt));
+        JwtTokenResponse tokenResponse = userService.login(request);
+        return new BaseResponse<>(new PostLoginResponse(tokenResponse));
     }
 
     @PostMapping("/logout")
