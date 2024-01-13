@@ -5,15 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.GetUserResponse;
 import peoplehere.peoplehere.controller.dto.user.PostLoginRequest;
 import peoplehere.peoplehere.controller.dto.user.PostUserRequest;
 import peoplehere.peoplehere.controller.dto.user.UserDtoConverter;
+import peoplehere.peoplehere.domain.JwtBlackList;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
+import peoplehere.peoplehere.repository.JwtBlackListRepository;
 import peoplehere.peoplehere.repository.UserRepository;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
@@ -33,6 +36,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
+    private final JwtBlackListRepository jwtBlackListRepository;
 
     /**
      * 회원 가입
@@ -90,6 +94,12 @@ public class UserService {
     /**
      * 로그아웃
      */
+    public void logout(String token) {
+        JwtBlackList blackList = jwtBlackListRepository.findByToken(token);
+        if (blackList == null) {
+            jwtBlackListRepository.save(new JwtBlackList(token));
+        }
+    }
 
 
     /**

@@ -51,10 +51,10 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public BaseResponse<Void> logout(@RequestBody PostLogoutRequest request) {
-        log.info("User logout request: {}", request.getEmail());
-        // TODO: 추후에 인증 방식을 변경하면 수정 필요.
-        // TODO: 로그아웃 로직 구현 예정
+    public BaseResponse<Void> logout(@RequestHeader("Authorization") String tokenRequest) {
+        log.info("User logout request");
+        String token = tokenRequest.split(" ")[1];
+        userService.logout(token);
         return new BaseResponse<>(null);
     }
 
