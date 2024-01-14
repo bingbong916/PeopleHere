@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import peoplehere.peoplehere.common.interceptor.JwtAuthFilter;
 import peoplehere.peoplehere.repository.JwtBlackListRepository;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
@@ -41,7 +42,7 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/api/users/login", "/api/users/signup").permitAll()
+                                .requestMatchers("/api/users/login", "/api/users/signup", "/swagger-ui/**", "v3/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
