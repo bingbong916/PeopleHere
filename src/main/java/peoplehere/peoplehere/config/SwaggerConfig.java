@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 
 @OpenAPIDefinition(
-        info = @Info(title = "User-Service API 명세서",
-                description = "사용자 어플 서비스 API 명세서",
+        info = @Info(title = "Peoplehere API 명세서",
+                description = "Peoplehere 서비스의 API 명세서입니다.",
                 version = "v1"))
 @Configuration
 public class SwaggerConfig {
