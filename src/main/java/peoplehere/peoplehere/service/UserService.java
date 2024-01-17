@@ -2,6 +2,7 @@ package peoplehere.peoplehere.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.controller.dto.user.GetUserResponse;
@@ -11,6 +12,7 @@ import peoplehere.peoplehere.controller.dto.user.UserDtoConverter;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
+import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.repository.UserRepository;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
     /**
@@ -40,7 +43,7 @@ public class UserService {
      */
     public void deactivateUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        user.setStatus("삭제"); //TODO: userStatus 코드 상수화 시키기
+        user.setStatus(Status.DELETED); //TODO: userStatus 코드 상수화 시키기
     }
 
     /**
