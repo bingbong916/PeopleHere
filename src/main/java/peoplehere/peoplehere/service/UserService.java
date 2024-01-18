@@ -125,22 +125,50 @@ public class UserService {
     public void modifyUser(Long userId, PostModifyRequest modifyRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-        // TODO: 유저 수정 추가 구현
-        user.setName(modifyRequest.getName());
-        user.setAddress(modifyRequest.getAddress());
-        user.setEmail(modifyRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(modifyRequest.getPassword()));
-        user.setName(modifyRequest.getName());
-        user.setGender(modifyRequest.getGender());
-        user.setAddress(modifyRequest.getAddress());
-        user.setBirth(modifyRequest.getBirth());
-        user.setJob(modifyRequest.getJob());
-        user.setAlmaMater(modifyRequest.getAlmaMater());
-        user.setHobby(modifyRequest.getHobby());
-        user.setPet(modifyRequest.getPet());
-        user.setFavourite(modifyRequest.getFavourite());
-        user.setImageUrl(modifyRequest.getImageUrl());
-        user.setContent(modifyRequest.getContent());
+
+        // 필수 필드 업데이트
+        if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
+            user.setEmail(modifyRequest.getEmail());
+        }
+        if (modifyRequest.getPassword() != null && !modifyRequest.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(modifyRequest.getPassword()));
+        }
+        if (modifyRequest.getName() != null && !modifyRequest.getName().isEmpty()) {
+            user.setName(modifyRequest.getName());
+        }
+
+        // 선택적 필드 업데이트
+        if (modifyRequest.getGender() != null) {
+            user.setGender(modifyRequest.getGender());
+        }
+        if (modifyRequest.getAddress() != null) {
+            user.setAddress(modifyRequest.getAddress());
+        }
+        if (modifyRequest.getBirth() != null) {
+            user.setBirth(modifyRequest.getBirth());
+        }
+        if (modifyRequest.getJob() != null) {
+            user.setJob(modifyRequest.getJob());
+        }
+        if (modifyRequest.getAlmaMater() != null) {
+            user.setAlmaMater(modifyRequest.getAlmaMater());
+        }
+        if (modifyRequest.getHobby() != null) {
+            user.setHobby(modifyRequest.getHobby());
+        }
+        if (modifyRequest.getPet() != null) {
+            user.setPet(modifyRequest.getPet());
+        }
+        if (modifyRequest.getFavourite() != null) {
+            user.setFavourite(modifyRequest.getFavourite());
+        }
+        if (modifyRequest.getImageUrl() != null) {
+            user.setImageUrl(modifyRequest.getImageUrl());
+        }
+        if (modifyRequest.getContent() != null) {
+            user.setContent(modifyRequest.getContent());
+        }
+
         userRepository.save(user);
     }
 
