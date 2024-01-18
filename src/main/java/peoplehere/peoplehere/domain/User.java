@@ -66,29 +66,23 @@ public class User extends BaseTimeEntity implements UserDetails {
     private Status status;
 
     // TODO: 문답에 대한 field 추가 예정
-
-    @Builder.Default
+    // FIX: @Builder.Default 어노테이션 삭제
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserLanguage> languages = new ArrayList<>();
 
     //투어 리더 입장에서 만든 투어 조회하기 위한 양방향 매핑. 여행객이 이용한 투어를 조회하려면 TourHistory테이블 조인해야한다.
-    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Tour> tours = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Chat> chats = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TourHistory> tourHistories = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TourReview> tourReviews = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 

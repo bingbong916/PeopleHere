@@ -61,9 +61,18 @@ public class UserController {
     @GetMapping("/{id}")
     public BaseResponse<GetUserResponse> getUserInfo(@PathVariable Long id) {
         log.info("Get user info for ID: {}", id);
-        // TODO: 유저 정보 조회 로직 구현 예정
-        return new BaseResponse<>(new GetUserResponse());
+        GetUserResponse userInfo = userService.getUser(id);
+        return new BaseResponse<>(userInfo);
     }
+
+    @PatchMapping("/{id}")
+    public BaseResponse<Void> modifyUser(@PathVariable Long id, @RequestBody PostModifyRequest modifyRequest) {
+        log.info("Modify user request for ID: {}", id);
+        userService.modifyUser(id, modifyRequest);
+        return new BaseResponse<>(null);
+    }
+
+
 
     @GetMapping("/{id}/tours")
     public BaseResponse<GetTourResponse> getUserTours(@PathVariable Long id, @RequestParam String option) {
@@ -80,9 +89,10 @@ public class UserController {
     }
 
     @PostMapping("/block")
-    public BaseResponse<Void> blockUser(@RequestParam Long targetId) {
-        log.info("Block user request for target ID: {}", targetId);
-        // TODO: 차단하기 로직 구현 예정
+    public BaseResponse<Void> blockUser(@RequestParam Long userId, @RequestParam Long targetId) {
+        log.info("Block user request: User {} blocks User {}", userId, targetId);
+        userService.blockUser(userId, targetId);
         return new BaseResponse<>(null);
     }
+
 }
