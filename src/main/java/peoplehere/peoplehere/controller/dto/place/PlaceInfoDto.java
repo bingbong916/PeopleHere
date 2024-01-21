@@ -8,7 +8,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PlaceInfoDto {
+    private Long id;
     private String content;
     private String imageUrl;
     private String address;
+    private int order;
 }

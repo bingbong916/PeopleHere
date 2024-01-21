@@ -10,7 +10,7 @@ public class TourDtoConverter {
 
     }
 
-    public static GetTourResponse TourToGetTourResponse(Tour tour) {
+    public static GetTourResponse tourToGetTourResponse(Tour tour) {
         GetTourResponse getTourResponse = new GetTourResponse();
         getTourResponse.setId(tour.getId());
         getTourResponse.setName(tour.getName());

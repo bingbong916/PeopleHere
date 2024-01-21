@@ -36,7 +36,7 @@ public class TourController {
         }
         log.info("Create tour request: {}", request.getName());
         Tour tour = tourService.createTour(request);
-        return new BaseResponse<>(TourDtoConverter.TourToGetTourResponse(tour));
+        return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(tour));
     }
 
     @PutMapping("/{id}")
@@ -63,7 +63,7 @@ public class TourController {
         List<Tour> findTours = tourService.findAllToursByCategory(categories);
         List<GetTourResponse> getTourResponses = new ArrayList<>();
         for (Tour findTour : findTours) {
-            getTourResponses.add(TourDtoConverter.TourToGetTourResponse(findTour));
+            getTourResponses.add(TourDtoConverter.tourToGetTourResponse(findTour));
         }
         return new BaseResponse<>(getTourResponses);
     }
@@ -72,6 +72,6 @@ public class TourController {
     public BaseResponse<GetTourResponse> getTour(@PathVariable Long id) {
         log.info("Get tour request for ID: {}", id);
         Tour findTour = tourService.findTourById(id);
-        return new BaseResponse<>(TourDtoConverter.TourToGetTourResponse(findTour));
+        return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
     }
 }

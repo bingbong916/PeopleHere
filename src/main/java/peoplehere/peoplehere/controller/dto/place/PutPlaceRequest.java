@@ -13,5 +13,6 @@ public class PutPlaceRequest {
     private String content;
     private String imageUrl;
     private String address;
+    private int order;
     private Long tourId;
 }

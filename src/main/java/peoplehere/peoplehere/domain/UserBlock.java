@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserBlock extends BaseTimeEntity {
@@ -27,4 +25,20 @@ public class UserBlock extends BaseTimeEntity {
     private User blocked; // 차단당하는 유저
 
     private String status;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setBlocker(User blocker) {
+        this.blocker = blocker;
+    }
+
+    public void setBlocked(User blocked) {
+        this.blocked = blocked;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

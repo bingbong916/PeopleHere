@@ -23,6 +23,7 @@ public class Tour extends BaseTimeEntity {
         this.time = time;
         this.imageUrl = imageUrl;
         this.content = content;
+        // TODO: 필드 수정 (budget 삭제, 코스 순서)
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

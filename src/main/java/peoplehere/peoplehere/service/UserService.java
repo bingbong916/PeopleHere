@@ -177,7 +177,8 @@ public class UserService {
      * 유저가 만든 투어 조회
      */
     public List<Tour> getCreatedTour(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
         return user.getTours();
     }
 
@@ -185,7 +186,8 @@ public class UserService {
      * 유저가 이용한 투어 조회
      */
     public List<TourHistory> getTourHistory(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
         return user.getTourHistories();
     }
 

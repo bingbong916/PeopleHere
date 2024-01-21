@@ -14,12 +14,14 @@ public class PutPlaceResponse {
     private String content;
     private String imageUrl;
     private String address;
+    private int order;
     private Long tourId;
 
-    public PutPlaceResponse(Long id, String content, String address) {
+    public PutPlaceResponse(Long id, String content, String address, int order) {
         this.id = id;
         this.content = content;
         this.address = address;
+        this.order = order;
     }
 }
 

@@ -9,9 +9,17 @@ import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
+import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.controller.dto.user.*;
+import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.service.UserService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
 import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
 
@@ -75,10 +83,39 @@ public class UserController {
 
 
     @GetMapping("/{id}/tours")
-    public BaseResponse<GetTourResponse> getUserTours(@PathVariable Long id, @RequestParam String option) {
-        log.info("Get tours for user ID: {}, Option: {}", id, option); // option값: created, attended
-        // TODO: 유저가 만든 또는 이용한 투어 조회 로직 구현 예정
-        return new BaseResponse<>(new GetTourResponse());
+    public BaseResponse<List<GetTourResponse>> getUserTours(@PathVariable Long id, @RequestParam(required = false) String option) {
+        log.info("Get tours for user ID: {}, Option: {}", id, option);
+
+        List<GetTourResponse> responses = new ArrayList<>();
+
+        if (option == null) {
+            // 만든 투어와 참여한 투어를 모두 반환
+            List<Tour> createdTours = userService.getCreatedTour(id);
+            responses.addAll(createdTours.stream()
+                    .map(TourDtoConverter::tourToGetTourResponse)
+                    .toList());
+
+            List<TourHistory> attendedTours = userService.getTourHistory(id);
+            responses.addAll(attendedTours.stream()
+                    .map(th -> TourDtoConverter.tourToGetTourResponse(th.getTour()))
+                    .toList());
+        } else if ("created".equals(option)) {
+            // 'created' 옵션: 만든 투어 반환
+            List<Tour> createdTours = userService.getCreatedTour(id);
+            responses.addAll(createdTours.stream()
+                    .map(TourDtoConverter::tourToGetTourResponse)
+                    .toList());
+        } else if ("attended".equals(option)) {
+            // 'attended' 옵션: 참여한 투어 반환
+            List<TourHistory> attendedTours = userService.getTourHistory(id);
+            responses.addAll(attendedTours.stream()
+                    .map(th -> TourDtoConverter.tourToGetTourResponse(th.getTour()))
+                    .toList());
+        } else {
+            throw new IllegalArgumentException("Invalid option: " + option);
+        }
+
+        return new BaseResponse<>(responses);
     }
 
     @GetMapping("/{id}/chats")

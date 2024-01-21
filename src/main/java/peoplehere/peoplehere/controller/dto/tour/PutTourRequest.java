@@ -7,8 +7,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,4 +34,8 @@ public class PutTourRequest {
     private String imageUrl;
 
     private String content;
+
+    private List<PlaceInfoDto> places;
+
+    private List<Long> deletedPlaceIds;
 }

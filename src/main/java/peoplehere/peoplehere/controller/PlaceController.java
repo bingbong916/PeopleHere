@@ -22,14 +22,14 @@ public class PlaceController {
     public BaseResponse<PostPlaceResponse> addPlace(@RequestBody PostPlaceRequest request) {
         log.info("Create place request: {}", request.getAddress());
         // TODO: 장소 생성 로직 구현 예정
-        return new BaseResponse<>(new PostPlaceResponse(1L, request.getContent(), request.getAddress()));
+        return new BaseResponse<>(new PostPlaceResponse(1L, request.getContent(), request.getAddress(), request.getOrder()));
     }
 
     @PutMapping("/{id}")
     public BaseResponse<PutPlaceResponse> updatePlace(@PathVariable Long id, @RequestBody PutPlaceRequest request) {
         log.info("Update place request for ID: {}, {}", id, request.getAddress());
         // TODO: 장소 수정 로직 구현 예정
-        return new BaseResponse<>(new PutPlaceResponse(id, request.getContent(), request.getAddress()));
+        return new BaseResponse<>(new PutPlaceResponse(id, request.getContent(), request.getAddress(), request.getOrder()));
     }
 
     @PatchMapping("/{id}")
