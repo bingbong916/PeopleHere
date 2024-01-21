@@ -16,7 +16,6 @@ import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtExpiredTokenEx
 import peoplehere.peoplehere.service.UserDetailsServiceImpl;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;

@@ -8,23 +8,41 @@ public class UserDtoConverter {
      * User -> GetUserResponse
      * 유저 -> 유저 조회 DTO
      */
+
     public static GetUserResponse userToGetUserResponse(User user) {
-        GetUserResponse getUserResponse = new GetUserResponse();
-        getUserResponse.setEmail(user.getEmail());
-        getUserResponse.setName(user.getName());
-        getUserResponse.setGender(user.getGender());
-        getUserResponse.setLeader(user.isLeader());
-        getUserResponse.setImageUrl(user.getImageUrl());
-        getUserResponse.setContent(user.getContent());
-        return getUserResponse;
+        return new GetUserResponse(
+                user.getEmail(),
+                user.getName(),
+                user.getGender(),
+                user.isLeader(),
+                user.getImageUrl(),
+                user.getContent(),
+                user.getAddress(),
+                user.getBirth(),
+                user.getJob(),
+                user.getAlmaMater(),
+                user.getHobby(),
+                user.getPet(),
+                user.getFavourite()
+        );
     }
 
-    public static User postUserRequestToUser(PostUserRequest postUserRequest) {
-
-       return new User(postUserRequest.getEmail(),postUserRequest.getPassword(),postUserRequest.getName(),
-                postUserRequest.getGender(),false,postUserRequest.getImageUrl(),postUserRequest.getContent());
-
+    public static User postUserRequestToUser(PostUserRequest request) {
+        return User.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .name(request.getName())
+                .gender(request.getGender())
+                .leader(request.isLeader())
+                .imageUrl(request.getImageUrl())
+                .content(request.getContent())
+                .birth(request.getBirth())
+                .address(request.getAddress())
+                .job(request.getJob())
+                .almaMater(request.getAlmaMater())
+                .hobby(request.getHobby())
+                .pet(request.getPet())
+                .favourite(request.getFavourite())
+                .build();
     }
-
-
 }

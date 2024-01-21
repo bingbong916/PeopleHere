@@ -4,6 +4,6 @@ import peoplehere.peoplehere.domain.Place;
 
 public class PlaceDtoConverter {
     public static Place placeInfoDtoToPlace(PlaceInfoDto placeInfoDto) {
-        return new Place(placeInfoDto.getContent(), placeInfoDto.getAddress(), placeInfoDto.getImageUrl());
+        return new Place(placeInfoDto.getContent(), placeInfoDto.getAddress(), placeInfoDto.getImageUrl(), placeInfoDto.getOrder());
     }
 }

@@ -1,23 +1,22 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 //TODO: 사용할 데이터 넣어서 완성시키기
 @Entity
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class Place extends BaseTimeEntity {
 
-    public Place(String content, String image_url, String address) {
+    public Place(String content, String imageUrl, String address, int order) {
         this.content = content;
-        this.image_url = image_url;
+        this.imageUrl = imageUrl;
         this.address = address;
+        this.order = order;
     }
 
     @Id
@@ -27,9 +26,12 @@ public class Place extends BaseTimeEntity {
 
     private String content;
 
-    private String image_url;
+    // max : 5장, 대표 사진
+    private String imageUrl;
 
     private String address;
+
+    private int order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")

@@ -16,6 +16,7 @@ import peoplehere.peoplehere.repository.TourRepository;
 import peoplehere.peoplehere.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -75,10 +76,11 @@ public class TourService {
         Tour tour = TourDtoConverter.postTourRequestToTour(postTourRequest);
         User user = userRepository.findById(postTourRequest.getUserId()).orElseThrow();
         tour.setUser(user);
+
         List<Place> places = new ArrayList<>();
-        List<PlaceInfoDto> placeInfoDtos = postTourRequest.getPlaces();
-        for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
+        for (PlaceInfoDto placeInfoDto : postTourRequest.getPlaces()) {
             Place place = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
+            place.setOrder(placeInfoDto.getOrder()); // 순서 설정
             place.setTour(tour);
             places.add(place);
         }
@@ -98,13 +100,64 @@ public class TourService {
     /**
      * 투어 수정
      */
-    public Tour modifyTour(Long id, PutTourRequest putTourRequest) {
+    public void modifyTour(Long id, PutTourRequest putTourRequest) {
         Tour tour = tourRepository.findById(id).orElseThrow();
+        // 투어 수정
         tour.update(putTourRequest);
+        // 투어에 속한 장소 수정
+        updatePlaces(tour, putTourRequest.getPlaces());
+        deletePlaces(tour, putTourRequest.getDeletedPlaceIds());
+        reorderPlaces(tour);
+
         tourRepository.save(tour);
-        return tour;
     }
 
+    private void updatePlaces(Tour tour, List<PlaceInfoDto> placeInfoDtos) {
+        if (placeInfoDtos != null) {
+            List<Place> updatedPlaces = new ArrayList<>();
+
+            for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
+                Place existingPlace = tour.getPlaces().stream()
+                        .filter(p -> p.getId().equals(placeInfoDto.getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (existingPlace != null) {
+                    // 기존 장소 업데이트
+                    existingPlace.setContent(placeInfoDto.getContent());
+                    existingPlace.setImageUrl(placeInfoDto.getImageUrl());
+                    existingPlace.setAddress(placeInfoDto.getAddress());
+                    existingPlace.setOrder(placeInfoDto.getOrder());
+                    updatedPlaces.add(existingPlace);
+                } else {
+                    // 새로운 장소 추가
+                    Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
+                    newPlace.setTour(tour);
+                    updatedPlaces.add(newPlace);
+                }
+            }
+
+            // 기존 장소 목록 업데이트
+            tour.getPlaces().clear();
+            tour.getPlaces().addAll(updatedPlaces);
+        }
+    }
+    private void deletePlaces(Tour tour, List<Long> deletedPlaceIds) {
+        if (deletedPlaceIds != null) {
+            tour.getPlaces().removeIf(place -> deletedPlaceIds.contains(place.getId()));
+        }
+    }
+
+    private void reorderPlaces(Tour tour) {
+        // 장소를 순서에 따라 정렬
+        tour.getPlaces().sort(Comparator.comparing(Place::getOrder));
+
+        // 순서 재할당
+        int order = 1;
+        for (Place place : tour.getPlaces()) {
+            place.setOrder(order++);
+        }
+    }
     /**
      * 투어 삭제
      */
