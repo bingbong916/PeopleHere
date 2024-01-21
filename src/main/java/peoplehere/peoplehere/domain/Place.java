@@ -3,6 +3,7 @@ package peoplehere.peoplehere.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 //TODO: 사용할 데이터 넣어서 완성시키기
@@ -44,5 +45,20 @@ public class Place extends BaseTimeEntity {
     public void setTour(Tour tour) {
         this.tour = tour;
         tour.getPlaces().add(this);
+    }
+
+    public void update(PlaceInfoDto placeInfoDto) {
+        if (placeInfoDto.getContent() != null) {
+            this.content = placeInfoDto.getContent();
+        }
+        if (placeInfoDto.getImageUrl() != null) {
+            this.imageUrl = placeInfoDto.getImageUrl();
+        }
+        if (placeInfoDto.getAddress() != null) {
+            this.address = placeInfoDto.getAddress();
+        }
+        if (placeInfoDto.getOrder() > 0) {
+            this.order = placeInfoDto.getOrder();
+        }
     }
 }

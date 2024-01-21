@@ -105,47 +105,45 @@ public class TourService {
         // 투어 수정
         tour.update(putTourRequest);
         // 투어에 속한 장소 수정
-        updatePlaces(tour, putTourRequest.getPlaces());
-        deletePlaces(tour, putTourRequest.getDeletedPlaceIds());
-        reorderPlaces(tour);
+        if (putTourRequest.getPlaces() != null && !putTourRequest.getPlaces().isEmpty()) {
+            updatePlaces(tour, putTourRequest.getPlaces());
+        }
+
+        if (putTourRequest.getDeletedPlaceIds() != null && !putTourRequest.getDeletedPlaceIds().isEmpty()) {
+            deletePlaces(tour, putTourRequest.getDeletedPlaceIds());
+        }
 
         tourRepository.save(tour);
     }
 
     private void updatePlaces(Tour tour, List<PlaceInfoDto> placeInfoDtos) {
-        if (placeInfoDtos != null) {
-            List<Place> updatedPlaces = new ArrayList<>();
+        List<Place> updatedPlaces = new ArrayList<>();
 
-            for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
-                Place existingPlace = tour.getPlaces().stream()
-                        .filter(p -> p.getId().equals(placeInfoDto.getId()))
-                        .findFirst()
-                        .orElse(null);
+        for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
+            Place existingPlace = tour.getPlaces().stream()
+                    .filter(p -> p.getId().equals(placeInfoDto.getId()))
+                    .findFirst()
+                    .orElse(null);
 
-                if (existingPlace != null) {
-                    // 기존 장소 업데이트
-                    existingPlace.setContent(placeInfoDto.getContent());
-                    existingPlace.setImageUrl(placeInfoDto.getImageUrl());
-                    existingPlace.setAddress(placeInfoDto.getAddress());
-                    existingPlace.setOrder(placeInfoDto.getOrder());
-                    updatedPlaces.add(existingPlace);
-                } else {
-                    // 새로운 장소 추가
-                    Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
-                    newPlace.setTour(tour);
-                    updatedPlaces.add(newPlace);
-                }
+            if (existingPlace != null) {
+                // 기존 장소 업데이트
+                existingPlace.update(placeInfoDto);
+
+            } else {
+                // 새로운 장소 추가
+                Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
+                newPlace.setTour(tour);
+                updatedPlaces.add(newPlace);
             }
 
             // 기존 장소 목록 업데이트
             tour.getPlaces().clear();
             tour.getPlaces().addAll(updatedPlaces);
+            reorderPlaces(tour);
         }
     }
     private void deletePlaces(Tour tour, List<Long> deletedPlaceIds) {
-        if (deletedPlaceIds != null) {
-            tour.getPlaces().removeIf(place -> deletedPlaceIds.contains(place.getId()));
-        }
+        tour.getPlaces().removeIf(place -> deletedPlaceIds.contains(place.getId()));
     }
 
     private void reorderPlaces(Tour tour) {
