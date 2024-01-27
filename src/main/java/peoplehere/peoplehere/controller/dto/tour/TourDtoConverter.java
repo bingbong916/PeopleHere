@@ -1,6 +1,10 @@
 package peoplehere.peoplehere.controller.dto.tour;
 
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.domain.Tour;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TourDtoConverter {
     public static Tour postTourRequestToTour(PostTourRequest postTourRequest) {
@@ -18,6 +22,13 @@ public class TourDtoConverter {
         getTourResponse.setStartDate(tour.getStartDate());
         getTourResponse.setImageUrl(tour.getImageUrl());
         getTourResponse.setContent(tour.getContent());
+
+        // 투어에 속한 장소들을 PlaceInfoDto로 변환하여 추가
+        List<PlaceInfoDto> placeInfoDtos = tour.getPlaces().stream()
+                .map(place -> new PlaceInfoDto(place.getId(), place.getContent(), place.getImageUrl(), place.getAddress(), place.getOrder()))
+                .collect(Collectors.toList());
+        getTourResponse.setPlaces(placeInfoDtos);
+
         return getTourResponse;
     }
 }

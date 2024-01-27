@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +20,5 @@ public class GetTourResponse {
     private Date startDate;
     private String imageUrl;
     private String content;
+    private List<PlaceInfoDto> places;
 }

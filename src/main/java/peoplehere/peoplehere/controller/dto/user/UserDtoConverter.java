@@ -11,6 +11,7 @@ public class UserDtoConverter {
 
     public static GetUserResponse userToGetUserResponse(User user) {
         return new GetUserResponse(
+                user.getId(),
                 user.getEmail(),
                 user.getName(),
                 user.getGender(),

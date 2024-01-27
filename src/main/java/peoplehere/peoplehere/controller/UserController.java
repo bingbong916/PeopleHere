@@ -41,7 +41,7 @@ public class UserController {
         return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/deactivate/{id}")
     public BaseResponse<Void> deactivateUser(@PathVariable Long id) {
         log.info("Deactivate user request for ID: {}", id);
         userService.deactivateUser(id);
@@ -73,7 +73,7 @@ public class UserController {
         return new BaseResponse<>(userInfo);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/modify/{id}")
     public BaseResponse<Void> modifyUser(@PathVariable Long id, @RequestBody PostModifyRequest modifyRequest) {
         log.info("Modify user request for ID: {}", id);
         userService.modifyUser(id, modifyRequest);
