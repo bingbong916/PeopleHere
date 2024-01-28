@@ -20,9 +20,6 @@ public class PostTourRequest {
     @Size(max = 100, message = "투어 이름은 최대 100자까지 가능합니다.")
     private String name;
 
-    @Min(value = 0, message = "경비는 0 이상이어야 합니다.")
-    private int budget;
-
     @Min(value = 0, message = "시간은 0 이상이어야 합니다.")
     private int time;
 

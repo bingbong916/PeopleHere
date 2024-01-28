@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,7 +13,7 @@ import lombok.Setter;
 public class PlaceInfoDto {
     private Long id;
     private String content;
-    private String imageUrl;
+    private List<String> imageUrls;
     private String address;
     private int order;
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import peoplehere.peoplehere.domain.enums.Gender;
+import peoplehere.peoplehere.domain.enums.Status;
 
 import java.time.LocalDate;
 
@@ -17,7 +18,6 @@ public class GetUserResponse {
     private String email;
     private String name;
     private Gender gender;
-    private boolean leader;
     private String imageUrl;
     private String content;
     private String address;
@@ -27,6 +27,7 @@ public class GetUserResponse {
     private String hobby;
     private String pet;
     private String favourite;
+    private Status status;
     // TODO: 문답에 대한 필드 추가 예정
 }
 

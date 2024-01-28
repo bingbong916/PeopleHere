@@ -15,7 +15,6 @@ public class UserDtoConverter {
                 user.getEmail(),
                 user.getName(),
                 user.getGender(),
-                user.isLeader(),
                 user.getImageUrl(),
                 user.getContent(),
                 user.getAddress(),
@@ -24,7 +23,8 @@ public class UserDtoConverter {
                 user.getAlmaMater(),
                 user.getHobby(),
                 user.getPet(),
-                user.getFavourite()
+                user.getFavourite(),
+                user.getStatus()
         );
     }
 
@@ -34,7 +34,6 @@ public class UserDtoConverter {
                 .password(request.getPassword())
                 .name(request.getName())
                 .gender(request.getGender())
-                .leader(request.isLeader())
                 .imageUrl(request.getImageUrl())
                 .content(request.getContent())
                 .birth(request.getBirth())

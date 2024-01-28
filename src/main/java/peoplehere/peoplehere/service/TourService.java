@@ -81,6 +81,7 @@ public class TourService {
         for (PlaceInfoDto placeInfoDto : postTourRequest.getPlaces()) {
             Place place = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
             place.setOrder(placeInfoDto.getOrder()); // 순서 설정
+            place.setImageUrls(placeInfoDto.getImageUrls());
             place.setTour(tour);
             places.add(place);
         }

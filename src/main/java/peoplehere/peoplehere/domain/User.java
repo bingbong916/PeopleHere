@@ -54,9 +54,6 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     private String favourite;
 
-    @Column(nullable = false)
-    private boolean leader; // true or false
-
     private String imageUrl;
 
     @Column(length = 500)

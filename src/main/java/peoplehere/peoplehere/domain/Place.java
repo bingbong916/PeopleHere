@@ -6,6 +6,9 @@ import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 //TODO: 사용할 데이터 넣어서 완성시키기
 @Entity
 @Getter
@@ -13,9 +16,9 @@ import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 @RequiredArgsConstructor
 public class Place extends BaseTimeEntity {
 
-    public Place(String content, String imageUrl, String address, int order) {
+    public Place(String content, List<String> imageUrls, String address, int order) {
         this.content = content;
-        this.imageUrl = imageUrl;
+        this.imageUrls = imageUrls;
         this.address = address;
         this.order = order;
     }
@@ -27,11 +30,14 @@ public class Place extends BaseTimeEntity {
 
     private String content;
 
-    // max : 5장, 대표 사진
-    private String imageUrl;
+    @ElementCollection
+    @CollectionTable(name = "place_images", joinColumns = @JoinColumn(name = "place_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls = new ArrayList<>();
 
     private String address;
 
+    @Column(name = "`order`")
     private int order;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,8 +57,8 @@ public class Place extends BaseTimeEntity {
         if (placeInfoDto.getContent() != null) {
             this.content = placeInfoDto.getContent();
         }
-        if (placeInfoDto.getImageUrl() != null) {
-            this.imageUrl = placeInfoDto.getImageUrl();
+        if (placeInfoDto.getImageUrls() != null) {
+            this.imageUrls = placeInfoDto.getImageUrls();
         }
         if (placeInfoDto.getAddress() != null) {
             this.address = placeInfoDto.getAddress();

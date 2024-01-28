@@ -62,9 +62,6 @@ public class PostUserRequest {
     @Nullable
     private String favourite;
 
-    @Nullable
-    private boolean leader; // true or false
-
     // TODO: 문답에 대한 필드 추가 예정
     public void resetPassword(String encodedPassword) {
         this.password = encodedPassword;

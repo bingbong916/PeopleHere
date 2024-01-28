@@ -16,7 +16,6 @@ import java.util.List;
 public class GetTourResponse {
     private Long id;
     private String name;
-    private int budget;
     private Date startDate;
     private String imageUrl;
     private String content;
