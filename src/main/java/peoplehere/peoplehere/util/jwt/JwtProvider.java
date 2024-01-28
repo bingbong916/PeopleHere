@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,12 +17,12 @@ import peoplehere.peoplehere.common.exception.jwt.unauthorized.JwtExpiredTokenEx
 import peoplehere.peoplehere.service.UserDetailsServiceImpl;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtProvider {
 
@@ -54,12 +55,14 @@ public class JwtProvider {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+        log.info("생성된 토큰: {}", token);
+        return token;
     }
 
     public Claims parseToken(String token) {
@@ -84,7 +87,11 @@ public class JwtProvider {
             Jwts.parserBuilder()
                     .setSigningKey(jwtSecretKey).build()
                     .parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            log.error("토큰 만료 오류: {}", e.getMessage());
+            throw new JwtExpiredTokenException(JWT_TOKEN_EXPIRED);
         } catch (JwtException e) {
+            log.error("토큰 유효성 검사 오류: {}", e.getMessage());
             throw new JwtInvalidTokenException(JWT_INVALID_TOKEN);
         }
     }

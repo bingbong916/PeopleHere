@@ -17,12 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Tour extends BaseTimeEntity {
 
-    public Tour(String name, int budget, int time, String imageUrl, String content) {
+    public Tour(String name, int time, String imageUrl, String content) {
         this.name = name;
-        this.budget = budget;
         this.time = time;
         this.imageUrl = imageUrl;
         this.content = content;
+        // TODO: 필드 수정 (코스 순서)
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +30,6 @@ public class Tour extends BaseTimeEntity {
     private Long id;
 
     private String name;
-
-    private int budget;
 
     private Date startDate;
 
@@ -80,7 +78,6 @@ public class Tour extends BaseTimeEntity {
     //TODO: 타워 update 구현
     public Tour update(PutTourRequest putTourRequest) {
         this.name = putTourRequest.getName();
-        this.budget = putTourRequest.getBudget();
         this.startDate = putTourRequest.getStartDate();
         this.time = putTourRequest.getTime();
         this.imageUrl = putTourRequest.getImageUrl();

@@ -1,23 +1,26 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //TODO: 사용할 데이터 넣어서 완성시키기
 @Entity
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class Place extends BaseTimeEntity {
 
-    public Place(String content, String image_url, String address) {
+    public Place(String content, List<String> imageUrls, String address, int order) {
         this.content = content;
-        this.image_url = image_url;
+        this.imageUrls = imageUrls;
         this.address = address;
+        this.order = order;
     }
 
     @Id
@@ -27,9 +30,15 @@ public class Place extends BaseTimeEntity {
 
     private String content;
 
-    private String image_url;
+    @ElementCollection
+    @CollectionTable(name = "place_images", joinColumns = @JoinColumn(name = "place_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls = new ArrayList<>();
 
     private String address;
+
+    @Column(name = "`order`")
+    private int order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
@@ -42,5 +51,20 @@ public class Place extends BaseTimeEntity {
     public void setTour(Tour tour) {
         this.tour = tour;
         tour.getPlaces().add(this);
+    }
+
+    public void update(PlaceInfoDto placeInfoDto) {
+        if (placeInfoDto.getContent() != null) {
+            this.content = placeInfoDto.getContent();
+        }
+        if (placeInfoDto.getImageUrls() != null) {
+            this.imageUrls = placeInfoDto.getImageUrls();
+        }
+        if (placeInfoDto.getAddress() != null) {
+            this.address = placeInfoDto.getAddress();
+        }
+        if (placeInfoDto.getOrder() > 0) {
+            this.order = placeInfoDto.getOrder();
+        }
     }
 }

@@ -1,52 +1,69 @@
 package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import peoplehere.peoplehere.domain.enums.Gender;
+import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User extends BaseTimeEntity implements UserDetails {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
+    @Column(length = 50, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
+    @Column(length = 30, nullable = false)
     private String name;
 
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
-    private boolean leader;
+    @Column(length = 100)
+    private String address;
+
+    private LocalDate birth;
+
+    private String job;
+
+    private String almaMater;
+
+    private String hobby;
+
+    private String pet;
+
+    private String favourite;
 
     private String imageUrl;
 
+    @Column(length = 500)
     private String content;
 
-    public User(String email, String password, String name, String gender, boolean leader, String imageUrl, String content) {
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.gender = gender;
-        this.leader = leader;
-        this.imageUrl = imageUrl;
-        this.content = content;
-    }
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
+    // TODO: 문답에 대한 field 추가 예정
+    // FIX: @Builder.Default 어노테이션 삭제
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserLanguage> languages = new ArrayList<>();
 
@@ -65,14 +82,6 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
-
-
-    @ColumnDefault("'일반'")
-    private String status = "일반";
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     //TODO: 유저 권한 설정
     @Override

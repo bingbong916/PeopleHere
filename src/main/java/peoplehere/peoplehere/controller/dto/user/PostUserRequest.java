@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
+import peoplehere.peoplehere.domain.enums.Gender;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -28,7 +31,8 @@ public class PostUserRequest {
     @NotBlank(message = "이름을 입력해주세요.")
     @Length(min = 2, max = 30, message = "이름은 2 ~ 30자 사이여야 합니다.")
     private String name;
-    private String gender;
+
+    private Gender gender;
 
     @Nullable
     private String imageUrl;
@@ -37,8 +41,29 @@ public class PostUserRequest {
     @Length(max = 500, message = "500자 이내로 작성해주세요.")
     private String content; // 사용자의 자기소개나 추가 정보
 
+    @Nullable
+    private String address;
+
+    @Nullable
+    private LocalDate birth;
+
+    @Nullable
+    private String job;
+
+    @Nullable
+    private String almaMater;
+
+    @Nullable
+    private String hobby;
+
+    @Nullable
+    private String pet;
+
+    @Nullable
+    private String favourite;
+
+    // TODO: 문답에 대한 필드 추가 예정
     public void resetPassword(String encodedPassword) {
         this.password = encodedPassword;
     }
-
 }
