@@ -71,11 +71,15 @@ public class UserService {
     /**
      * 로그인
      */
-    public JwtTokenResponse login(PostLoginRequest postLoginRequest) {
-        User findUser = userRepository.findByEmail(postLoginRequest.getEmail()).orElseThrow();
-        validatePassword(postLoginRequest.getPassword(),findUser.getPassword());
-        String accessToken = jwtProvider.createAccessToken(findUser.getId());
-        String refreshToken = jwtProvider.createRefreshToken(findUser.getId());
+    public JwtTokenResponse login(PostLoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        if (user.getStatus() == Status.DELETED) {
+            throw new UserException(USER_DELETED);
+        }
+        validatePassword(request.getPassword(),user.getPassword());
+        String accessToken = jwtProvider.createAccessToken(user.getId());
+        String refreshToken = jwtProvider.createRefreshToken(user.getId());
         return new JwtTokenResponse("Bearer", accessToken, refreshToken);
     }
 

@@ -7,6 +7,6 @@ import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 @Getter
 @AllArgsConstructor
 public class PostLoginResponse {
-//    private long userId;
+    private long userId;
     private JwtTokenResponse jwtToken;
 }

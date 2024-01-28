@@ -14,6 +14,7 @@ import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
+import peoplehere.peoplehere.repository.UserRepository;
 import peoplehere.peoplehere.service.UserService;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
 import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
@@ -30,6 +32,8 @@ import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
+
 
     @PostMapping("/signup")
     public BaseResponse<PostUserResponse> signUp(@Validated @RequestBody PostUserRequest request, BindingResult bindingResult) {
@@ -41,7 +45,7 @@ public class UserController {
         return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/deactivate/{id}")
     public BaseResponse<Void> deactivateUser(@PathVariable Long id) {
         log.info("Deactivate user request for ID: {}", id);
         userService.deactivateUser(id);
@@ -54,8 +58,11 @@ public class UserController {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         log.info("User login request: {}", request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
         JwtTokenResponse tokenResponse = userService.login(request);
-        return new BaseResponse<>(new PostLoginResponse(tokenResponse));
+        return new BaseResponse<>(new PostLoginResponse(user.getId(), tokenResponse));
     }
 
     @PostMapping("/logout")
@@ -73,7 +80,7 @@ public class UserController {
         return new BaseResponse<>(userInfo);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/modify/{id}")
     public BaseResponse<Void> modifyUser(@PathVariable Long id, @RequestBody PostModifyRequest modifyRequest) {
         log.info("Modify user request for ID: {}", id);
         userService.modifyUser(id, modifyRequest);
