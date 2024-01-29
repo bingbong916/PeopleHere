@@ -32,4 +32,6 @@ public class PutTourRequest {
     private List<PlaceInfoDto> places;
 
     private List<Long> deletedPlaceIds;
+
+    private List<String> categoryNames;
 }
