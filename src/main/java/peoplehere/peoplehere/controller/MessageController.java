@@ -27,9 +27,9 @@ public class MessageController {
             String errorMessages = BindingResultUtils.getErrorMessages(bindingResult);
             throw new MessageException(INVALID_MESSAGE_VALUE, errorMessages);
         }
-        log.info("Create message request: {}", request.getContent());
+        log.info("Create message request: {}", request.getMessage());
         // TODO: 메시지 생성 로직 구현 예정
-        return new BaseResponse<>(new GetMessageResponse(1L, request.getChatId(), request.getUserId(), request.getContent()));
+        return new BaseResponse<>(new GetMessageResponse(1L, request.getChatId(), request.getUserId(), request.getMessage()));
     }
 
     @PatchMapping("/{messageId}")
