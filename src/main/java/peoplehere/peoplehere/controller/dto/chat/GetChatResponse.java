@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GetChatResponse {
     private Long chatId;
+    private Long userId;
     private Long tourId;
     private List<GetMessageResponse> messages;
 }

@@ -12,6 +12,11 @@ import java.util.List;
 @Getter
 public class Chat extends BaseTimeEntity {
 
+    public Chat(Tour tour, User user) {
+        this.tour = tour;
+        this.user = user;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id")

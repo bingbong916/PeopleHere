@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.controller.dto.chat;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,12 +9,15 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
+/**
+ * 새로운 채팅을 만들 때 요청 하는 DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 public class PostChatRequest {
-    @NotEmpty(message = "사용자 ID 목록은 비어 있으면 안됩니다.")
-    private List<@NotNull(message = "사용자 ID는 null이면 안됩니다.") Long> userIds;
+    @NotBlank
+    private Long userId;
 
     @NotNull(message = "투어 ID는 필수입니다.")
     private Long tourId;

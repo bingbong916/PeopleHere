@@ -2,12 +2,20 @@ package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 @Entity
 @Getter
+@NoArgsConstructor
+
 public class Message extends BaseTimeEntity {
+    public Message(User user, Chat chat, String content) {
+        this.user = user;
+        this.chat = chat;
+        this.content = content;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
