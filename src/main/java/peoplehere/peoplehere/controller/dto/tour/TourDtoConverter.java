@@ -19,6 +19,7 @@ public class TourDtoConverter {
         getTourResponse.setId(tour.getId());
         getTourResponse.setName(tour.getName());
         getTourResponse.setStartDate(tour.getStartDate());
+        getTourResponse.setTime(tour.getTime());
         getTourResponse.setImageUrl(tour.getImageUrl());
         getTourResponse.setContent(tour.getContent());
 
@@ -27,6 +28,17 @@ public class TourDtoConverter {
                 .map(place -> new PlaceInfoDto(place.getId(), place.getContent(), place.getImageUrls(), place.getAddress(), place.getOrder()))
                 .collect(Collectors.toList());
         getTourResponse.setPlaces(placeInfoDtos);
+
+        // 투어의 카테고리 이름을 추출하여 추가
+        List<String> categoryNames = tour.getTourCategories().stream()
+                .map(tc -> tc.getCategory().getName())
+                .collect(Collectors.toList());
+        getTourResponse.setCategoryNames(categoryNames);
+
+        // 투어 상태, 생성 및 수정 날짜 설정
+        getTourResponse.setStatus(tour.getStatus());
+        getTourResponse.setCreatedAt(tour.getCreatedAt());
+        getTourResponse.setUpdatedAt(tour.getUpdatedAt());
 
         return getTourResponse;
     }
