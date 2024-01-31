@@ -2,6 +2,7 @@ package peoplehere.peoplehere.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Chat extends BaseTimeEntity {
 
     public Chat(Tour tour, User user) {
