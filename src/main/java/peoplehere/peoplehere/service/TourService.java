@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
@@ -19,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.TOUR_NOT_FOUND;
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -74,9 +78,12 @@ public class TourService {
      */
     public Tour createTour(PostTourRequest postTourRequest) {
         Tour tour = TourDtoConverter.postTourRequestToTour(postTourRequest);
-        User user = userRepository.findById(postTourRequest.getUserId()).orElseThrow();
+        // 사용자 확인
+        User user = userRepository.findById(postTourRequest.getUserId())
+                .orElseThrow(() -> new TourException(USER_NOT_FOUND));
         tour.setUser(user);
 
+        // 장소 설정
         List<Place> places = new ArrayList<>();
         for (PlaceInfoDto placeInfoDto : postTourRequest.getPlaces()) {
             Place place = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
@@ -88,12 +95,18 @@ public class TourService {
         tour.setPlace(places);
         tourRepository.save(tour);
 
-        List<String> categoryNames = postTourRequest.getCategoryNames();
-        for (String categoryName : categoryNames) {
-            Category findCategory = categoryRepository.findByName(categoryName);
-            TourCategory tourCategory = new TourCategory(tour, findCategory);
-            tourCategoryRepository.save(tourCategory);
+        // 카테고리 정보 설정
+        if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames().isEmpty()) {
+            List<TourCategory> tourCategories = new ArrayList<>();
+            for (String categoryName : postTourRequest.getCategoryNames()) {
+                Category category = categoryRepository.findByName(categoryName);
+                if (category != null) {
+                    tourCategories.add(new TourCategory(tour, category));
+                }
+            }
+            tour.setTourCategories(tourCategories);
         }
+        tourRepository.save(tour);
 
         return tour;
     }
@@ -102,7 +115,8 @@ public class TourService {
      * 투어 수정
      */
     public void modifyTour(Long id, PutTourRequest putTourRequest) {
-        Tour tour = tourRepository.findById(id).orElseThrow();
+        Tour tour = tourRepository.findById(id)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         // 투어 수정
         tour.update(putTourRequest);
         // 투어에 속한 장소 수정
@@ -112,6 +126,24 @@ public class TourService {
 
         if (putTourRequest.getDeletedPlaceIds() != null && !putTourRequest.getDeletedPlaceIds().isEmpty()) {
             deletePlaces(tour, putTourRequest.getDeletedPlaceIds());
+        }
+
+        // 투어 카테고리 수정
+        if (putTourRequest.getCategoryNames() != null && !putTourRequest.getCategoryNames().isEmpty()) {
+
+            // 기존 카테고리 연결 제거
+            tourCategoryRepository.deleteAll(tour.getTourCategories());
+            tour.getTourCategories().clear();
+
+            // 새 카테고리 연결
+            for (String categoryName : putTourRequest.getCategoryNames()) {
+                Category category = categoryRepository.findByName(categoryName);
+                if (category != null) {
+                    TourCategory tourCategory = new TourCategory(tour, category);
+                    tour.getTourCategories().add(tourCategory);
+                    tourCategoryRepository.save(tourCategory);
+                }
+            }
         }
 
         tourRepository.save(tour);

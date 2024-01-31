@@ -71,6 +71,11 @@ public class Tour extends BaseTimeEntity {
         this.places = places;
     }
 
+    public void setTourCategories(List<TourCategory> tourCategories) {
+        this.tourCategories = tourCategories;
+        tourCategories.forEach(tc -> tc.setTour(this));
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
