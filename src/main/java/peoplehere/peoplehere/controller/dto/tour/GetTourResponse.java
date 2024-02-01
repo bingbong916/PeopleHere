@@ -25,6 +25,7 @@ public class GetTourResponse {
     private List<PlaceInfoDto> places;
     private List<String> categoryNames;
     private Status status;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

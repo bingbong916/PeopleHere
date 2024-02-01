@@ -38,6 +38,10 @@ public class Chat extends BaseTimeEntity {
     @ColumnDefault("'일반'")
     private String status = "일반";
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     //==연관관계 편의 메서드==//
     public void setUser(User user) {
         this.user = user;

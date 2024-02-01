@@ -34,13 +34,21 @@ public class ChatService {
         return result.getId();
     }
 
-    public List<GetChatResponse> getChatRoom(Long tourId) {
+    public GetChatResponse getChat(Long chatId) {
+        Chat chat =  chatRepository.findById(chatId).orElseThrow();
+        List<GetMessageResponse> messageResponses = new ArrayList<>();
+        for (Message message : chat.getMessages()) {
+            messageResponses.add(new GetMessageResponse(message.getId(),message.getChat().getId(),message.getUser().getId(),message.getContent()));
+        }
+        return new GetChatResponse(chat.getId(),chat.getUser().getId(),chat.getTour().getId(),messageResponses);
+    }
+
+    public List<GetChatResponse> getChatsByTourId(Long tourId) {
         List<Chat> chatList = chatRepository.findByTourId(tourId);
         List<GetChatResponse> getChatResponses = new ArrayList<>();
         for (Chat chat : chatList) {
-            List<Message> messages = chat.getMessages();
             List<GetMessageResponse> messageResponses = new ArrayList<>();
-            for (Message message : messages) {
+            for (Message message : chat.getMessages()) {
                 messageResponses.add(
                     new GetMessageResponse(message.getId(), message.getChat().getId(),
                         message.getUser().getId(), message.getContent()));
@@ -53,6 +61,7 @@ public class ChatService {
 
     @Transactional
     public void deleteChatRoom(Long chatRoomId) {
-        chatRepository.deleteById(chatRoomId);
+        Chat chat = chatRepository.findById(chatRoomId).orElseThrow();
+        chat.setStatus("닫힘");
     }
 }
