@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class PostChatRequest {
-    @NotBlank
+    @NotNull
     private Long userId;
 
     @NotNull(message = "투어 ID는 필수입니다.")

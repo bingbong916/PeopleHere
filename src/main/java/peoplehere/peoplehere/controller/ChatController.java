@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import peoplehere.peoplehere.common.exception.ChatException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.chat.*;
+import peoplehere.peoplehere.service.MessageService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import peoplehere.peoplehere.service.ChatService;
 
@@ -20,6 +21,7 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 public class ChatController {
 
     private final ChatService chatService;
+    private final MessageService messageService;
 
     @PostMapping("/new")
     public BaseResponse<GetChatResponse> createChat(@Valid @RequestBody PostChatRequest request, BindingResult bindingResult) {
@@ -28,8 +30,9 @@ public class ChatController {
             throw new ChatException(INVALID_CHAT_VALUE, errorMessages);
         }
         log.info("Create chat request: {}", request.getTourId());
+        Long chatRoomId = chatService.createChatRoom(request);
         // TODO: 채팅방 생성 로직 구현 예정
-        return new BaseResponse<>(null);
+        return new BaseResponse(chatRoomId);
     }
 
     @PatchMapping("/{chatId}")
