@@ -12,6 +12,7 @@ import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
@@ -61,6 +62,13 @@ public class TourController {
     public BaseResponse<Void> deleteTour(@PathVariable Long id) {
         log.info("Delete tour request for ID: {}", id);
         tourService.deleteTour(id);
+        return new BaseResponse<>(null);
+    }
+
+    @PatchMapping("/{id}/status")
+    public BaseResponse<Void> updateTourStatus(@PathVariable Long id, @RequestParam Status status) {
+        log.info("Update tour status request for ID: {}, Status: {}", id, status);
+        tourService.updateTourStatus(id, status);
         return new BaseResponse<>(null);
     }
 
