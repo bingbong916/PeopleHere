@@ -67,7 +67,7 @@ public class Tour extends BaseTimeEntity {
     }
 
 
-    public void setPlace(List<Place> places) {
+    public void setPlaces(List<Place> places) {
         this.places = places;
     }
 

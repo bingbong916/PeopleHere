@@ -14,6 +14,10 @@ import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.service.TourService;
 import peoplehere.peoplehere.util.BindingResultUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +62,19 @@ public class TourController {
     }
 
     @GetMapping("")
-    public BaseResponse<List<GetTourResponse>> getAllTours(@RequestParam(required = false) String language, @RequestParam(required = false) List<String> categories) {
-        log.info("Get all tours request with Language: {}, Category: {}", language, categories);
-        List<Tour> findTours = tourService.findAllToursByCategory(categories);
-        List<GetTourResponse> getTourResponses = new ArrayList<>();
-        for (Tour findTour : findTours) {
-            getTourResponses.add(TourDtoConverter.tourToGetTourResponse(findTour));
+    public BaseResponse<Page<GetTourResponse>> getAllTours(
+            @RequestParam(required = false) List<String> categories, Pageable pageable) {
+        Page<Tour> toursPage;
+        if (categories == null || categories.isEmpty()) {
+            // 페이징 정보와 랜덤 정렬을 사용하여 모든 투어 조회
+            toursPage = tourService.findAllTours(pageable);
+        } else {
+            // 선택된 카테고리에 따라 투어 조회
+            toursPage = tourService.findAllToursByCategory(categories, pageable);
         }
-        return new BaseResponse<>(getTourResponses);
+
+        Page<GetTourResponse> responsePage = toursPage.map(TourDtoConverter::tourToGetTourResponse);
+        return new BaseResponse<>(responsePage);
     }
 
     @GetMapping("/{id}")
