@@ -34,6 +34,11 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final JwtBlackListRepository jwtBlackListRepository;
 
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+    }
+
     /**
      * 회원 가입
      */
@@ -64,7 +69,7 @@ public class UserService {
      * 회원 탈퇴
      */
     public void deactivateUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = getUserOrThrow(userId);
         user.setStatus(Status.DELETED);
     }
 
@@ -118,7 +123,7 @@ public class UserService {
      * 특정 유저 조회
      */
     public GetUserResponse getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = getUserOrThrow(userId);
         return UserDtoConverter.userToGetUserResponse(user);
     }
 
@@ -127,8 +132,7 @@ public class UserService {
      * TODO: userModifyRequest 형식 만들기
      */
     public void modifyUser(Long userId, PostModifyRequest modifyRequest) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = getUserOrThrow(userId);
 
         // 필수 필드 업데이트
         if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
@@ -181,8 +185,8 @@ public class UserService {
      * 유저가 만든 투어 조회
      */
     public List<Tour> getCreatedTour(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = getUserOrThrow(userId);
+
         return user.getTours();
     }
 
@@ -190,8 +194,8 @@ public class UserService {
      * 유저가 이용한 투어 조회
      */
     public List<TourHistory> getTourHistory(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = getUserOrThrow(userId);
+
         return user.getTourHistories();
     }
 
@@ -205,10 +209,8 @@ public class UserService {
      * 차단하기
      */
     public void blockUser(Long blockerId, Long blockedId) {
-        User blocker = userRepository.findById(blockerId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-        User blocked = userRepository.findById(blockedId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User blocker = getUserOrThrow(blockerId);
+        User blocked = getUserOrThrow(blockedId);
 
         UserBlock userBlock = new UserBlock();
         userBlock.setBlocker(blocker);

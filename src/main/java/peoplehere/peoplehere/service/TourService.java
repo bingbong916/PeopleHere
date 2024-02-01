@@ -10,6 +10,7 @@ import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.repository.CategoryRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
@@ -184,11 +185,20 @@ public class TourService {
     }
 
     /**
+     * 상태 변경
+     */
+    public void updateTourStatus(Long id, Status status) {
+        Tour tour = tourRepository.findById(id).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        tour.setStatus(status);
+        tourRepository.save(tour);
+    }
+
+    /**
      * 투어 삭제
      */
     public void deleteTour(Long id) {
         Tour tour = tourRepository.findById(id).orElseThrow();
-        tour.setStatus("삭제");
+        tour.setStatus(Status.DELETED);
         tourRepository.save(tour);
     }
 

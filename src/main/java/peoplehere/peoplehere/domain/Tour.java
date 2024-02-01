@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
+import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 import java.util.Date;
@@ -22,7 +23,6 @@ public class Tour extends BaseTimeEntity {
         this.time = time;
         this.imageUrl = imageUrl;
         this.content = content;
-        // TODO: 필드 수정 (코스 순서)
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,8 +59,8 @@ public class Tour extends BaseTimeEntity {
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Place> places = new ArrayList<>();
 
-    @ColumnDefault("'닫힘'")
-    private String status = "닫힘";
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
@@ -76,7 +76,7 @@ public class Tour extends BaseTimeEntity {
         tourCategories.forEach(tc -> tc.setTour(this));
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
