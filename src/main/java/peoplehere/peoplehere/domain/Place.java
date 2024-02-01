@@ -63,8 +63,5 @@ public class Place extends BaseTimeEntity {
         if (placeInfoDto.getAddress() != null) {
             this.address = placeInfoDto.getAddress();
         }
-        if (placeInfoDto.getOrder() > 0) {
-            this.order = placeInfoDto.getOrder();
-        }
     }
 }

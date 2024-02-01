@@ -15,6 +15,8 @@ import peoplehere.peoplehere.repository.CategoryRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
 import peoplehere.peoplehere.repository.TourRepository;
 import peoplehere.peoplehere.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,10 +41,9 @@ public class TourService {
      * 모든 투어 조회
      */
     @Transactional(readOnly = true)
-    public List<Tour> findAllTours() {
-        return tourRepository.findAll();
+    public Page<Tour> findAllTours(Pageable pageable) {
+        return tourRepository.findAll(pageable);
     }
-
     /**
      * 특정 투어 조회
      */
@@ -56,13 +57,13 @@ public class TourService {
      * 특정 카테고리에 해당하는 투어 조회
      */
     @Transactional(readOnly = true)
-    public List<Tour> findAllToursByCategory(List<String> categories) {
-        List<Category> categoryList = new ArrayList<>();
-        for (String category : categories) {
-            categoryList.add(categoryRepository.findByName(category));
+    public Page<Tour> findAllToursByCategory(List<String> categories, Pageable pageable) {
+        if (categories == null || categories.isEmpty()) {
+            return tourRepository.findAll(pageable);
+        } else {
+            List<Category> categoryList = categoryRepository.findByNameIn(categories);
+            return tourRepository.findByCategoriesIn(categoryList, pageable);
         }
-        List<Tour> findTours = tourRepository.findByCategoryIn(categoryList);
-        return findTours;
     }
 
     /**
@@ -85,15 +86,15 @@ public class TourService {
 
         // 장소 설정
         List<Place> places = new ArrayList<>();
+        int order = 1;
         for (PlaceInfoDto placeInfoDto : postTourRequest.getPlaces()) {
             Place place = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
-            place.setOrder(placeInfoDto.getOrder()); // 순서 설정
+            place.setOrder(order++); // 순서를 리스트의 순서대로 할당
             place.setImageUrls(placeInfoDto.getImageUrls());
             place.setTour(tour);
             places.add(place);
         }
-        tour.setPlace(places);
-        tourRepository.save(tour);
+        tour.setPlaces(places);
 
         // 카테고리 정보 설정
         if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames().isEmpty()) {
@@ -119,76 +120,69 @@ public class TourService {
                 .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         // 투어 수정
         tour.update(putTourRequest);
+
         // 투어에 속한 장소 수정
         if (putTourRequest.getPlaces() != null && !putTourRequest.getPlaces().isEmpty()) {
             updatePlaces(tour, putTourRequest.getPlaces());
         }
 
+        // 삭제할 장소가 있는 경우 처리
         if (putTourRequest.getDeletedPlaceIds() != null && !putTourRequest.getDeletedPlaceIds().isEmpty()) {
             deletePlaces(tour, putTourRequest.getDeletedPlaceIds());
         }
 
         // 투어 카테고리 수정
-        if (putTourRequest.getCategoryNames() != null && !putTourRequest.getCategoryNames().isEmpty()) {
-
-            // 기존 카테고리 연결 제거
-            tourCategoryRepository.deleteAll(tour.getTourCategories());
-            tour.getTourCategories().clear();
-
-            // 새 카테고리 연결
-            for (String categoryName : putTourRequest.getCategoryNames()) {
-                Category category = categoryRepository.findByName(categoryName);
-                if (category != null) {
-                    TourCategory tourCategory = new TourCategory(tour, category);
-                    tour.getTourCategories().add(tourCategory);
-                    tourCategoryRepository.save(tourCategory);
-                }
-            }
-        }
+        updateTourCategories(tour, putTourRequest.getCategoryNames());
 
         tourRepository.save(tour);
     }
 
     private void updatePlaces(Tour tour, List<PlaceInfoDto> placeInfoDtos) {
         List<Place> updatedPlaces = new ArrayList<>();
+        int order = 1;
 
         for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
-            Place existingPlace = tour.getPlaces().stream()
-                    .filter(p -> p.getId().equals(placeInfoDto.getId()))
+            Place place = tour.getPlaces().stream()
+                    .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getId()))
                     .findFirst()
-                    .orElse(null);
+                    .orElseGet(() -> {
+                        Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
+                        newPlace.setTour(tour);
+                        return newPlace;
+                    });
 
-            if (existingPlace != null) {
-                // 기존 장소 업데이트
-                existingPlace.update(placeInfoDto);
-
-            } else {
-                // 새로운 장소 추가
-                Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
-                newPlace.setTour(tour);
-                updatedPlaces.add(newPlace);
-            }
-
-            // 기존 장소 목록 업데이트
-            tour.getPlaces().clear();
-            tour.getPlaces().addAll(updatedPlaces);
-            reorderPlaces(tour);
+            place.update(placeInfoDto);
+            place.setOrder(order++);
+            updatedPlaces.add(place);
         }
+
+        tour.setPlaces(updatedPlaces);
     }
+
     private void deletePlaces(Tour tour, List<Long> deletedPlaceIds) {
         tour.getPlaces().removeIf(place -> deletedPlaceIds.contains(place.getId()));
+        reorderPlaces(tour);
     }
 
     private void reorderPlaces(Tour tour) {
-        // 장소를 순서에 따라 정렬
-        tour.getPlaces().sort(Comparator.comparing(Place::getOrder));
-
-        // 순서 재할당
         int order = 1;
         for (Place place : tour.getPlaces()) {
             place.setOrder(order++);
         }
     }
+
+    private void updateTourCategories(Tour tour, List<String> categoryNames) {
+        // 기존 카테고리 연결 제거 및 새 카테고리 연결
+        tourCategoryRepository.deleteAll(tour.getTourCategories());
+        tour.getTourCategories().clear();
+        categoryNames.forEach(categoryName -> {
+            Category category = categoryRepository.findByName(categoryName);
+            if (category != null) {
+                tour.getTourCategories().add(new TourCategory(tour, category));
+            }
+        });
+    }
+
     /**
      * 투어 삭제
      */
