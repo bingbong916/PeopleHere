@@ -20,7 +20,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -62,7 +65,7 @@ public class TourController {
     }
 
     @GetMapping("")
-    public BaseResponse<Page<GetTourResponse>> getAllTours(
+    public BaseResponse<Map<String, Object>> getAllTours(
             @RequestParam(required = false) List<String> categories, Pageable pageable) {
         Page<Tour> toursPage;
         if (categories == null || categories.isEmpty()) {
@@ -73,8 +76,14 @@ public class TourController {
             toursPage = tourService.findAllToursByCategory(categories, pageable);
         }
 
-        Page<GetTourResponse> responsePage = toursPage.map(TourDtoConverter::tourToGetTourResponse);
-        return new BaseResponse<>(responsePage);
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", toursPage.getContent().stream().map(TourDtoConverter::tourToGetTourResponse).collect(Collectors.toList()));
+        response.put("currentPage", toursPage.getNumber());
+        response.put("totalPages", toursPage.getTotalPages());
+        response.put("totalElements", toursPage.getTotalElements());
+        response.put("size", toursPage.getSize());
+
+        return new BaseResponse<>(response);
     }
 
     @GetMapping("/{id}")
