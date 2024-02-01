@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.domain.enums.Status;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -23,7 +24,7 @@ public class GetTourResponse {
     private String content;
     private List<PlaceInfoDto> places;
     private List<String> categoryNames;
-    private String status;
+    private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
