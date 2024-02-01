@@ -43,8 +43,7 @@ public class TourService {
      */
     @Transactional(readOnly = true)
     public Page<Tour> findAllTours(Pageable pageable) {
-        return tourRepository.findAll(pageable);
-    }
+        return tourRepository.findAllByStatus(Status.ACTIVE, pageable);    }
     /**
      * 특정 투어 조회
      */
@@ -60,10 +59,10 @@ public class TourService {
     @Transactional(readOnly = true)
     public Page<Tour> findAllToursByCategory(List<String> categories, Pageable pageable) {
         if (categories == null || categories.isEmpty()) {
-            return tourRepository.findAll(pageable);
+            return tourRepository.findAllByStatus(Status.ACTIVE, pageable);
         } else {
             List<Category> categoryList = categoryRepository.findByNameIn(categories);
-            return tourRepository.findByCategoriesIn(categoryList, pageable);
+            return tourRepository.findByCategoriesInAndStatus(categoryList, Status.ACTIVE, pageable);
         }
     }
 
