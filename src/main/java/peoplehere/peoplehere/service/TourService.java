@@ -19,6 +19,7 @@ import peoplehere.peoplehere.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,8 +69,9 @@ public class TourService {
     /**
      * 투어 시작일 설정
      */
-    public void setStartDate(Long id, Date startDate) {
-        Tour findTour = tourRepository.findById(id).orElseThrow();
+    public void setStartDate(Long id, LocalDateTime startDate) {
+        Tour findTour = tourRepository.findById(id)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         findTour.setStartDate(startDate);
     }
 

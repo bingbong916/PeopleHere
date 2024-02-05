@@ -18,7 +18,7 @@ import java.util.List;
 public class GetTourResponse {
     private Long id;
     private String name;
-    private Date startDate;
+    private LocalDateTime startDate;
     private int time;
     private String imageUrl;
     private String content;

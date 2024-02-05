@@ -20,10 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
@@ -69,6 +67,13 @@ public class TourController {
     public BaseResponse<Void> updateTourStatus(@PathVariable Long id, @RequestParam Status status) {
         log.info("Update tour status request for ID: {}, Status: {}", id, status);
         tourService.updateTourStatus(id, status);
+        return new BaseResponse<>(null);
+    }
+
+    @PatchMapping("/{id}/startDate")
+    public BaseResponse<Void> setStartDate(@PathVariable Long id, @RequestParam LocalDateTime startDate) {
+        log.info("Set tour start date request for ID: {}, Date: {}", id, startDate);
+        tourService.setStartDate(id, startDate);
         return new BaseResponse<>(null);
     }
 
