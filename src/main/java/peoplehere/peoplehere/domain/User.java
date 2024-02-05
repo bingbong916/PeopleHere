@@ -60,7 +60,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.ACTIVE;
 
     // TODO: 문답에 대한 field 추가 예정
     // FIX: @Builder.Default 어노테이션 삭제

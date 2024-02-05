@@ -69,7 +69,7 @@ public class TourController {
         return new BaseResponse<>(null);
     }
 
-    @PatchMapping("/{id}/startDate")
+    @PatchMapping("/{id}/start-date")
     public BaseResponse<Void> setStartDate(@PathVariable Long id, @RequestParam LocalDateTime startDate) {
         log.info("Set tour start date request for ID: {}, Date: {}", id, startDate);
         tourService.setStartDate(id, startDate);

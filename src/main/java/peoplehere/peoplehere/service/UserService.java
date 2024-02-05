@@ -68,9 +68,10 @@ public class UserService {
     /**
      * 회원 탈퇴
      */
-    public void deactivateUser(Long userId) {
-        User user = getUserOrThrow(userId);
-        user.setStatus(Status.DELETED);
+    public void updateUserStatus(Long id, Status status) {
+        User user = getUserOrThrow(id);
+        user.setStatus(status);
+        userRepository.save(user);
     }
 
     /**
