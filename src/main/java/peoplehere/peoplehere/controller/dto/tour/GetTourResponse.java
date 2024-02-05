@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.enums.Status;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,10 +20,10 @@ public class GetTourResponse {
     private String name;
     private LocalDateTime startDate;
     private int time;
-    private String imageUrl;
     private String content;
     private List<PlaceInfoDto> places;
     private List<String> categoryNames;
+    private List<UserInfoDto> participants;
     private Status status;
 
     private LocalDateTime createdAt;

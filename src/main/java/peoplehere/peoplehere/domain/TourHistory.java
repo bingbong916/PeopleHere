@@ -33,4 +33,8 @@ public class TourHistory extends BaseTimeEntity {
         this.tour = tour;
         tour.getTourHistories().add(this);
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

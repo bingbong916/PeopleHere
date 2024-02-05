@@ -12,13 +12,12 @@ import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -104,5 +103,11 @@ public class TourController {
         log.info("Get tour request for ID: {}", id);
         Tour findTour = tourService.findTourById(id);
         return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
+    }
+
+    @PostMapping("/{tid}/join")
+    public BaseResponse<String> joinTour(@PathVariable Long tid, @RequestParam Long uid) {
+        TourHistory tourHistory = tourService.joinTour(uid, tid);
+        return new BaseResponse<>("User " + uid + " joined tour " + tid);
     }
 }
