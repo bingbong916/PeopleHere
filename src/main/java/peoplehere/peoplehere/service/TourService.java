@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -98,14 +97,18 @@ public class TourService {
 
         // 카테고리 정보 설정
         if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames().isEmpty()) {
-            List<TourCategory> tourCategories = new ArrayList<>();
             for (String categoryName : postTourRequest.getCategoryNames()) {
                 Category category = categoryRepository.findByName(categoryName);
                 if (category != null) {
-                    tourCategories.add(new TourCategory(tour, category));
+                    // 이미 존재하는 Category 인스턴스를 사용하여 TourCategory를 생성합니다.
+                    boolean alreadyAdded = tour.getTourCategories().stream()
+                            .anyMatch(tc -> tc.getCategory().equals(category));
+                    if (!alreadyAdded) {
+                        TourCategory tourCategory = new TourCategory(tour, category);
+                        tour.getTourCategories().add(tourCategory);
+                    }
                 }
             }
-            tour.setTourCategories(tourCategories);
         }
         tourRepository.save(tour);
 
