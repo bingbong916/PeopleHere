@@ -14,6 +14,7 @@ import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
+import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.repository.UserRepository;
 import peoplehere.peoplehere.service.UserService;
 
@@ -45,10 +46,10 @@ public class UserController {
         return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
-    @PatchMapping("/deactivate/{id}")
-    public BaseResponse<Void> deactivateUser(@PathVariable Long id) {
-        log.info("Deactivate user request for ID: {}", id);
-        userService.deactivateUser(id);
+    @PatchMapping("/{id}/status")
+    public BaseResponse<Void> updateUserStatus(@PathVariable Long id, @RequestParam Status status) {
+        log.info("Update user status request for ID: {}, Status: {}", id, status);
+        userService.updateUserStatus(id, status);
         return new BaseResponse<>(null);
     }
 
@@ -80,13 +81,12 @@ public class UserController {
         return new BaseResponse<>(userInfo);
     }
 
-    @PatchMapping("/modify/{id}")
+    @PatchMapping("/{id}")
     public BaseResponse<Void> modifyUser(@PathVariable Long id, @RequestBody PostModifyRequest modifyRequest) {
         log.info("Modify user request for ID: {}", id);
         userService.modifyUser(id, modifyRequest);
         return new BaseResponse<>(null);
     }
-
 
 
     @GetMapping("/{id}/tours")

@@ -12,18 +12,15 @@ import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
@@ -72,6 +69,13 @@ public class TourController {
         return new BaseResponse<>(null);
     }
 
+    @PatchMapping("/{id}/start-date")
+    public BaseResponse<Void> setStartDate(@PathVariable Long id, @RequestParam LocalDateTime startDate) {
+        log.info("Set tour start date request for ID: {}, Date: {}", id, startDate);
+        tourService.setStartDate(id, startDate);
+        return new BaseResponse<>(null);
+    }
+
     @GetMapping("")
     public BaseResponse<Map<String, Object>> getAllTours(
             @RequestParam(required = false) List<String> categories, Pageable pageable) {
@@ -99,5 +103,11 @@ public class TourController {
         log.info("Get tour request for ID: {}", id);
         Tour findTour = tourService.findTourById(id);
         return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
+    }
+
+    @PostMapping("/{tid}/join")
+    public BaseResponse<String> joinTour(@PathVariable Long tid, @RequestParam Long uid) {
+        TourHistory tourHistory = tourService.joinTour(uid, tid);
+        return new BaseResponse<>("User " + uid + " joined tour " + tid);
     }
 }

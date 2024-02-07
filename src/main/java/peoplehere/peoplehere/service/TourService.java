@@ -14,18 +14,17 @@ import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.repository.CategoryRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
+import peoplehere.peoplehere.repository.TourHistoryRepository;
 import peoplehere.peoplehere.repository.TourRepository;
 import peoplehere.peoplehere.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
-import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.TOUR_NOT_FOUND;
-import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -37,14 +36,17 @@ public class TourService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final TourCategoryRepository tourCategoryRepository;
+    private final TourHistoryRepository tourHistoryRepository;
+
 
     /**
      * 모든 투어 조회
      */
     @Transactional(readOnly = true)
     public Page<Tour> findAllTours(Pageable pageable) {
-        return tourRepository.findAll(pageable);
+        return tourRepository.findAllByStatus(Status.ACTIVE, pageable);
     }
+
     /**
      * 특정 투어 조회
      */
@@ -53,25 +55,25 @@ public class TourService {
         return tourRepository.findById(id).orElseThrow();
     }
 
-
     /**
      * 특정 카테고리에 해당하는 투어 조회
      */
     @Transactional(readOnly = true)
     public Page<Tour> findAllToursByCategory(List<String> categories, Pageable pageable) {
         if (categories == null || categories.isEmpty()) {
-            return tourRepository.findAll(pageable);
+            return tourRepository.findAllByStatus(Status.ACTIVE, pageable);
         } else {
             List<Category> categoryList = categoryRepository.findByNameIn(categories);
-            return tourRepository.findByCategoriesIn(categoryList, pageable);
+            return tourRepository.findByCategoriesInAndStatus(categoryList, Status.ACTIVE, pageable);
         }
     }
 
     /**
      * 투어 시작일 설정
      */
-    public void setStartDate(Long id, Date startDate) {
-        Tour findTour = tourRepository.findById(id).orElseThrow();
+    public void setStartDate(Long id, LocalDateTime startDate) {
+        Tour findTour = tourRepository.findById(id)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         findTour.setStartDate(startDate);
     }
 
@@ -99,14 +101,18 @@ public class TourService {
 
         // 카테고리 정보 설정
         if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames().isEmpty()) {
-            List<TourCategory> tourCategories = new ArrayList<>();
             for (String categoryName : postTourRequest.getCategoryNames()) {
                 Category category = categoryRepository.findByName(categoryName);
                 if (category != null) {
-                    tourCategories.add(new TourCategory(tour, category));
+                    // 이미 존재하는 Category 인스턴스를 사용하여 TourCategory를 생성합니다.
+                    boolean alreadyAdded = tour.getTourCategories().stream()
+                            .anyMatch(tc -> tc.getCategory().equals(category));
+                    if (!alreadyAdded) {
+                        TourCategory tourCategory = new TourCategory(tour, category);
+                        tour.getTourCategories().add(tourCategory);
+                    }
                 }
             }
-            tour.setTourCategories(tourCategories);
         }
         tourRepository.save(tour);
 
@@ -202,5 +208,33 @@ public class TourService {
         tourRepository.save(tour);
     }
 
+    /**
+     * 투어 참여
+     */
+    public TourHistory joinTour(Long tid, Long uid) {
+        Tour tour = tourRepository.findById(tid)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        User user = userRepository.findById(uid)
+                .orElseThrow(() -> new TourException(USER_NOT_FOUND));
+
+        // 투어 상태가 ACTIVE가 아닌 경우 참여 불가
+        if (tour.getStatus() != Status.ACTIVE) {
+            throw new TourException(TOUR_INACTIVATED);
+        }
+
+        // 이미 참여한 경우 중복 참여 방지
+        boolean alreadyJoined = tour.getTourHistories().stream()
+                .anyMatch(th -> th.getUser().equals(user));
+        if (alreadyJoined) {
+            throw new TourException(TOUR_JOINED);
+        }
+
+        TourHistory tourHistory = new TourHistory();
+        tourHistory.setUser(user);
+        tourHistory.setTour(tour);
+        tourHistory.setStatus("예약중"); //TODO: Status 상수화 (예약중, 취소됨, 등)
+
+        return tourHistoryRepository.save(tourHistory);
+    }
 
 }

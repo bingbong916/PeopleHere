@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.domain;
 
+import ch.qos.logback.core.util.Loader;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ public class Tour extends BaseTimeEntity {
 
     private String name;
 
-    private Date startDate;
+    private LocalDateTime startDate;
 
     private int time;
 
@@ -62,7 +64,7 @@ public class Tour extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
