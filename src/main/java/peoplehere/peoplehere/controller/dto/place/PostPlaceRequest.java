@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class PostPlaceRequest { // 구글맵 API 특성상 제약조건 불필요
     private String content; //구글 기본 장소 설명..? 필요 없기는 할듯?
-    private List<MultipartFile> images;
+//    private List<MultipartFile> images;
     private String address;
     private int order;
 }

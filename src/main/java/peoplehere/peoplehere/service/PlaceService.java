@@ -34,9 +34,8 @@ public class PlaceService {
         }
     }
 
-    public Place createPlace(PostPlaceRequest postPlaceRequest) {
+    public Place createPlace(PostPlaceRequest postPlaceRequest, List<MultipartFile> images) {
         Place place = PlaceDtoConverter.postPlaceRequestToPlace(postPlaceRequest);
-        List<MultipartFile> images = postPlaceRequest.getImages();
         saveImages(place, images);
         placeRepository.save(place);
         return place;

@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import peoplehere.peoplehere.common.exception.PlaceException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.place.*;
@@ -28,13 +29,14 @@ public class PlaceController {
      * PostPlaceRequest에 담긴 MultipartFile을 S3에 저장 후 url로 변경하여 리턴.
      */
     @PostMapping("/new")
-    public BaseResponse<List<PostPlaceResponse>> addPlaces(@RequestBody List<PostPlaceRequest> postPlaceRequests) {
+    public BaseResponse<List<PostPlaceResponse>> addPlaces(@RequestPart("images") List<MultipartFile> images,
+        @RequestPart List<PostPlaceRequest> postPlaceRequests) {
         log.info("Create place request");
         List<Place> places = new ArrayList<>();
         int order = 1;
         for (PostPlaceRequest postPlaceRequest : postPlaceRequests) {
             postPlaceRequest.setOrder(order++);
-            places.add(placeService.createPlace(postPlaceRequest));
+            places.add(placeService.createPlace(postPlaceRequest, images));
         }
         List<PostPlaceResponse> postPlaceResponses = new ArrayList<>();
         for (Place place : places) {
