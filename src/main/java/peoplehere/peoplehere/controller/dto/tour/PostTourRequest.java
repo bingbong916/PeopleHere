@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
 
 @Getter
 @Setter
@@ -33,5 +34,5 @@ public class PostTourRequest {
 
     // TODO: notice 필드 추가 필요.
 
-    private List<PlaceInfoDto> places;
+    private List<PostPlaceResponse> places;
 }

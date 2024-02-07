@@ -7,12 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.repository.CategoryRepository;
+import peoplehere.peoplehere.repository.PlaceRepository;
 import peoplehere.peoplehere.repository.TourCategoryRepository;
 import peoplehere.peoplehere.repository.TourRepository;
 import peoplehere.peoplehere.repository.UserRepository;
@@ -37,6 +39,7 @@ public class TourService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final TourCategoryRepository tourCategoryRepository;
+    private final PlaceRepository placeRepository;
 
     /**
      * 모든 투어 조회
@@ -86,12 +89,10 @@ public class TourService {
         tour.setUser(user);
 
         // 장소 설정
+        List<PostPlaceResponse> postTourRequestPlaces = postTourRequest.getPlaces();
         List<Place> places = new ArrayList<>();
-        int order = 1;
-        for (PlaceInfoDto placeInfoDto : postTourRequest.getPlaces()) {
-            Place place = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
-            place.setOrder(order++); // 순서를 리스트의 순서대로 할당
-            place.setImageUrls(placeInfoDto.getImageUrls());
+        for (PostPlaceResponse postTourRequestPlace : postTourRequestPlaces) {
+            Place place = placeRepository.findById(postTourRequestPlace.getId()).orElseThrow();
             place.setTour(tour);
             places.add(place);
         }
