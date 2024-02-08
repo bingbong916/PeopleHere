@@ -7,11 +7,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.response.BaseResponse;
-import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
-import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
-import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
-import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.controller.dto.tour.*;
 import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.TourDate;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
@@ -74,6 +72,19 @@ public class TourController {
         log.info("Set tour start date request for ID: {}, Date: {}", id, startDate);
         tourService.setStartDate(id, startDate);
         return new BaseResponse<>(null);
+    }
+
+    @PostMapping("/{id}/dates")
+    public BaseResponse<Void> addTourDate(@PathVariable Long id, @Valid @RequestBody PostTourDateRequest request) {
+        tourService.addTourDate(id, request.getDate(), request.getTime());
+        return new BaseResponse<>(null);
+    }
+
+    @GetMapping("/{id}/dates")
+    public BaseResponse<List<GetTourDatesResponse>> getTourDates(
+            @PathVariable Long id) {
+        List<GetTourDatesResponse> responses = tourService.getTourDates(id);
+        return new BaseResponse<>(responses);
     }
 
     @GetMapping("")

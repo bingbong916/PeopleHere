@@ -7,22 +7,23 @@ import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.tour.GetTourDatesResponse;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
-import peoplehere.peoplehere.repository.CategoryRepository;
-import peoplehere.peoplehere.repository.TourCategoryRepository;
-import peoplehere.peoplehere.repository.TourHistoryRepository;
-import peoplehere.peoplehere.repository.TourRepository;
-import peoplehere.peoplehere.repository.UserRepository;
+import peoplehere.peoplehere.domain.enums.TourDateStatus;
+import peoplehere.peoplehere.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -37,6 +38,7 @@ public class TourService {
     private final CategoryRepository categoryRepository;
     private final TourCategoryRepository tourCategoryRepository;
     private final TourHistoryRepository tourHistoryRepository;
+    private final TourDateRepository tourDateRepository;
 
 
     /**
@@ -66,6 +68,16 @@ public class TourService {
             List<Category> categoryList = categoryRepository.findByNameIn(categories);
             return tourRepository.findByCategoriesInAndStatus(categoryList, Status.ACTIVE, pageable);
         }
+    }
+
+    /**
+     * 특정 투어의 모든 일정 조회
+     */
+    public List<GetTourDatesResponse> getTourDates(Long tourId) {
+        Tour tour = tourRepository.findById(tourId).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        return tour.getTourDates().stream()
+                .map(TourDtoConverter::tourDateToGetTourDatesResponse)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -226,7 +238,7 @@ public class TourService {
         boolean alreadyJoined = tour.getTourHistories().stream()
                 .anyMatch(th -> th.getUser().equals(user));
         if (alreadyJoined) {
-            throw new TourException(TOUR_JOINED);
+            throw new TourException(TOUR_ALREADY_JOINED);
         }
 
         TourHistory tourHistory = new TourHistory();
@@ -237,4 +249,54 @@ public class TourService {
         return tourHistoryRepository.save(tourHistory);
     }
 
+    /**
+     * 투어 일정 추가
+     */
+    @Transactional
+    public void addTourDate(Long tourId, LocalDate date, LocalTime time) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        LocalDateTime dateTime = (time != null) ? LocalDateTime.of(date, time) : null;
+
+        validateTourDate(tour, date, time);
+
+        TourDate tourDate = new TourDate();
+
+        if (dateTime != null) {
+            tourDate.setDateTime(dateTime);
+        } else {
+            tourDate.setDate(date); // 날짜만 설정
+        }
+
+        tourDate.makeAvailable();
+        tour.addTourDate(tourDate);
+        tourDateRepository.save(tourDate);
+    }
+
+    /**
+     * 투어 일정 삭제
+     */
+    public void removeTourDate(Long tourId, Long tourDateId) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        TourDate tourDate = tourDateRepository.findById(tourDateId)
+                .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
+
+        tour.removeTourDate(tourDate);
+        tourDateRepository.delete(tourDate);
+    }
+
+    private void validateTourDate(Tour tour, LocalDate date, LocalTime time) {
+        // 날짜가 과거인지, 다른 일정과 중복되는지 등의 검사를 수행
+        if (date.isBefore(LocalDate.now())) {
+            throw new TourException(TOUR_DATE_IN_PAST);
+        }
+
+        // 기존에 같은 날짜에 대한 일정이 있는지 확인
+        boolean dateExists = tour.getTourDates().stream()
+                .anyMatch(td -> td.getDate().equals(date));
+        if (dateExists) {
+            throw new TourException(DUPLICATE_TOUR_DATE);
+        }
+    }
 }

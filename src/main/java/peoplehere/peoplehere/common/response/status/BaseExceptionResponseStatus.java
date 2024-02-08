@@ -43,7 +43,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_TOUR_VALUE(6001, HttpStatus.BAD_REQUEST.value(), "투어 요청에서 잘못된 값이 존재합니다."),
     DUPLICATE_TOUR_NAME(6002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 투어 이름입니다."),
     TOUR_INACTIVATED(6003, HttpStatus.BAD_REQUEST.value(), "비활성화된 투어입니다."),
-    TOUR_JOINED(6004, HttpStatus.BAD_REQUEST.value(), "이미 참여한 투어입니다."),
+    TOUR_ALREADY_JOINED(6004, HttpStatus.BAD_REQUEST.value(), "이미 참여한 투어입니다."),
+    TOUR_DATE_NOT_FOUND(6005, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 일정입니다."),
+    TOUR_DATE_IN_PAST(6006, HttpStatus.BAD_REQUEST.value(), "과거의 날짜입니다."),
+    DUPLICATE_TOUR_DATE(6004, HttpStatus.BAD_REQUEST.value(), "중복된 일정입니다."),
+
 
     // Place 오류
     PLACE_NOT_FOUND(7000, HttpStatus.NOT_FOUND.value(), "존재하지 않는 장소입니다."),

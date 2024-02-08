@@ -11,7 +11,8 @@ import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class Tour extends BaseTimeEntity {
         this.content = content;
     }
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tour_id")
     private Long id;
 
@@ -61,6 +63,9 @@ public class Tour extends BaseTimeEntity {
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Place> places = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TourDate> tourDates = new HashSet<>();
+
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
@@ -68,7 +73,15 @@ public class Tour extends BaseTimeEntity {
         this.startDate = startDate;
     }
 
+    public void addTourDate(TourDate tourDate) {
+        tourDates.add(tourDate);
+        tourDate.setTour(this);
+    }
 
+    public void removeTourDate(TourDate tourDate) {
+        tourDates.remove(tourDate);
+        tourDate.setTour(null);
+    }
     public void setPlaces(List<Place> places) {
         this.places = places;
     }
