@@ -81,15 +81,6 @@ public class TourService {
     }
 
     /**
-     * 투어 시작일 설정
-     */
-    public void setStartDate(Long id, LocalDateTime startDate) {
-        Tour findTour = tourRepository.findById(id)
-                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
-        findTour.setStartDate(startDate);
-    }
-
-    /**
      * 투어 생성
      */
     public Tour createTour(PostTourRequest postTourRequest) {

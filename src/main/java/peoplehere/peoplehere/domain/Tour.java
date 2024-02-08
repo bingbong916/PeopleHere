@@ -35,8 +35,6 @@ public class Tour extends BaseTimeEntity {
 
     private String name;
 
-    private LocalDateTime startDate;
-
     private int time;
 
     private String imageUrl;
@@ -69,10 +67,6 @@ public class Tour extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
     public void addTourDate(TourDate tourDate) {
         tourDates.add(tourDate);
         tourDate.setTour(this);
@@ -98,7 +92,6 @@ public class Tour extends BaseTimeEntity {
     //TODO: 타워 update 구현
     public Tour update(PutTourRequest putTourRequest) {
         this.name = putTourRequest.getName();
-        this.startDate = putTourRequest.getStartDate();
         this.time = putTourRequest.getTime();
         this.imageUrl = putTourRequest.getImageUrl();
         this.content = putTourRequest.getContent();

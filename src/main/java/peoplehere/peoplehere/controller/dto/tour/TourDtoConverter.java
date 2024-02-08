@@ -22,7 +22,6 @@ public class TourDtoConverter {
         GetTourResponse getTourResponse = new GetTourResponse();
         getTourResponse.setId(tour.getId());
         getTourResponse.setName(tour.getName());
-        getTourResponse.setStartDate(tour.getStartDate());
         getTourResponse.setTime(tour.getTime());
         getTourResponse.setContent(tour.getContent());
 
