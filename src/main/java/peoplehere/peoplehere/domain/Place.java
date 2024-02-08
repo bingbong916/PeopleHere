@@ -47,6 +47,10 @@ public class Place extends BaseTimeEntity {
     @ColumnDefault("'일반'")
     private String status = "일반";
 
+    public void addImageUrls(String imageUrl){
+        imageUrls.add(imageUrl);
+    }
+
     //==연관관계 편의 메서드==//
     public void setTour(Tour tour) {
         this.tour = tour;
