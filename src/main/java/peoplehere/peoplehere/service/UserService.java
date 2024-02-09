@@ -65,6 +65,11 @@ public class UserService {
         }
     }
 
+    public boolean isEmailAvailable(String email) {
+        return userRepository.findByEmail(email).isEmpty();
+    }
+
+
     /**
      * 회원 탈퇴
      */
