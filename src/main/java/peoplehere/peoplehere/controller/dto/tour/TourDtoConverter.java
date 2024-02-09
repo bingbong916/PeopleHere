@@ -57,7 +57,7 @@ public class TourDtoConverter {
                 tourDate.getId(),
                 tourDate.getDate(),
                 tourDate.getTime(),
-                tourDate.getStatus().toString()
+                tourDate.getStatus()
         );
     }
 

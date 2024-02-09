@@ -14,6 +14,7 @@ import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
+import peoplehere.peoplehere.domain.enums.TourDateStatus;
 import peoplehere.peoplehere.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -77,6 +78,7 @@ public class TourService {
     public List<GetTourDatesResponse> getTourDates(Long tourId) {
         Tour tour = tourRepository.findById(tourId).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         return tour.getTourDates().stream()
+                .filter(tourDate -> tourDate.getStatus() == TourDateStatus.AVAILABLE)
                 .map(TourDtoConverter::tourDateToGetTourDatesResponse)
                 .collect(Collectors.toList());
     }
@@ -253,6 +255,7 @@ public class TourService {
                 tourDate -> {
                     if (time != null) {
                         tourDate.setTime(time);
+                        tourDate.makeAvailable();
                     }
                 },
                 () -> {
@@ -272,8 +275,8 @@ public class TourService {
     public void removeTourDate(Long tourDateId) {
         TourDate tourDate = tourDateRepository.findById(tourDateId)
                 .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
-
-        tourDateRepository.delete(tourDate);
+        tourDate.setStatus(TourDateStatus.BLOCKED);
+        tourDateRepository.save(tourDate);
     }
 
     private void validateTourDate(LocalDate date, LocalTime time) {

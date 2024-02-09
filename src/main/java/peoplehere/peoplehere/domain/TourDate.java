@@ -64,4 +64,8 @@ public class TourDate extends BaseTimeEntity {
     public void setTour(Tour tour) {
         this.tour = tour;
     }
+
+    public void setStatus(TourDateStatus status) {
+        this.status = status;
+    }
 }

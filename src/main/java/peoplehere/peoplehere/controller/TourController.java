@@ -73,7 +73,7 @@ public class TourController {
         return new BaseResponse<>(null);
     }
 
-    @DeleteMapping("/dates/{tourDateId}")
+    @PatchMapping("/dates/{tourDateId}")
     public BaseResponse<Void> deleteTourDate(@PathVariable Long tourDateId) {
         tourService.removeTourDate(tourDateId);
         return new BaseResponse<>(null);

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import peoplehere.peoplehere.domain.enums.TourDateStatus;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,5 +20,5 @@ public class GetTourDatesResponse {
     private LocalDate date;
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime time;
-    private String status;
+    private TourDateStatus status;
 }
