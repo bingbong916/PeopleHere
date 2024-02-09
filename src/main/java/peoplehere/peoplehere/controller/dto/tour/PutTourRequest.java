@@ -19,8 +19,6 @@ public class PutTourRequest {
     @Size(max = 100, message = "투어 이름은 최대 100자까지 가능합니다.")
     private String name;
 
-    private LocalDateTime startDate;
-
     @Min(value = 0, message = "시간은 0 이상이어야 합니다.")
     private int time;
 

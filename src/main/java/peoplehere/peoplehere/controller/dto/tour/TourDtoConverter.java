@@ -4,6 +4,7 @@ import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.Place;
+import peoplehere.peoplehere.domain.TourDate;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +22,6 @@ public class TourDtoConverter {
         GetTourResponse getTourResponse = new GetTourResponse();
         getTourResponse.setId(tour.getId());
         getTourResponse.setName(tour.getName());
-        getTourResponse.setStartDate(tour.getStartDate());
         getTourResponse.setTime(tour.getTime());
         getTourResponse.setContent(tour.getContent());
 
@@ -51,4 +51,14 @@ public class TourDtoConverter {
 
         return getTourResponse;
     }
+
+    public static GetTourDatesResponse tourDateToGetTourDatesResponse(TourDate tourDate) {
+        return new GetTourDatesResponse(
+                tourDate.getId(),
+                tourDate.getDate(),
+                tourDate.getTime(),
+                tourDate.getStatus()
+        );
+    }
+
 }

@@ -18,7 +18,6 @@ import java.util.List;
 public class GetTourResponse {
     private Long id;
     private String name;
-    private LocalDateTime startDate;
     private int time;
     private String content;
     private List<PlaceInfoDto> places;
