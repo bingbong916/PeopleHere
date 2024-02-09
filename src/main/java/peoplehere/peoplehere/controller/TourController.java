@@ -68,10 +68,17 @@ public class TourController {
     }
 
     @PostMapping("/{id}/dates")
-    public BaseResponse<Void> addTourDate(@PathVariable Long id, @Valid @RequestBody PostTourDateRequest request) {
-        tourService.addTourDate(id, request.getDate(), request.getTime());
+    public BaseResponse<Void> addOrUpdateTourDate(@PathVariable Long id, @Valid @RequestBody PostTourDateRequest request) {
+        tourService.addOrUpdateTourDate(id, request.getDate(), request.getTime());
         return new BaseResponse<>(null);
     }
+
+    @DeleteMapping("/dates/{tourDateId}")
+    public BaseResponse<Void> deleteTourDate(@PathVariable Long tourDateId) {
+        tourService.removeTourDate(tourDateId);
+        return new BaseResponse<>(null);
+    }
+
 
     @GetMapping("/{id}/dates")
     public BaseResponse<List<GetTourDatesResponse>> getTourDates(

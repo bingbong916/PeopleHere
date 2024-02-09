@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
@@ -102,18 +103,12 @@ public class TourService {
 
         // 카테고리 정보 설정
         if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames().isEmpty()) {
-            for (String categoryName : postTourRequest.getCategoryNames()) {
-                Category category = categoryRepository.findByName(categoryName);
-                if (category != null) {
-                    // 이미 존재하는 Category 인스턴스를 사용하여 TourCategory를 생성합니다.
-                    boolean alreadyAdded = tour.getTourCategories().stream()
-                            .anyMatch(tc -> tc.getCategory().equals(category));
-                    if (!alreadyAdded) {
-                        TourCategory tourCategory = new TourCategory(tour, category);
-                        tour.getTourCategories().add(tourCategory);
-                    }
+            List<Category> categories = categoryRepository.findByNameIn(postTourRequest.getCategoryNames());
+            categories.forEach(category -> {
+                if (tour.getTourCategories().stream().noneMatch(tc -> tc.getCategory().equals(category))) {
+                    tour.getTourCategories().add(new TourCategory(tour, category));
                 }
-            }
+            });
         }
         tourRepository.save(tour);
 
@@ -242,50 +237,52 @@ public class TourService {
      * 투어 일정 추가
      */
     @Transactional
-    public void addTourDate(Long tourId, LocalDate date, LocalTime time) {
+    public void addOrUpdateTourDate(Long tourId, LocalDate date, LocalTime time) {
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
-        LocalDateTime dateTime = (time != null) ? LocalDateTime.of(date, time) : null;
 
-        validateTourDate(tour, date, time);
+        validateTourDate(date, time);
 
-        TourDate tourDate = new TourDate();
+        // 해당 날짜에 대한 TourDate 객체 찾기
+        Optional<TourDate> existingTourDate = tour.getTourDates().stream()
+                .filter(td -> td.getDate().equals(date))
+                .findFirst();
 
-        if (dateTime != null) {
-            tourDate.setDateTime(dateTime);
-        } else {
-            tourDate.setDate(date); // 날짜만 설정
-        }
 
-        tourDate.makeAvailable();
-        tour.addTourDate(tourDate);
-        tourDateRepository.save(tourDate);
+        existingTourDate.ifPresentOrElse(
+                tourDate -> {
+                    if (time != null) {
+                        tourDate.setTime(time);
+                    }
+                },
+                () -> {
+                    TourDate newTourDate = new TourDate();
+                    newTourDate.setDate(date);
+                    newTourDate.setTime(time);
+                    newTourDate.makeAvailable();
+                    tour.addTourDate(newTourDate);
+                    tourDateRepository.save(newTourDate);
+                }
+        );
     }
 
     /**
      * 투어 일정 삭제
      */
-    public void removeTourDate(Long tourId, Long tourDateId) {
-        Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+    public void removeTourDate(Long tourDateId) {
         TourDate tourDate = tourDateRepository.findById(tourDateId)
                 .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
 
-        tour.removeTourDate(tourDate);
         tourDateRepository.delete(tourDate);
     }
 
-    private void validateTourDate(Tour tour, LocalDate date, LocalTime time) {
-        // 날짜가 과거인지, 다른 일정과 중복되는지 등의 검사를 수행
-        if (date.isBefore(LocalDate.now())) {
-            throw new TourException(TOUR_DATE_IN_PAST);
-        }
+    private void validateTourDate(LocalDate date, LocalTime time) {
 
-        // 기존에 같은 날짜에 대한 일정이 있는지 확인
-        boolean dateExists = tour.getTourDates().stream()
-                .anyMatch(td -> td.getDate().equals(date));
-        if (dateExists) {
-            throw new TourException(DUPLICATE_TOUR_DATE);
+        LocalDateTime localDateTime = LocalDateTime.of(date, time);
+
+        // 날짜가 과거인지 확인
+        if (localDateTime.isBefore(LocalDateTime.now())) {
+            throw new TourException(TOUR_DATE_IN_PAST);
         }
     }
 }
