@@ -201,7 +201,7 @@ public class UserService {
      */
     public List<TourHistory> getTourHistory(Long userId) {
         User user = getUserOrThrow(userId);
-
+        // TODO: RESERVED는 반환 X, CONFIRMED만 반환시켜야 함
         return user.getTourHistories();
     }
 

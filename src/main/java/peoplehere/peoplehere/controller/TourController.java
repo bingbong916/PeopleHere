@@ -116,9 +116,9 @@ public class TourController {
         return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
     }
 
-    @PostMapping("/{tid}/join")
-    public BaseResponse<String> joinTour(@PathVariable Long tid, @RequestParam Long uid) {
-        TourHistory tourHistory = tourService.joinTour(uid, tid);
-        return new BaseResponse<>("User " + uid + " joined tour " + tid);
+    @PostMapping("/{tourDateId}/join")
+    public BaseResponse<String> joinTour(@PathVariable Long tourDateId, @RequestParam Long userId) {
+        tourService.joinTourDate(tourDateId, userId);
+        return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
     }
 }

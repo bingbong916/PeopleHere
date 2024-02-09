@@ -15,6 +15,7 @@ import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.domain.enums.TourDateStatus;
+import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -209,28 +210,32 @@ public class TourService {
     /**
      * 투어 참여
      */
-    public TourHistory joinTour(Long tid, Long uid) {
-        Tour tour = tourRepository.findById(tid)
-                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
-        User user = userRepository.findById(uid)
+    public TourHistory joinTourDate(Long tourDateId, Long userId) {
+        TourDate tourDate  = tourDateRepository.findById(tourDateId)
+                .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new TourException(USER_NOT_FOUND));
 
-        // 투어 상태가 ACTIVE가 아닌 경우 참여 불가
-        if (tour.getStatus() != Status.ACTIVE) {
+        // 해당 일정의 투어 상태가 ACTIVE가 아니면 참여 불가
+        if (tourDate.getTour().getStatus() != Status.ACTIVE) {
             throw new TourException(TOUR_INACTIVATED);
+        }
+        if (tourDate.getStatus() != TourDateStatus.AVAILABLE) {
+            throw new TourException(TOUR_DATE_NOT_FOUND);
         }
 
         // 이미 참여한 경우 중복 참여 방지
-        boolean alreadyJoined = tour.getTourHistories().stream()
-                .anyMatch(th -> th.getUser().equals(user));
+        boolean alreadyJoined = tourDate.getTour().getTourHistories().stream()
+                .anyMatch(th -> th.getUser().getId().equals(userId) && th.getTourDate().equals(tourDate));
         if (alreadyJoined) {
             throw new TourException(TOUR_ALREADY_JOINED);
         }
 
         TourHistory tourHistory = new TourHistory();
         tourHistory.setUser(user);
-        tourHistory.setTour(tour);
-        tourHistory.setStatus("예약중"); //TODO: Status 상수화 (예약중, 취소됨, 등)
+        tourHistory.setTourDate(tourDate);
+        tourHistory.setTour(tourDate.getTour());
+        tourHistory.setStatus(TourHistoryStatus.RESERVED);
 
         return tourHistoryRepository.save(tourHistory);
     }

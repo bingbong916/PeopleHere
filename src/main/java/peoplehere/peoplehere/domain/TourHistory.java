@@ -3,6 +3,7 @@ package peoplehere.peoplehere.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
+import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 @Entity
@@ -17,11 +18,15 @@ public class TourHistory extends BaseTimeEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tour_date_id")
+    private TourDate tourDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
-    @ColumnDefault("'예약중'")
-    private String status = "예약중";
+    @Enumerated(EnumType.STRING)
+    private TourHistoryStatus status = TourHistoryStatus.RESERVED;
 
     //==연관관계 편의 메서드==//
     public void setUser(User user) {
@@ -29,12 +34,16 @@ public class TourHistory extends BaseTimeEntity {
         user.getTourHistories().add(this);
     }
 
-    public void setTour(Tour tour) {
-        this.tour = tour;
-        tour.getTourHistories().add(this);
+    public void setTourDate(TourDate tourDate) {
+        this.tourDate = tourDate;
+        tourDate.getTourHistories().add(this);
     }
 
-    public void setStatus(String status) {
+    public void setTour(Tour tour) {
+        this.tour = tour;
+    }
+
+    public void setStatus(TourHistoryStatus status) {
         this.status = status;
     }
 }

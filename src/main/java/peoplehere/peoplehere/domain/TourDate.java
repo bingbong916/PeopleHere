@@ -10,6 +10,8 @@ import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,6 +33,9 @@ public class TourDate extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private TourDateStatus status = TourDateStatus.BLOCKED;
+
+    @OneToMany(mappedBy = "tourDate", cascade = CascadeType.ALL)
+    private List<TourHistory> tourHistories = new ArrayList<>();
 
     // 날짜와 시간을 선택적으로 반환하는 메서드
     public LocalDateTime getDateTime() {
@@ -67,5 +72,15 @@ public class TourDate extends BaseTimeEntity {
 
     public void setStatus(TourDateStatus status) {
         this.status = status;
+    }
+
+    public void addTourHistory(TourHistory tourHistory) {
+        this.tourHistories.add(tourHistory);
+        tourHistory.setTourDate(this);
+    }
+
+    public void removeTourHistory(TourHistory tourHistory) {
+        this.tourHistories.remove(tourHistory);
+        tourHistory.setTourDate(null);
     }
 }
