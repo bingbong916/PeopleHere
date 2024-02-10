@@ -190,7 +190,7 @@ public class TourService {
     }
 
     /**
-     * 상태 변경
+     * 투어 상태 변경
      */
     public void updateTourStatus(Long id, Status status) {
         Tour tour = tourRepository.findById(id).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
@@ -210,7 +210,7 @@ public class TourService {
     /**
      * 투어 참여
      */
-    public TourHistory joinTourDate(Long tourDateId, Long userId) {
+    public void joinTourDate(Long tourDateId, Long userId) {
         TourDate tourDate  = tourDateRepository.findById(tourDateId)
                 .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
         User user = userRepository.findById(userId)
@@ -237,7 +237,7 @@ public class TourService {
         tourHistory.setTour(tourDate.getTour());
         tourHistory.setStatus(TourHistoryStatus.RESERVED);
 
-        return tourHistoryRepository.save(tourHistory);
+        tourHistoryRepository.save(tourHistory);
     }
 
     /**
@@ -273,7 +273,15 @@ public class TourService {
                 }
         );
     }
+    private void validateTourDate(LocalDate date, LocalTime time) {
 
+        LocalDateTime localDateTime = LocalDateTime.of(date, time);
+
+        // 날짜가 과거인지 확인
+        if (localDateTime.isBefore(LocalDateTime.now())) {
+            throw new TourException(TOUR_DATE_IN_PAST);
+        }
+    }
     /**
      * 투어 일정 삭제
      */
@@ -284,13 +292,19 @@ public class TourService {
         tourDateRepository.save(tourDate);
     }
 
-    private void validateTourDate(LocalDate date, LocalTime time) {
+    /**
+     * 투어 참여 상태 변경
+     */
+    public void updateReservationStatus(Long tourHistoryId, TourHistoryStatus status) {
+        TourHistory tourHistory = tourHistoryRepository.findById(tourHistoryId)
+                .orElseThrow(() -> new TourException(TOUR_HISTORY_NOT_FOUND));
 
-        LocalDateTime localDateTime = LocalDateTime.of(date, time);
-
-        // 날짜가 과거인지 확인
-        if (localDateTime.isBefore(LocalDateTime.now())) {
-            throw new TourException(TOUR_DATE_IN_PAST);
+        if (!tourHistory.getStatus().equals(TourHistoryStatus.RESERVED)) {
+            throw new TourException(INVALID_TOUR_HISTORY_STATUS);
         }
+
+        tourHistory.setStatus(status);
+        tourHistoryRepository.save(tourHistory);
     }
+
 }

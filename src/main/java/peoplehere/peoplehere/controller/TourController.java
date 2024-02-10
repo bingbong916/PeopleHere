@@ -12,6 +12,7 @@ import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.TourDate;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.enums.Status;
+import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.service.TourService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
@@ -120,5 +121,12 @@ public class TourController {
     public BaseResponse<String> joinTour(@PathVariable Long tourDateId, @RequestParam Long userId) {
         tourService.joinTourDate(tourDateId, userId);
         return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
+    }
+
+    @PatchMapping("/{tourHistoryId}/status")
+    public BaseResponse<Void> updateTourStatus(@PathVariable Long tourHistoryId, @RequestParam TourHistoryStatus status) {
+        log.info("Update tour history status request for ID: {}, Status: {}", tourHistoryId, status);
+        tourService.updateReservationStatus(tourHistoryId, status);
+        return new BaseResponse<>(null);
     }
 }
