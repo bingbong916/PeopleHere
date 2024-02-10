@@ -16,8 +16,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetTourResponse {
-    private Long id;
-    private String name;
+    private Long tourId;
+    private String tourName;
+    private Long userId;
+    private String userName;
+    private String userImageUrl;
     private int time;
     private String content;
     private List<PlaceInfoDto> places;
