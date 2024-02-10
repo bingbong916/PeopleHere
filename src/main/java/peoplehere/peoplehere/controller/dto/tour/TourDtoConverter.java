@@ -20,8 +20,11 @@ public class TourDtoConverter {
 
     public static GetTourResponse tourToGetTourResponse(Tour tour) {
         GetTourResponse getTourResponse = new GetTourResponse();
-        getTourResponse.setId(tour.getId());
-        getTourResponse.setName(tour.getName());
+        getTourResponse.setTourId(tour.getId());
+        getTourResponse.setTourName(tour.getName());
+        getTourResponse.setUserId(tour.getUser().getId());
+        getTourResponse.setUserName(tour.getUser().getName());
+        getTourResponse.setUserImageUrl(tour.getUser().getImageUrl());
         getTourResponse.setTime(tour.getTime());
         getTourResponse.setContent(tour.getContent());
 
