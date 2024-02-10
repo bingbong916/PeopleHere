@@ -65,6 +65,11 @@ public class UserService {
         }
     }
 
+    public boolean isEmailAvailable(String email) {
+        return userRepository.findByEmail(email).isEmpty();
+    }
+
+
     /**
      * 회원 탈퇴
      */
@@ -196,7 +201,7 @@ public class UserService {
      */
     public List<TourHistory> getTourHistory(Long userId) {
         User user = getUserOrThrow(userId);
-
+        // TODO: RESERVED는 반환 X, CONFIRMED만 반환시켜야 함
         return user.getTourHistories();
     }
 

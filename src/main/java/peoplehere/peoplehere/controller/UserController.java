@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
-import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
+import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
@@ -34,6 +33,19 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+
+
+    @GetMapping("/check-email")
+    public BaseResponse<GetEmailCheckResponse> checkEmail(@RequestParam String email) {
+        boolean isEmailAvailable = userService.isEmailAvailable(email);
+        GetEmailCheckResponse response;
+        if (isEmailAvailable) {
+            response = new GetEmailCheckResponse(true, "새로운 이메일입니다.");
+        } else {
+            response = new GetEmailCheckResponse(false, "중복된 이메일입니다.");
+        }
+        return new BaseResponse<>(response);
+    }
 
 
     @PostMapping("/signup")

@@ -7,11 +7,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.response.BaseResponse;
-import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
-import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
-import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
-import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.controller.dto.tour.*;
 import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.TourDate;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
@@ -69,11 +67,24 @@ public class TourController {
         return new BaseResponse<>(null);
     }
 
-    @PatchMapping("/{id}/start-date")
-    public BaseResponse<Void> setStartDate(@PathVariable Long id, @RequestParam LocalDateTime startDate) {
-        log.info("Set tour start date request for ID: {}, Date: {}", id, startDate);
-        tourService.setStartDate(id, startDate);
+    @PostMapping("/{id}/dates")
+    public BaseResponse<Void> addOrUpdateTourDate(@PathVariable Long id, @Valid @RequestBody PostTourDateRequest request) {
+        tourService.addOrUpdateTourDate(id, request.getDate(), request.getTime());
         return new BaseResponse<>(null);
+    }
+
+    @PatchMapping("/dates/{tourDateId}")
+    public BaseResponse<Void> deleteTourDate(@PathVariable Long tourDateId) {
+        tourService.removeTourDate(tourDateId);
+        return new BaseResponse<>(null);
+    }
+
+
+    @GetMapping("/{id}/dates")
+    public BaseResponse<List<GetTourDatesResponse>> getTourDates(
+            @PathVariable Long id) {
+        List<GetTourDatesResponse> responses = tourService.getTourDates(id);
+        return new BaseResponse<>(responses);
     }
 
     @GetMapping("")
@@ -105,9 +116,9 @@ public class TourController {
         return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
     }
 
-    @PostMapping("/{tid}/join")
-    public BaseResponse<String> joinTour(@PathVariable Long tid, @RequestParam Long uid) {
-        TourHistory tourHistory = tourService.joinTour(uid, tid);
-        return new BaseResponse<>("User " + uid + " joined tour " + tid);
+    @PostMapping("/{tourDateId}/join")
+    public BaseResponse<String> joinTour(@PathVariable Long tourDateId, @RequestParam Long userId) {
+        tourService.joinTourDate(tourDateId, userId);
+        return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
     }
 }
