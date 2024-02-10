@@ -9,16 +9,12 @@ import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.tour.*;
 import peoplehere.peoplehere.domain.Tour;
-import peoplehere.peoplehere.domain.TourDate;
-import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.enums.Status;
-import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.service.TourService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,38 +50,19 @@ public class TourController {
         return new BaseResponse<>(new GetTourResponse());
     }
 
-    @PatchMapping("/{id}")
-    public BaseResponse<Void> deleteTour(@PathVariable Long id) {
-        log.info("Delete tour request for ID: {}", id);
-        tourService.deleteTour(id);
-        return new BaseResponse<>(null);
-    }
+    // 투어 삭제하는 로직 Status 변경하는 로직과 동일
+//    @PatchMapping("/{id}")
+//    public BaseResponse<Void> deleteTour(@PathVariable Long id) {
+//        log.info("Delete tour request for ID: {}", id);
+//        tourService.deleteTour(id);
+//        return new BaseResponse<>(null);
+//    }
 
     @PatchMapping("/{id}/status")
     public BaseResponse<Void> updateTourStatus(@PathVariable Long id, @RequestParam Status status) {
         log.info("Update tour status request for ID: {}, Status: {}", id, status);
         tourService.updateTourStatus(id, status);
         return new BaseResponse<>(null);
-    }
-
-    @PostMapping("/{id}/dates")
-    public BaseResponse<Void> addOrUpdateTourDate(@PathVariable Long id, @Valid @RequestBody PostTourDateRequest request) {
-        tourService.addOrUpdateTourDate(id, request.getDate(), request.getTime());
-        return new BaseResponse<>(null);
-    }
-
-    @PatchMapping("/dates/{tourDateId}")
-    public BaseResponse<Void> deleteTourDate(@PathVariable Long tourDateId) {
-        tourService.removeTourDate(tourDateId);
-        return new BaseResponse<>(null);
-    }
-
-
-    @GetMapping("/{id}/dates")
-    public BaseResponse<List<GetTourDatesResponse>> getTourDates(
-            @PathVariable Long id) {
-        List<GetTourDatesResponse> responses = tourService.getTourDates(id);
-        return new BaseResponse<>(responses);
     }
 
     @GetMapping("")
@@ -117,16 +94,4 @@ public class TourController {
         return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
     }
 
-    @PostMapping("/{tourDateId}/join")
-    public BaseResponse<String> joinTour(@PathVariable Long tourDateId, @RequestParam Long userId) {
-        tourService.joinTourDate(tourDateId, userId);
-        return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
-    }
-
-    @PatchMapping("/{tourHistoryId}/status")
-    public BaseResponse<Void> updateTourStatus(@PathVariable Long tourHistoryId, @RequestParam TourHistoryStatus status) {
-        log.info("Update tour history status request for ID: {}, Status: {}", tourHistoryId, status);
-        tourService.updateReservationStatus(tourHistoryId, status);
-        return new BaseResponse<>(null);
-    }
 }
