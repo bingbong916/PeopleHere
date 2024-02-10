@@ -10,9 +10,7 @@ import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -82,6 +80,14 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Wishlist> wishlists = new HashSet<>();
+
+    public void addWishlist(Wishlist wishlist) {
+        wishlists.add(wishlist);
+        wishlist.setUser(this);
+    }
 
     //TODO: 유저 권한 설정
     @Override

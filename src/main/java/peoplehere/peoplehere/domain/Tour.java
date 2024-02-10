@@ -64,12 +64,21 @@ public class Tour extends BaseTimeEntity {
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TourDate> tourDates = new HashSet<>();
 
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Wishlist> wishlists = new HashSet<>();
+
+
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
     public void addTourDate(TourDate tourDate) {
         tourDates.add(tourDate);
         tourDate.setTour(this);
+    }
+
+    public void addWishlist(Wishlist wishlist) {
+        wishlists.add(wishlist);
+        wishlist.setTour(this);
     }
 
     public void removeTourDate(TourDate tourDate) {
