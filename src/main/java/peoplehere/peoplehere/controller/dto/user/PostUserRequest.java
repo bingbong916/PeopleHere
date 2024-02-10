@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
+import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.domain.enums.Gender;
 
 import java.time.LocalDate;
@@ -35,7 +36,7 @@ public class PostUserRequest {
     private Gender gender;
 
     @Nullable
-    private String imageUrl;
+    private PostImageRequest postImageRequest;
 
     @Nullable
     @Length(max = 500, message = "500자 이내로 작성해주세요.")

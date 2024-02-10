@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.service;
 
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
 import peoplehere.peoplehere.common.exception.UserException;
+import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.*;
@@ -33,6 +35,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final JwtBlackListRepository jwtBlackListRepository;
+    private final S3Service s3Service;
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
@@ -54,9 +57,16 @@ public class UserService {
 
         //DB 저장
         User user = UserDtoConverter.postUserRequestToUser(postUserRequest);
+        user.setImageUrl(saveImage(postUserRequest.getPostImageRequest()));
         userRepository.save(user);
 
         return user;
+    }
+
+    private String saveImage(PostImageRequest postImageRequest) {
+        byte[] decodingImage = Base64.getDecoder().decode(postImageRequest.getEncodingString());
+        String storedFileName = s3Service.saveByteArrayToS3(decodingImage, postImageRequest.getOriginalFileName()); //S3에 파일 저장
+        return s3Service.getPictureS3Url(storedFileName);
     }
 
     private void validateEmail(String email) {
@@ -176,8 +186,8 @@ public class UserService {
         if (modifyRequest.getFavourite() != null) {
             user.setFavourite(modifyRequest.getFavourite());
         }
-        if (modifyRequest.getImageUrl() != null) {
-            user.setImageUrl(modifyRequest.getImageUrl());
+        if (modifyRequest.getImageRequest() != null) {
+            user.setImageUrl(saveImage(modifyRequest.getImageRequest()));
         }
         if (modifyRequest.getContent() != null) {
             user.setContent(modifyRequest.getContent());

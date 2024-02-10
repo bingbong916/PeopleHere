@@ -3,6 +3,7 @@ package peoplehere.peoplehere.controller.dto.user;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.domain.enums.Gender;
 
 import java.time.LocalDate;
@@ -22,6 +23,6 @@ public class PostModifyRequest {
     private String hobby;
     private String pet;
     private String favourite;
-    private String imageUrl;
+    private PostImageRequest imageRequest;
     private String content;
 }

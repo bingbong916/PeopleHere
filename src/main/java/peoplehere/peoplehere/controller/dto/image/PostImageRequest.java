@@ -1,4 +1,4 @@
-package peoplehere.peoplehere.controller.dto.place;
+package peoplehere.peoplehere.controller.dto.image;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
