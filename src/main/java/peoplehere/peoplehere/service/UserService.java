@@ -11,9 +11,8 @@ import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.domain.enums.Status;
-import peoplehere.peoplehere.repository.JwtBlackListRepository;
-import peoplehere.peoplehere.repository.UserBlockRepository;
-import peoplehere.peoplehere.repository.UserRepository;
+import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
+import peoplehere.peoplehere.repository.*;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
 import java.util.ArrayList;
@@ -29,6 +28,8 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 public class UserService {
 
     private final UserRepository userRepository;
+    private final WishlistRepository wishlistRepository;
+    private final TourRepository tourRepository;
     private final UserBlockRepository userBlockRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -201,10 +202,31 @@ public class UserService {
      */
     public List<TourHistory> getTourHistory(Long userId) {
         User user = getUserOrThrow(userId);
-        // TODO: RESERVED는 반환 X, CONFIRMED만 반환시켜야 함
-        return user.getTourHistories();
+        List<TourHistory> confirmedTourHistories = new ArrayList<>();
+        for (TourHistory tourHistory : user.getTourHistories()) {
+            if (tourHistory.getStatus().equals(TourHistoryStatus.CONFIRMED)) {
+                confirmedTourHistories.add(tourHistory);
+            }
+        }
+        return confirmedTourHistories;
     }
 
+    public void toggleWishlist(Long userId, Long tourId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new UserException(TOUR_NOT_FOUND));
+
+        Optional<Wishlist> wishlistOpt = wishlistRepository.findByUserAndTour(user, tour);
+        if (wishlistOpt.isPresent()) {
+            wishlistRepository.delete(wishlistOpt.get());
+        } else {
+            Wishlist newWishlist = new Wishlist();
+            newWishlist.setUser(user);
+            newWishlist.setTour(tour);
+            wishlistRepository.save(newWishlist);
+        }
+    }
 
     /**
      * 유저 채팅 조회
