@@ -56,12 +56,11 @@ public class TourDtoConverter {
     }
 
     public static GetTourDatesResponse tourDateToGetTourDatesResponse(TourDate tourDate) {
-        return new GetTourDatesResponse(
-                tourDate.getId(),
-                tourDate.getDate(),
-                tourDate.getTime(),
-                tourDate.getStatus()
-        );
+        GetTourDatesResponse response = new GetTourDatesResponse();
+        response.setId(tourDate.getId());
+        response.setDate(tourDate.getDate());
+        response.setTime(tourDate.getTime());
+        response.setStatus(tourDate.getStatus());
+        return response;
     }
-
 }

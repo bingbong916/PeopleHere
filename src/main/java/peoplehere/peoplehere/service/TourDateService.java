@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.controller.dto.tour.GetTourDatesResponse;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.domain.enums.TourDateStatus;
@@ -38,10 +39,19 @@ public class TourDateService {
      * 특정 투어의 모든 일정 조회
      */
     public List<GetTourDatesResponse> getTourDates(Long tourId) {
-        Tour tour = tourRepository.findById(tourId).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         return tour.getTourDates().stream()
                 .filter(tourDate -> tourDate.getStatus() == TourDateStatus.AVAILABLE)
-                .map(TourDtoConverter::tourDateToGetTourDatesResponse)
+                .map(tourDate -> {
+                    GetTourDatesResponse response = TourDtoConverter.tourDateToGetTourDatesResponse(tourDate);
+                    List<UserInfoDto> participants = tourDate.getTourHistories().stream()
+                            .filter(th -> th.getStatus() == TourHistoryStatus.CONFIRMED)
+                            .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getName(), th.getUser().getImageUrl()))
+                            .collect(Collectors.toList());
+                    response.setParticipants(participants);
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 
