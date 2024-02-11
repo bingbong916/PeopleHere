@@ -196,14 +196,17 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public List<GetTourResponse> getUserTours(Long userId, String option, Authentication authentication) {
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new UserException(USER_NOT_LOGGED_IN);
-        }
-
         User user = getUserOrThrow(userId);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        User currentUser = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        User currentUser;
+
+        if (authentication != null && authentication.getPrincipal() != null) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            currentUser = userRepository.findById(userDetails.getId())
+                    .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        } else {
+            currentUser = null;
+        }
 
         List<GetTourResponse> responses = new ArrayList<>();
 
@@ -211,7 +214,10 @@ public class UserService {
         if (option == null || "created".equals(option)) {
             List<Tour> createdTours = new ArrayList<>(user.getTours());
             createdTours.forEach(tour -> {
-                boolean isWished = wishlistRepository.findByUserAndTour(currentUser, tour).isPresent();
+                boolean isWished = false;
+                if (currentUser != null) {
+                    isWished = wishlistRepository.findByUserAndTour(currentUser, tour).isPresent();
+                }
                 responses.add(TourDtoConverter.tourToGetTourResponse(tour, isWished));
             });
         }
@@ -221,7 +227,10 @@ public class UserService {
             user.getTourHistories().stream()
                     .filter(th -> th.getStatus().equals(TourHistoryStatus.CONFIRMED))
                     .forEach(th -> {
-                        boolean isWished = wishlistRepository.findByUserAndTour(currentUser, th.getTour()).isPresent();
+                        boolean isWished = false;
+                        if (currentUser != null) {
+                            isWished = wishlistRepository.findByUserAndTour(currentUser, th.getTour()).isPresent();
+                        }
                         responses.add(TourDtoConverter.tourToGetTourResponse(th.getTour(), isWished));
                     });
         }
