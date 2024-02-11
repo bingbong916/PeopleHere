@@ -2,11 +2,12 @@ package peoplehere.peoplehere.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
 import peoplehere.peoplehere.common.exception.UserException;
+import peoplehere.peoplehere.util.security.UserDetailsImpl;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.*;
@@ -90,8 +91,8 @@ public class UserService {
             throw new UserException(USER_DELETED);
         }
         validatePassword(request.getPassword(),user.getPassword());
-        String accessToken = jwtProvider.createAccessToken(user.getId());
-        String refreshToken = jwtProvider.createRefreshToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
         return new JwtTokenResponse("Bearer", accessToken, refreshToken);
     }
 
@@ -211,7 +212,17 @@ public class UserService {
         return confirmedTourHistories;
     }
 
-    public void toggleWishlist(Long userId, Long tourId) {
+    /**
+     * 위시리스트 추가 및 삭제
+     */
+    public void toggleWishlist(Authentication authentication, Long tourId) {
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UserException(USER_NOT_LOGGED_IN);
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
         Tour tour = tourRepository.findById(tourId)
@@ -227,6 +238,7 @@ public class UserService {
             wishlistRepository.save(newWishlist);
         }
     }
+
 
     /**
      * 유저 채팅 조회

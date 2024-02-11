@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.repository.UserRepository;
+import peoplehere.peoplehere.util.security.UserDetailsImpl;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +19,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        Long id = Long.valueOf(userId);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Failed: No User Info"));
-        return user;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        return new UserDetailsImpl(user);
     }
+
 }

@@ -26,7 +26,7 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 @RequiredArgsConstructor
 public class JwtProvider {
 
-    private final UserDetailsServiceImpl userDetailsServiceimpl;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${secret.jwt-secret-key}")
     private String jwtSecretKey;
@@ -40,15 +40,15 @@ public class JwtProvider {
     @Value("${secret.jwt-refresh-expired-in}")
     private long jwtRefreshExpiredIn;
 
-    public String createAccessToken(Long userId) {
-        return createToken(userId, jwtExpiredIn, jwtSecretKey);
+    public String createAccessToken(String email) {
+        return createToken(email, jwtExpiredIn, jwtSecretKey);
     }
 
-    public String createRefreshToken(Long userId) {
-        return createToken(userId, jwtRefreshExpiredIn, jwtRefreshSecretKey);
+    public String createRefreshToken(String email) {
+        return createToken(email, jwtRefreshExpiredIn, jwtRefreshSecretKey);
     }
 
-    private String createToken(Long userId, long expirationTime, String secretKey) {
+    private String createToken(String email, long expirationTime, String secretKey) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
 
@@ -56,7 +56,7 @@ public class JwtProvider {
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
         String token = Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(String.valueOf(email))
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -96,9 +96,25 @@ public class JwtProvider {
         }
     }
 
-    public Authentication getAuthentication(String accessToken) {
-        UserDetails userDetails = userDetailsServiceimpl.loadUserByUsername(parseToken(accessToken).getSubject());
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    public Authentication getAuthentication(String token) {
+        String email = getEmailFromToken(token);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+    private String getEmailFromToken(String token) {
+        Jws<Claims> jws = Jwts.parserBuilder()
+                .setSigningKey(jwtSecretKey)
+                .build()
+                .parseClaimsJws(token);
+
+        Claims claims = jws.getBody();
+        String subject = claims.getSubject();
+        if (subject != null && subject.contains("@")) {
+            return subject;
+        } else {
+            throw new IllegalArgumentException("Invalid JWT token");
+        }
     }
 
 }
