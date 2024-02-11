@@ -3,19 +3,21 @@ package peoplehere.peoplehere.service;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
+import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
+import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.util.security.UserDetailsImpl;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.domain.enums.Status;
-import peoplehere.peoplehere.repository.JwtBlackListRepository;
-import peoplehere.peoplehere.repository.UserBlockRepository;
-import peoplehere.peoplehere.repository.UserRepository;
+import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
+import peoplehere.peoplehere.repository.*;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 public class UserService {
 
     private final UserRepository userRepository;
+    private final WishlistRepository wishlistRepository;
+    private final TourRepository tourRepository;
     private final UserBlockRepository userBlockRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -99,8 +103,8 @@ public class UserService {
             throw new UserException(USER_DELETED);
         }
         validatePassword(request.getPassword(),user.getPassword());
-        String accessToken = jwtProvider.createAccessToken(user.getId());
-        String refreshToken = jwtProvider.createRefreshToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
         return new JwtTokenResponse("Bearer", accessToken, refreshToken);
     }
 
@@ -200,19 +204,76 @@ public class UserService {
     /**
      * 유저가 만든 투어 조회
      */
-    public List<Tour> getCreatedTour(Long userId) {
+    @Transactional(readOnly = true)
+    public List<GetTourResponse> getUserTours(Long userId, String option, Authentication authentication) {
         User user = getUserOrThrow(userId);
 
-        return user.getTours();
+        User currentUser;
+
+        if (authentication != null && authentication.getPrincipal() != null) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            currentUser = userRepository.findById(userDetails.getId())
+                    .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        } else {
+            currentUser = null;
+        }
+
+        List<GetTourResponse> responses = new ArrayList<>();
+
+        // 만든 투어 조회
+        if (option == null || "created".equals(option)) {
+            List<Tour> createdTours = new ArrayList<>(user.getTours());
+            createdTours.forEach(tour -> {
+                boolean isWished = false;
+                if (currentUser != null) {
+                    isWished = wishlistRepository.findByUserAndTour(currentUser, tour).isPresent();
+                }
+                responses.add(TourDtoConverter.tourToGetTourResponse(tour, isWished));
+            });
+        }
+
+        // 참여한 투어 조회
+        if (option == null || "attended".equals(option)) {
+            user.getTourHistories().stream()
+                    .filter(th -> th.getStatus().equals(TourHistoryStatus.CONFIRMED))
+                    .forEach(th -> {
+                        boolean isWished = false;
+                        if (currentUser != null) {
+                            isWished = wishlistRepository.findByUserAndTour(currentUser, th.getTour()).isPresent();
+                        }
+                        responses.add(TourDtoConverter.tourToGetTourResponse(th.getTour(), isWished));
+                    });
+        }
+
+        return responses;
     }
 
+
     /**
-     * 유저가 이용한 투어 조회
+     * 위시리스트 추가 및 삭제
      */
-    public List<TourHistory> getTourHistory(Long userId) {
-        User user = getUserOrThrow(userId);
-        // TODO: RESERVED는 반환 X, CONFIRMED만 반환시켜야 함
-        return user.getTourHistories();
+    public void toggleWishlist(Authentication authentication, Long tourId) {
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UserException(USER_NOT_LOGGED_IN);
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new UserException(TOUR_NOT_FOUND));
+
+        Optional<Wishlist> wishlistOpt = wishlistRepository.findByUserAndTour(user, tour);
+        if (wishlistOpt.isPresent()) {
+            wishlistRepository.delete(wishlistOpt.get());
+        } else {
+            Wishlist newWishlist = new Wishlist();
+            newWishlist.setUser(user);
+            newWishlist.setTour(tour);
+            wishlistRepository.save(newWishlist);
+        }
     }
 
 

@@ -2,6 +2,7 @@ package peoplehere.peoplehere.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,6 @@ import peoplehere.peoplehere.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
@@ -102,39 +102,17 @@ public class UserController {
 
 
     @GetMapping("/{id}/tours")
-    public BaseResponse<List<GetTourResponse>> getUserTours(@PathVariable Long id, @RequestParam(required = false) String option) {
+    public BaseResponse<List<GetTourResponse>> getUserTours(Authentication authentication, @PathVariable Long id, @RequestParam(required = false) String option) {
         log.info("Get tours for user ID: {}, Option: {}", id, option);
-
-        List<GetTourResponse> responses = new ArrayList<>();
-
-        if (option == null) {
-            // 만든 투어와 참여한 투어를 모두 반환
-            List<Tour> createdTours = userService.getCreatedTour(id);
-            responses.addAll(createdTours.stream()
-                    .map(TourDtoConverter::tourToGetTourResponse)
-                    .toList());
-
-            List<TourHistory> attendedTours = userService.getTourHistory(id);
-            responses.addAll(attendedTours.stream()
-                    .map(th -> TourDtoConverter.tourToGetTourResponse(th.getTour()))
-                    .toList());
-        } else if ("created".equals(option)) {
-            // 'created' 옵션: 만든 투어 반환
-            List<Tour> createdTours = userService.getCreatedTour(id);
-            responses.addAll(createdTours.stream()
-                    .map(TourDtoConverter::tourToGetTourResponse)
-                    .toList());
-        } else if ("attended".equals(option)) {
-            // 'attended' 옵션: 참여한 투어 반환
-            List<TourHistory> attendedTours = userService.getTourHistory(id);
-            responses.addAll(attendedTours.stream()
-                    .map(th -> TourDtoConverter.tourToGetTourResponse(th.getTour()))
-                    .toList());
-        } else {
-            throw new IllegalArgumentException("Invalid option: " + option);
-        }
-
+        List<GetTourResponse> responses = userService.getUserTours(id, option, authentication);
         return new BaseResponse<>(responses);
+    }
+
+    @PostMapping("/wishlist/{tourId}")
+    public BaseResponse<Void> toggleWishlist(Authentication authentication, @PathVariable Long tourId) {
+        log.info("Toggle wishlist for tour ID: {}", tourId);
+        userService.toggleWishlist(authentication, tourId);
+        return new BaseResponse<>(null);
     }
 
     @GetMapping("/{id}/chats")
