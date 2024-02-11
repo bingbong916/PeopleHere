@@ -3,17 +3,21 @@ package peoplehere.peoplehere.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.tour.*;
 import peoplehere.peoplehere.domain.Tour;
+import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
+import peoplehere.peoplehere.service.UserService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import peoplehere.peoplehere.util.security.UserDetailsImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +40,7 @@ public class TourController {
         }
         log.info("Create tour request: {}", request.getName());
         Tour tour = tourService.createTour(request);
-        return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(tour));
+        return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(tour, false));
     }
 
     @PutMapping("/{id}")
@@ -66,19 +70,14 @@ public class TourController {
     }
 
     @GetMapping("")
-    public BaseResponse<Map<String, Object>> getAllTours(
+    public BaseResponse<Map<String, Object>> getAllTours(Authentication authentication,
             @RequestParam(required = false) List<String> categories, Pageable pageable) {
-        Page<Tour> toursPage;
-        if (categories == null || categories.isEmpty()) {
-            // 페이징 정보와 랜덤 정렬을 사용하여 모든 투어 조회
-            toursPage = tourService.findAllTours(pageable);
-        } else {
-            // 선택된 카테고리에 따라 투어 조회
-            toursPage = tourService.findAllToursByCategory(categories, pageable);
-        }
+        Page<GetTourResponse> toursPage = (categories == null || categories.isEmpty()) ?
+                tourService.findAllTours(authentication, pageable) :
+                tourService.findAllToursByCategory(authentication, categories, pageable);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("content", toursPage.getContent().stream().map(TourDtoConverter::tourToGetTourResponse).collect(Collectors.toList()));
+        response.put("content", toursPage.getContent());
         response.put("currentPage", toursPage.getNumber());
         response.put("totalPages", toursPage.getTotalPages());
         response.put("totalElements", toursPage.getTotalElements());
@@ -88,10 +87,10 @@ public class TourController {
     }
 
     @GetMapping("/{id}")
-    public BaseResponse<GetTourResponse> getTour(@PathVariable Long id) {
+    public BaseResponse<GetTourResponse> getTour(Authentication authentication, @PathVariable Long id) {
         log.info("Get tour request for ID: {}", id);
-        Tour findTour = tourService.findTourById(id);
-        return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(findTour));
+        GetTourResponse tourResponse = tourService.findTourById(authentication, id);
+        return new BaseResponse<>(tourResponse);
     }
 
 }

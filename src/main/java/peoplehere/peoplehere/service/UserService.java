@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.UserException;
+import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
+import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.util.security.UserDetailsImpl;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
@@ -192,25 +194,41 @@ public class UserService {
     /**
      * 유저가 만든 투어 조회
      */
-    public List<Tour> getCreatedTour(Long userId) {
-        User user = getUserOrThrow(userId);
-
-        return user.getTours();
-    }
-
-    /**
-     * 유저가 이용한 투어 조회
-     */
-    public List<TourHistory> getTourHistory(Long userId) {
-        User user = getUserOrThrow(userId);
-        List<TourHistory> confirmedTourHistories = new ArrayList<>();
-        for (TourHistory tourHistory : user.getTourHistories()) {
-            if (tourHistory.getStatus().equals(TourHistoryStatus.CONFIRMED)) {
-                confirmedTourHistories.add(tourHistory);
-            }
+    @Transactional(readOnly = true)
+    public List<GetTourResponse> getUserTours(Long userId, String option, Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UserException(USER_NOT_LOGGED_IN);
         }
-        return confirmedTourHistories;
+
+        User user = getUserOrThrow(userId);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        User currentUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        List<GetTourResponse> responses = new ArrayList<>();
+
+        // 만든 투어 조회
+        if (option == null || "created".equals(option)) {
+            List<Tour> createdTours = new ArrayList<>(user.getTours());
+            createdTours.forEach(tour -> {
+                boolean isWished = wishlistRepository.findByUserAndTour(currentUser, tour).isPresent();
+                responses.add(TourDtoConverter.tourToGetTourResponse(tour, isWished));
+            });
+        }
+
+        // 참여한 투어 조회
+        if (option == null || "attended".equals(option)) {
+            user.getTourHistories().stream()
+                    .filter(th -> th.getStatus().equals(TourHistoryStatus.CONFIRMED))
+                    .forEach(th -> {
+                        boolean isWished = wishlistRepository.findByUserAndTour(currentUser, th.getTour()).isPresent();
+                        responses.add(TourDtoConverter.tourToGetTourResponse(th.getTour(), isWished));
+                    });
+        }
+
+        return responses;
     }
+
 
     /**
      * 위시리스트 추가 및 삭제

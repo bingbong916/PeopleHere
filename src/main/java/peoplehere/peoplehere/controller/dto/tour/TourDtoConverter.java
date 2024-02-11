@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.controller.dto.tour;
 
+import jakarta.annotation.Nullable;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.Tour;
@@ -18,10 +19,11 @@ public class TourDtoConverter {
 
     }
 
-    public static GetTourResponse tourToGetTourResponse(Tour tour) {
+    public static GetTourResponse tourToGetTourResponse(Tour tour, boolean isWished) {
         GetTourResponse getTourResponse = new GetTourResponse();
         getTourResponse.setTourId(tour.getId());
         getTourResponse.setTourName(tour.getName());
+        getTourResponse.setWished(isWished);
         getTourResponse.setUserId(tour.getUser().getId());
         getTourResponse.setUserName(tour.getUser().getName());
         getTourResponse.setUserImageUrl(tour.getUser().getImageUrl());

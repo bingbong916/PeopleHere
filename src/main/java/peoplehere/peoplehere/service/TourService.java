@@ -2,12 +2,15 @@ package peoplehere.peoplehere.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
+import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
+import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
@@ -16,9 +19,11 @@ import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import peoplehere.peoplehere.util.security.UserDetailsImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -33,34 +38,60 @@ public class TourService {
     private final CategoryRepository categoryRepository;
     private final TourCategoryRepository tourCategoryRepository;
     private final PlaceRepository placeRepository;
+    private final WishlistRepository wishlistRepository;
+
 
     /**
      * 모든 투어 조회
      */
     @Transactional(readOnly = true)
-    public Page<Tour> findAllTours(Pageable pageable) {
-        return tourRepository.findAllByStatus(Status.ACTIVE, pageable);
+    public Page<GetTourResponse> findAllTours(Authentication authentication, Pageable pageable) {
+        Optional<User> user = extractUser(authentication);
+
+        Page<Tour> tours = tourRepository.findAllByStatus(Status.ACTIVE, pageable);
+        return tours.map(tour -> TourDtoConverter.tourToGetTourResponse(tour,
+                user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false)));
     }
 
     /**
      * 특정 투어 조회
      */
     @Transactional(readOnly = true)
-    public Tour findTourById(Long id) {
-        return tourRepository.findById(id).orElseThrow();
+    public GetTourResponse findTourById(Authentication authentication, Long id) {
+        Optional<User> user = extractUser(authentication);
+
+        Tour tour = tourRepository.findById(id).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        return TourDtoConverter.tourToGetTourResponse(tour,
+                user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false));
     }
 
     /**
      * 특정 카테고리에 해당하는 투어 조회
      */
     @Transactional(readOnly = true)
-    public Page<Tour> findAllToursByCategory(List<String> categories, Pageable pageable) {
+    public Page<GetTourResponse> findAllToursByCategory(Authentication authentication, List<String> categories, Pageable pageable) {
+        Optional<User> user = extractUser(authentication);
+
+        Page<Tour> tours = getToursByCategory(categories, pageable);
+        return tours.map(tour -> TourDtoConverter.tourToGetTourResponse(tour,
+                user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false)));
+    }
+
+
+    private Page<Tour> getToursByCategory(List<String> categories, Pageable pageable) {
         if (categories == null || categories.isEmpty()) {
             return tourRepository.findAllByStatus(Status.ACTIVE, pageable);
         } else {
             List<Category> categoryList = categoryRepository.findByNameIn(categories);
             return tourRepository.findByCategoriesInAndStatus(categoryList, Status.ACTIVE, pageable);
         }
+    }
+
+    private Optional<User> extractUser(Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
+            return userRepository.findById(userDetails.getId());
+        }
+        return Optional.empty();
     }
 
     /**
