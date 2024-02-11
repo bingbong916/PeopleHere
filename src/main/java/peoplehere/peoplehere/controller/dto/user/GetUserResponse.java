@@ -1,9 +1,11 @@
 package peoplehere.peoplehere.controller.dto.user;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import peoplehere.peoplehere.domain.UserLanguage;
 import peoplehere.peoplehere.domain.enums.Gender;
 import peoplehere.peoplehere.domain.enums.Status;
 
@@ -28,6 +30,7 @@ public class GetUserResponse {
     private String pet;
     private String favourite;
     private Status status;
+    private List<UserLanguage> languages;
     // TODO: 문답에 대한 필드 추가 예정
 }
 

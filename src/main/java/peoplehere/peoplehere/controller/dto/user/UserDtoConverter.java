@@ -24,7 +24,8 @@ public class UserDtoConverter {
                 user.getHobby(),
                 user.getPet(),
                 user.getFavourite(),
-                user.getStatus()
+                user.getStatus(),
+                user.getLanguages()
         );
     }
 
@@ -34,7 +35,7 @@ public class UserDtoConverter {
                 .password(request.getPassword())
                 .name(request.getName())
                 .gender(request.getGender())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(null)
                 .content(request.getContent())
                 .birth(request.getBirth())
                 .address(request.getAddress())

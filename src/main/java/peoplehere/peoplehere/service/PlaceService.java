@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.controller.dto.place.GetPlaceResponse;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
-import peoplehere.peoplehere.controller.dto.place.PostImageRequest;
+import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.controller.dto.place.PostPlaceRequest;
 import peoplehere.peoplehere.domain.Place;
 import peoplehere.peoplehere.repository.PlaceRepository;
