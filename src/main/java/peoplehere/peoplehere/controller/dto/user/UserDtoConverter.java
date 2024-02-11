@@ -24,7 +24,8 @@ public class UserDtoConverter {
                 user.getHobby(),
                 user.getPet(),
                 user.getFavourite(),
-                user.getStatus()
+                user.getStatus(),
+                user.getLanguages()
         );
     }
 
