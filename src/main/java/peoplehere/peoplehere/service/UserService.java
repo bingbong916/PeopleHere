@@ -211,9 +211,7 @@ public class UserService {
         User currentUser;
 
         if (authentication != null && authentication.getPrincipal() != null) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            currentUser = userRepository.findById(userDetails.getId())
-                    .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+            currentUser = getAuthenticatedUser(authentication);
         } else {
             currentUser = null;
         }
@@ -276,6 +274,32 @@ public class UserService {
         }
     }
 
+    /**
+     * 유저 위시리스트 조회
+     */
+    @Transactional(readOnly = true)
+    public List<GetTourResponse> getUserWishlist(Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+
+        List<Wishlist> wishlists = wishlistRepository.findByUser(user);
+        List<GetTourResponse> responses = new ArrayList<>();
+        for (Wishlist wishlist : wishlists) {
+            Tour tour = wishlist.getTour();
+            responses.add(TourDtoConverter.tourToGetTourResponse(tour, true));
+        }
+
+        return responses;
+    }
+
+    private User getAuthenticatedUser(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UserException(USER_NOT_LOGGED_IN);
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+    }
 
     /**
      * 유저 채팅 조회

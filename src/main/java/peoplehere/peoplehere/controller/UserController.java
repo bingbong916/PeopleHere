@@ -115,6 +115,13 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
+    @GetMapping("/wishlist")
+    public BaseResponse<List<GetTourResponse>> getWishlist(Authentication authentication) {
+        log.info("Get wishlist for current user");
+        List<GetTourResponse> responses = userService.getUserWishlist(authentication);
+        return new BaseResponse<>(responses);
+    }
+
     @GetMapping("/{id}/chats")
     public BaseResponse<GetUserChatsResponse> getUserChats(@PathVariable Long id, @RequestParam String option) {
         log.info("Get chats for user ID: {}, Option: {}", id, option); // option값: traveler, leader
