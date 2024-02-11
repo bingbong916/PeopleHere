@@ -18,6 +18,7 @@ import java.util.List;
 public class GetTourResponse {
     private Long tourId;
     private String tourName;
+    private boolean isWished;
     private Long userId;
     private String userName;
     private String userImageUrl;

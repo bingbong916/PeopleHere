@@ -46,7 +46,7 @@ public class TourDateController {
         return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
     }
 
-    @PatchMapping("/{tourHistoryId}/status")
+    @PatchMapping("/{tourHistoryId}/reservation-status")
     public BaseResponse<Void> updateTourStatus(@PathVariable Long tourHistoryId, @RequestParam TourHistoryStatus status) {
         log.info("Update tour history status request for ID: {}, Status: {}", tourHistoryId, status);
         tourDateService.updateReservationStatus(tourHistoryId, status);
