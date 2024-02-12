@@ -21,21 +21,21 @@ public class PlaceController {
 
     private final PlaceService placeService;
 
-    @PostMapping("/new")
-    public BaseResponse<List<PostPlaceResponse>> addPlaces(@RequestBody List<PostPlaceRequest> postPlaceRequests) {
-        log.info("Create place request");
-        List<Place> places = new ArrayList<>();
-        int order = 1;
-        for (PostPlaceRequest postPlaceRequest : postPlaceRequests) {
-            postPlaceRequest.setOrder(order++);
-            places.add(placeService.createPlace(postPlaceRequest));
-        }
-        List<PostPlaceResponse> postPlaceResponses = new ArrayList<>();
-        for (Place place : places) {
-            postPlaceResponses.add(PlaceDtoConverter.placeToPostPlaceResponse(place));
-        }
-        return new BaseResponse<>(postPlaceResponses);
-    }
+//    @PostMapping("/new")
+//    public BaseResponse<List<PostPlaceResponse>> addPlaces(@RequestBody List<PostPlaceRequest> postPlaceRequests) {
+//        log.info("Create place request");
+//        List<Place> places = new ArrayList<>();
+//        int order = 1;
+//        for (PostPlaceRequest postPlaceRequest : postPlaceRequests) {
+//            postPlaceRequest.setOrder(order++);
+//            places.add(placeService.createPlace(postPlaceRequest));
+//        }
+//        List<PostPlaceResponse> postPlaceResponses = new ArrayList<>();
+//        for (Place place : places) {
+//            postPlaceResponses.add(PlaceDtoConverter.placeToPostPlaceResponse(place));
+//        }
+//        return new BaseResponse<>(postPlaceResponses);
+//    }
 
     @GetMapping("/{id}")
     public BaseResponse<GetPlaceResponse> getPlace(@PathVariable Long id) {

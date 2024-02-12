@@ -9,6 +9,7 @@ import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.place.PostPlaceRequest;
 import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
@@ -39,6 +40,7 @@ public class TourService {
     private final TourCategoryRepository tourCategoryRepository;
     private final PlaceRepository placeRepository;
     private final WishlistRepository wishlistRepository;
+    private final PlaceService placeService;
 
 
     /**
@@ -50,7 +52,8 @@ public class TourService {
 
         Page<Tour> tours = tourRepository.findAllByStatus(Status.ACTIVE, pageable);
         return tours.map(tour -> TourDtoConverter.tourToGetTourResponse(tour,
-                user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false)));
+            user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent())
+                .orElse(false)));
     }
 
     /**
@@ -60,21 +63,24 @@ public class TourService {
     public GetTourResponse findTourById(Authentication authentication, Long id) {
         Optional<User> user = extractUser(authentication);
 
-        Tour tour = tourRepository.findById(id).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        Tour tour = tourRepository.findById(id)
+            .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         return TourDtoConverter.tourToGetTourResponse(tour,
-                user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false));
+            user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false));
     }
 
     /**
      * 특정 카테고리에 해당하는 투어 조회
      */
     @Transactional(readOnly = true)
-    public Page<GetTourResponse> findAllToursByCategory(Authentication authentication, List<String> categories, Pageable pageable) {
+    public Page<GetTourResponse> findAllToursByCategory(Authentication authentication,
+        List<String> categories, Pageable pageable) {
         Optional<User> user = extractUser(authentication);
 
         Page<Tour> tours = getToursByCategory(categories, pageable);
         return tours.map(tour -> TourDtoConverter.tourToGetTourResponse(tour,
-                user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent()).orElse(false)));
+            user.map(u -> wishlistRepository.findByUserAndTour(u, tour).isPresent())
+                .orElse(false)));
     }
 
 
@@ -83,12 +89,14 @@ public class TourService {
             return tourRepository.findAllByStatus(Status.ACTIVE, pageable);
         } else {
             List<Category> categoryList = categoryRepository.findByNameIn(categories);
-            return tourRepository.findByCategoriesInAndStatus(categoryList, Status.ACTIVE, pageable);
+            return tourRepository.findByCategoriesInAndStatus(categoryList, Status.ACTIVE,
+                pageable);
         }
     }
 
     private Optional<User> extractUser(Authentication authentication) {
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
+        if (authentication != null
+            && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
             return userRepository.findById(userDetails.getId());
         }
         return Optional.empty();
@@ -101,24 +109,28 @@ public class TourService {
         Tour tour = TourDtoConverter.postTourRequestToTour(postTourRequest);
         // 사용자 확인
         User user = userRepository.findById(postTourRequest.getUserId())
-                .orElseThrow(() -> new TourException(USER_NOT_FOUND));
+            .orElseThrow(() -> new TourException(USER_NOT_FOUND));
         tour.setUser(user);
 
         // 장소 설정
-        List<PostPlaceResponse> postTourRequestPlaces = postTourRequest.getPlaces();
         List<Place> places = new ArrayList<>();
-        for (PostPlaceResponse postTourRequestPlace : postTourRequestPlaces) {
-            Place place = placeRepository.findById(postTourRequestPlace.getId()).orElseThrow();
+        int order = 1;
+        for (PostPlaceRequest postPlaceRequest : postTourRequest.getPlaces()) {
+            postPlaceRequest.setOrder(order++);
+            Place place = placeService.createPlace(postPlaceRequest);
             place.setTour(tour);
             places.add(place);
         }
         tour.setPlaces(places);
 
         // 카테고리 정보 설정
-        if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames().isEmpty()) {
-            List<Category> categories = categoryRepository.findByNameIn(postTourRequest.getCategoryNames());
+        if (postTourRequest.getCategoryNames() != null && !postTourRequest.getCategoryNames()
+            .isEmpty()) {
+            List<Category> categories = categoryRepository.findByNameIn(
+                postTourRequest.getCategoryNames());
             categories.forEach(category -> {
-                if (tour.getTourCategories().stream().noneMatch(tc -> tc.getCategory().equals(category))) {
+                if (tour.getTourCategories().stream()
+                    .noneMatch(tc -> tc.getCategory().equals(category))) {
                     tour.getTourCategories().add(new TourCategory(tour, category));
                 }
             });
@@ -133,7 +145,7 @@ public class TourService {
      */
     public void modifyTour(Long id, PutTourRequest putTourRequest) {
         Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+            .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         // 투어 수정
         tour.update(putTourRequest);
 
@@ -143,7 +155,8 @@ public class TourService {
         }
 
         // 삭제할 장소가 있는 경우 처리
-        if (putTourRequest.getDeletedPlaceIds() != null && !putTourRequest.getDeletedPlaceIds().isEmpty()) {
+        if (putTourRequest.getDeletedPlaceIds() != null && !putTourRequest.getDeletedPlaceIds()
+            .isEmpty()) {
             deletePlaces(tour, putTourRequest.getDeletedPlaceIds());
         }
 
@@ -159,13 +172,13 @@ public class TourService {
 
         for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
             Place place = tour.getPlaces().stream()
-                    .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getId()))
-                    .findFirst()
-                    .orElseGet(() -> {
-                        Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
-                        newPlace.setTour(tour);
-                        return newPlace;
-                    });
+                .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getId()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
+                    newPlace.setTour(tour);
+                    return newPlace;
+                });
 
             place.update(placeInfoDto);
             place.setOrder(order++);
@@ -203,7 +216,8 @@ public class TourService {
      * 투어 상태 변경
      */
     public void updateTourStatus(Long id, Status status) {
-        Tour tour = tourRepository.findById(id).orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+        Tour tour = tourRepository.findById(id)
+            .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
         tour.setStatus(status);
         tourRepository.save(tour);
     }
