@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.controller.dto.user;
 
+import java.util.ArrayList;
 import peoplehere.peoplehere.domain.User;
 
 public class UserDtoConverter {
@@ -11,21 +12,21 @@ public class UserDtoConverter {
 
     public static GetUserResponse userToGetUserResponse(User user) {
         return new GetUserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getGender(),
-                user.getImageUrl(),
-                user.getContent(),
-                user.getAddress(),
-                user.getBirth(),
-                user.getJob(),
-                user.getAlmaMater(),
-                user.getHobby(),
-                user.getPet(),
-                user.getFavourite(),
-                user.getStatus(),
-                user.getLanguages()
+            user.getId(),
+            user.getEmail(),
+            user.getName(),
+            user.getGender(),
+            user.getImageUrl(),
+            user.getContent(),
+            user.getAddress(),
+            user.getBirth(),
+            user.getJob(),
+            user.getAlmaMater(),
+            user.getHobby(),
+            user.getPet(),
+            user.getFavourite(),
+            user.getStatus(),
+            new ArrayList<>()
         );
     }
 
