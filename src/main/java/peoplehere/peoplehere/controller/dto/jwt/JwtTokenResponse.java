@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JwtTokenResponse {
 
-    private String grantType;
     private String accessToken;
     private String refreshToken;
-
 }

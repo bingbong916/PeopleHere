@@ -106,7 +106,7 @@ public class UserService {
         validatePassword(request.getPassword(),user.getPassword());
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
         String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
-        return new JwtTokenResponse("Bearer", accessToken, refreshToken);
+        return new JwtTokenResponse(accessToken, refreshToken);
     }
 
     private void validatePassword(String password, String encodedPassword) {
