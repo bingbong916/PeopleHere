@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -36,6 +37,10 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @Column(length = 30, nullable = false)
     private String name;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserQuestion> userQuestion = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -87,10 +92,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Wishlist> wishlists = new HashSet<>();
 
-    public void addWishlist(Wishlist wishlist) {
-        wishlists.add(wishlist);
-        wishlist.setUser(this);
-    }
 
     //TODO: 유저 권한 설정
     @Override
