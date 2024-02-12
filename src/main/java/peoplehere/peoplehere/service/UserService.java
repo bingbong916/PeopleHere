@@ -36,6 +36,7 @@ public class UserService {
     private final WishlistRepository wishlistRepository;
     private final TourRepository tourRepository;
     private final UserBlockRepository userBlockRepository;
+    private final UserLanguageRepository userLanguageRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final JwtBlackListRepository jwtBlackListRepository;
@@ -144,7 +145,13 @@ public class UserService {
      */
     public GetUserResponse getUser(Long userId) {
         User user = getUserOrThrow(userId);
-        return UserDtoConverter.userToGetUserResponse(user);
+        GetUserResponse getUserResponse = UserDtoConverter.userToGetUserResponse(user);
+        List<UserLanguage> userLanguages = userLanguageRepository.findByUserId(userId);
+
+        for (UserLanguage userLanguage : userLanguages) {
+            getUserResponse.getLanguages().add(userLanguage.getLanguage().getKoreanName());
+        }
+        return getUserResponse;
     }
 
     /**

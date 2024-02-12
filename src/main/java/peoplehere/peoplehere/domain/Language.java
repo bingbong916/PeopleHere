@@ -1,6 +1,9 @@
 package peoplehere.peoplehere.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,5 +23,9 @@ public class Language {
 
     private String koreanName;
     private String englishName;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL)
+    private List<UserLanguage> userLanguages = new ArrayList<>();
 
 }
