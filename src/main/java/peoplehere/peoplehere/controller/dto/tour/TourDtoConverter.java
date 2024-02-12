@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class TourDtoConverter {
     public static Tour postTourRequestToTour(PostTourRequest postTourRequest) {
         Tour tour = new Tour(postTourRequest.getName(),
-                postTourRequest.getTime(), postTourRequest.getImageUrl(),postTourRequest.getContent());
+                postTourRequest.getTime(),postTourRequest.getContent());
         return tour;
 
     }

@@ -3,12 +3,11 @@ package peoplehere.peoplehere.controller.dto.tour;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
-import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
+import peoplehere.peoplehere.controller.dto.place.PostPlaceRequest;
 
 @Getter
 @Setter
@@ -23,8 +22,6 @@ public class PostTourRequest {
     @Min(value = 0, message = "시간은 0 이상이어야 합니다.")
     private int time;
 
-    private String imageUrl;
-
     @Size(max = 500, message = "소개글은 최대 500자까지 가능합니다.")
     private String content;
 
@@ -33,5 +30,5 @@ public class PostTourRequest {
 
     // TODO: notice 필드 추가 필요.
 
-    private List<PostPlaceResponse> places;
+    private List<PostPlaceRequest> places;
 }

@@ -21,10 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Tour extends BaseTimeEntity {
 
-    public Tour(String name, int time, String imageUrl, String content) {
+    public Tour(String name, int time, String content) {
         this.name = name;
         this.time = time;
-        this.imageUrl = imageUrl;
         this.content = content;
     }
 
@@ -102,7 +101,6 @@ public class Tour extends BaseTimeEntity {
     public Tour update(PutTourRequest putTourRequest) {
         this.name = putTourRequest.getName();
         this.time = putTourRequest.getTime();
-        this.imageUrl = putTourRequest.getImageUrl();
         this.content = putTourRequest.getContent();
         return this;
     }
