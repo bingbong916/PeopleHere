@@ -108,13 +108,15 @@ public class TourDateService {
                 tourDate -> {
                     if (time != null) {
                         tourDate.setTime(time);
-                        tourDate.makeAvailable();
                     }
+                    tourDate.makeAvailable();
                 },
                 () -> {
                     TourDate newTourDate = new TourDate();
                     newTourDate.setDate(date);
-                    newTourDate.setTime(time);
+                    if (time != null) {
+                        newTourDate.setTime(time);
+                    }
                     newTourDate.makeAvailable();
                     tour.addTourDate(newTourDate);
                     tourDateRepository.save(newTourDate);
@@ -123,7 +125,13 @@ public class TourDateService {
     }
     private void validateTourDate(LocalDate date, LocalTime time) {
 
-        LocalDateTime localDateTime = LocalDateTime.of(date, time);
+        LocalDateTime localDateTime;
+
+        if (time != null) {
+            localDateTime = LocalDateTime.of(date, time);
+        } else {
+            localDateTime = LocalDateTime.of(date, LocalTime.MIDNIGHT);
+        }
 
         // 날짜가 과거인지 확인
         if (localDateTime.isBefore(LocalDateTime.now())) {
