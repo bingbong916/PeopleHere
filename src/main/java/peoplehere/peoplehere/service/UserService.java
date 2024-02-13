@@ -1,5 +1,7 @@
 package peoplehere.peoplehere.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,15 @@ public class UserService {
 
         // 이메일 중복 검사
         validateEmail(postUserRequest.getEmail());
+
+        // 만 18세 이상 검사
+        LocalDate today = LocalDate.now();
+        LocalDate birthDate = postUserRequest.getBirth();
+        int age = Period.between(birthDate, today).getYears();
+
+        if (age < 18) {
+            throw new UserException(USER_NOT_ADULT);
+        }
 
         //패스워드 암호화
         String encodedPassword = passwordEncoder.encode(postUserRequest.getPassword());

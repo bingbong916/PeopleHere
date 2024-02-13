@@ -38,6 +38,9 @@ public class PostUserRequest {
     @Length(min = 1, max = 30)
     private String lastName;
 
+    @NotNull(message = "생년월일을 입력해주세요")
+    private LocalDate birth;
+
     @NotNull(message = "성별을 선택해주세요.")
     private Gender gender;
 

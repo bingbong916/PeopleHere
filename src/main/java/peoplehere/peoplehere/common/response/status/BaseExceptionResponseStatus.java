@@ -35,7 +35,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     USER_NOT_FOUND(5002, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 회원입니다."),
     PASSWORD_NO_MATCH(5003, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
     INVALID_USER_STATUS(5004, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
-    EMAIL_NOT_FOUND(5005, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
+    USER_NOT_ADULT(5005, HttpStatus.BAD_REQUEST.value(), "만 18세 이상이 아닙니다."),
     USER_DELETED(5006, HttpStatus.BAD_REQUEST.value(), "삭제된 사용자입니다."),
     USER_NOT_LOGGED_IN(5007, HttpStatus.BAD_REQUEST.value(), "로그인하지 않은 사용자입니다."),
 
