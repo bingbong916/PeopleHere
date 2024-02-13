@@ -43,6 +43,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final JwtBlackListRepository jwtBlackListRepository;
     private final S3Service s3Service;
+    private final LanguageRepository languageRepository;
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
@@ -168,8 +169,7 @@ public class UserService {
      * 화원 정보 수정
      * TODO: userModifyRequest 형식 만들기
      */
-    public void modifyUser(Long userId, PostModifyRequest modifyRequest) {
-        User user = getUserOrThrow(userId);
+    public void modifyUser(Authentication authentication, PostModifyRequest modifyRequest) {
         // TODO: 민감한 유저 정보 업데이트 분리 구현
 //        if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
 //            user.setEmail(modifyRequest.getEmail());
@@ -180,15 +180,33 @@ public class UserService {
 //        if (modifyRequest.getName() != null && !modifyRequest.getName().isEmpty()) {
 //            user.setName(modifyRequest.getName());
 //        }
+//
+//        if (modifyRequest.getGender() != null) {
+//            user.setGender(modifyRequest.getGender());
+//        }
+//        if (modifyRequest.getBirth() != null) {
+//            user.setBirth(modifyRequest.getBirth());
+//        }
 
-        if (modifyRequest.getGender() != null) {
-            user.setGender(modifyRequest.getGender());
+        User user = getAuthenticatedUser(authentication);
+
+        // 현재 유저의 언어 리스트 초기화
+        userLanguageRepository.deleteByUserId(user.getId());
+
+        // 언어 id를 사용해 언어 리스트에 언어 추가
+        for (Long languageId : modifyRequest.getLanguages()) {
+            Language language = languageRepository.findById(languageId)
+                    .orElseThrow(() -> new UserException(LANGUAGE_NOT_FOUND));
+
+            UserLanguage userLanguage = new UserLanguage();
+            userLanguage.setUser(user);
+            userLanguage.setLanguage(language);
+            userLanguageRepository.save(userLanguage);
         }
+
+
         if (modifyRequest.getAddress() != null) {
             user.setAddress(modifyRequest.getAddress());
-        }
-        if (modifyRequest.getBirth() != null) {
-            user.setBirth(modifyRequest.getBirth());
         }
         if (modifyRequest.getJob() != null) {
             user.setJob(modifyRequest.getJob());

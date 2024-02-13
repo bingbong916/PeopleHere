@@ -30,4 +30,8 @@ public class UserLanguage extends BaseTimeEntity {
         this.user = user;
         user.getLanguages().add(this);
     }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
 }
