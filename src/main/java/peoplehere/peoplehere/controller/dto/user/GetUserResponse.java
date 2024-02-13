@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class GetUserResponse {
     private Long id;
     private String email;
-    private String name;
+    private String firstName;
     private Gender gender;
     private String imageUrl;
     private String content;

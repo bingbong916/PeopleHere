@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 public class PostModifyRequest {
-    private String email;
-    private String password;
-    private String name;
+//    private String email;
+//    private String password;
+//    private String name;
     private Gender gender;
     private String address;
     private LocalDate birth;

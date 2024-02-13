@@ -62,7 +62,6 @@ public class UserService {
 
         //DB 저장
         User user = UserDtoConverter.postUserRequestToUser(postUserRequest);
-        user.setImageUrl(saveImage(postUserRequest.getPostImageRequest()));
         userRepository.save(user);
 
         return user;
@@ -160,19 +159,17 @@ public class UserService {
      */
     public void modifyUser(Long userId, PostModifyRequest modifyRequest) {
         User user = getUserOrThrow(userId);
+        // TODO: 민감한 유저 정보 업데이트 분리 구현
+//        if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
+//            user.setEmail(modifyRequest.getEmail());
+//        }
+//        if (modifyRequest.getPassword() != null && !modifyRequest.getPassword().isEmpty()) {
+//            user.setPassword(passwordEncoder.encode(modifyRequest.getPassword()));
+//        }
+//        if (modifyRequest.getName() != null && !modifyRequest.getName().isEmpty()) {
+//            user.setName(modifyRequest.getName());
+//        }
 
-        // 필수 필드 업데이트
-        if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
-            user.setEmail(modifyRequest.getEmail());
-        }
-        if (modifyRequest.getPassword() != null && !modifyRequest.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(modifyRequest.getPassword()));
-        }
-        if (modifyRequest.getName() != null && !modifyRequest.getName().isEmpty()) {
-            user.setName(modifyRequest.getName());
-        }
-
-        // 선택적 필드 업데이트
         if (modifyRequest.getGender() != null) {
             user.setGender(modifyRequest.getGender());
         }

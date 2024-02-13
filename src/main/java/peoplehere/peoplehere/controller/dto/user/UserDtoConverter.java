@@ -14,7 +14,7 @@ public class UserDtoConverter {
         return new GetUserResponse(
             user.getId(),
             user.getEmail(),
-            user.getName(),
+            user.getFirstName(),
             user.getGender(),
             user.getImageUrl(),
             user.getContent(),
@@ -34,17 +34,9 @@ public class UserDtoConverter {
         return User.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
-                .name(request.getName())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .gender(request.getGender())
-                .imageUrl(null)
-                .content(request.getContent())
-                .birth(request.getBirth())
-                .address(request.getAddress())
-                .job(request.getJob())
-                .almaMater(request.getAlmaMater())
-                .hobby(request.getHobby())
-                .pet(request.getPet())
-                .favourite(request.getFavourite())
                 .build();
     }
 }
