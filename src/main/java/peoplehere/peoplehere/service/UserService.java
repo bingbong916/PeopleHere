@@ -1,5 +1,7 @@
 package peoplehere.peoplehere.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final JwtBlackListRepository jwtBlackListRepository;
     private final S3Service s3Service;
+    private final LanguageRepository languageRepository;
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
@@ -56,13 +59,21 @@ public class UserService {
         // 이메일 중복 검사
         validateEmail(postUserRequest.getEmail());
 
+        // 만 18세 이상 검사
+        LocalDate today = LocalDate.now();
+        LocalDate birthDate = postUserRequest.getBirth();
+        int age = Period.between(birthDate, today).getYears();
+
+        if (age < 18) {
+            throw new UserException(USER_NOT_ADULT);
+        }
+
         //패스워드 암호화
         String encodedPassword = passwordEncoder.encode(postUserRequest.getPassword());
         postUserRequest.resetPassword(encodedPassword);
 
         //DB 저장
         User user = UserDtoConverter.postUserRequestToUser(postUserRequest);
-        user.setImageUrl(saveImage(postUserRequest.getPostImageRequest()));
         userRepository.save(user);
 
         return user;
@@ -106,7 +117,7 @@ public class UserService {
         validatePassword(request.getPassword(),user.getPassword());
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
         String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
-        return new JwtTokenResponse("Bearer", accessToken, refreshToken);
+        return new JwtTokenResponse(accessToken, refreshToken);
     }
 
     private void validatePassword(String password, String encodedPassword) {
@@ -158,29 +169,44 @@ public class UserService {
      * 화원 정보 수정
      * TODO: userModifyRequest 형식 만들기
      */
-    public void modifyUser(Long userId, PostModifyRequest modifyRequest) {
-        User user = getUserOrThrow(userId);
+    public void modifyUser(Authentication authentication, PostModifyRequest modifyRequest) {
+        // TODO: 민감한 유저 정보 업데이트 분리 구현
+//        if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
+//            user.setEmail(modifyRequest.getEmail());
+//        }
+//        if (modifyRequest.getPassword() != null && !modifyRequest.getPassword().isEmpty()) {
+//            user.setPassword(passwordEncoder.encode(modifyRequest.getPassword()));
+//        }
+//        if (modifyRequest.getName() != null && !modifyRequest.getName().isEmpty()) {
+//            user.setName(modifyRequest.getName());
+//        }
+//
+//        if (modifyRequest.getGender() != null) {
+//            user.setGender(modifyRequest.getGender());
+//        }
+//        if (modifyRequest.getBirth() != null) {
+//            user.setBirth(modifyRequest.getBirth());
+//        }
 
-        // 필수 필드 업데이트
-        if (modifyRequest.getEmail() != null && !modifyRequest.getEmail().isEmpty()) {
-            user.setEmail(modifyRequest.getEmail());
-        }
-        if (modifyRequest.getPassword() != null && !modifyRequest.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(modifyRequest.getPassword()));
-        }
-        if (modifyRequest.getName() != null && !modifyRequest.getName().isEmpty()) {
-            user.setName(modifyRequest.getName());
+        User user = getAuthenticatedUser(authentication);
+
+        // 현재 유저의 언어 리스트 초기화
+        userLanguageRepository.deleteByUserId(user.getId());
+
+        // 언어 id를 사용해 언어 리스트에 언어 추가
+        for (Long languageId : modifyRequest.getLanguages()) {
+            Language language = languageRepository.findById(languageId)
+                    .orElseThrow(() -> new UserException(LANGUAGE_NOT_FOUND));
+
+            UserLanguage userLanguage = new UserLanguage();
+            userLanguage.setUser(user);
+            userLanguage.setLanguage(language);
+            userLanguageRepository.save(userLanguage);
         }
 
-        // 선택적 필드 업데이트
-        if (modifyRequest.getGender() != null) {
-            user.setGender(modifyRequest.getGender());
-        }
+
         if (modifyRequest.getAddress() != null) {
             user.setAddress(modifyRequest.getAddress());
-        }
-        if (modifyRequest.getBirth() != null) {
-            user.setBirth(modifyRequest.getBirth());
         }
         if (modifyRequest.getJob() != null) {
             user.setJob(modifyRequest.getJob());

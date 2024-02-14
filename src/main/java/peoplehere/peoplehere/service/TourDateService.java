@@ -47,7 +47,7 @@ public class TourDateService {
                     GetTourDatesResponse response = TourDtoConverter.tourDateToGetTourDatesResponse(tourDate);
                     List<UserInfoDto> participants = tourDate.getTourHistories().stream()
                             .filter(th -> th.getStatus() == TourHistoryStatus.CONFIRMED)
-                            .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getName(), th.getUser().getImageUrl()))
+                            .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
                             .collect(Collectors.toList());
                     response.setParticipants(participants);
                     return response;

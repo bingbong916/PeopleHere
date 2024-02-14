@@ -7,11 +7,11 @@ import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 @Entity
 @Getter
-public class UserLanguage extends BaseTimeEntity {
+public class UserQuestion extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_language_id")
+    @Column(name = "user_question_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -19,8 +19,8 @@ public class UserLanguage extends BaseTimeEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_id")
-    private Language language;
+    @JoinColumn(name = "question_id")
+    private Question question;
 
     @ColumnDefault("'일반'")
     private String status = "일반";
@@ -28,10 +28,7 @@ public class UserLanguage extends BaseTimeEntity {
     //==연관관계 편의 메서드==//
     public void setUser(User user) {
         this.user = user;
-        user.getLanguages().add(this);
+        user.getUserQuestion().add(this);
     }
 
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
 }

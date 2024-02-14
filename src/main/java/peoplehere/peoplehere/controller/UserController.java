@@ -93,10 +93,10 @@ public class UserController {
         return new BaseResponse<>(userInfo);
     }
 
-    @PatchMapping("/{id}")
-    public BaseResponse<Void> modifyUser(@PathVariable Long id, @RequestBody PostModifyRequest modifyRequest) {
-        log.info("Modify user request for ID: {}", id);
-        userService.modifyUser(id, modifyRequest);
+    @PatchMapping("/profile")
+    public BaseResponse<Void> modifyUser(Authentication authentication, @RequestBody PostModifyRequest modifyRequest) {
+        log.info("Modify user profile request for current user");
+        userService.modifyUser(authentication, modifyRequest);
         return new BaseResponse<>(null);
     }
 

@@ -35,7 +35,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     USER_NOT_FOUND(5002, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 회원입니다."),
     PASSWORD_NO_MATCH(5003, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
     INVALID_USER_STATUS(5004, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
-    EMAIL_NOT_FOUND(5005, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
+    USER_NOT_ADULT(5005, HttpStatus.BAD_REQUEST.value(), "만 18세 이상이 아닙니다."),
     USER_DELETED(5006, HttpStatus.BAD_REQUEST.value(), "삭제된 사용자입니다."),
     USER_NOT_LOGGED_IN(5007, HttpStatus.BAD_REQUEST.value(), "로그인하지 않은 사용자입니다."),
 
@@ -50,6 +50,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     DUPLICATE_TOUR_DATE(6007, HttpStatus.BAD_REQUEST.value(), "중복된 일정입니다."),
     TOUR_HISTORY_NOT_FOUND(6008, HttpStatus.NOT_FOUND.value(), "존재하지 않는 참여 정보입니다."),
     INVALID_TOUR_HISTORY_STATUS(6009, HttpStatus.BAD_REQUEST.value(), "잘못된 참여 정보 status 값입니다."),
+
     // Place 오류
     PLACE_NOT_FOUND(7000, HttpStatus.NOT_FOUND.value(), "존재하지 않는 장소입니다."),
     INVALID_PLACE_VALUE(7001, HttpStatus.BAD_REQUEST.value(), "장소 요청에서 잘못된 값이 존재합니다."),
@@ -76,7 +77,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     JWT_TOKEN_UNSUPPORTED(11002, HttpStatus.BAD_REQUEST.value(), "지원하지 않는 JWT 토큰입니다."),
     JWT_TOKEN_MALFORMED(11003, HttpStatus.BAD_REQUEST.value(), "잘못된 형식의 JWT 토큰입니다."),
     JWT_SIGNATURE_INVALID(11004, HttpStatus.BAD_REQUEST.value(), "JWT 서명이 유효하지 않습니다."),
-    JWT_TOKEN_NOT_PROVIDED(11005, HttpStatus.UNAUTHORIZED.value(), "JWT 토큰이 제공되지 않았습니다.");
+    JWT_TOKEN_NOT_PROVIDED(11005, HttpStatus.UNAUTHORIZED.value(), "JWT 토큰이 제공되지 않았습니다."),
+
+    // Language 오류
+    LANGUAGE_NOT_FOUND(12000, HttpStatus.NOT_FOUND.value(), "언어를 찾을 수 없습니다.");
+
 
 
     private final int code;

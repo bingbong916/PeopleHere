@@ -25,7 +25,7 @@ public class TourDtoConverter {
         getTourResponse.setTourName(tour.getName());
         getTourResponse.setWished(isWished);
         getTourResponse.setUserId(tour.getUser().getId());
-        getTourResponse.setUserName(tour.getUser().getName());
+        getTourResponse.setUserName(tour.getUser().getFirstName());
         getTourResponse.setUserImageUrl(tour.getUser().getImageUrl());
         getTourResponse.setTime(tour.getTime());
         getTourResponse.setContent(tour.getContent());
@@ -45,7 +45,7 @@ public class TourDtoConverter {
 
         // 투어의 참여 유저 리스트 추가
         List<UserInfoDto> participants = tour.getTourHistories().stream()
-                .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getName(), th.getUser().getImageUrl()))
+                .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
                 .collect(Collectors.toList());
         getTourResponse.setParticipants(participants);
 
