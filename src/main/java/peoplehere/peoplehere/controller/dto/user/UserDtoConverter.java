@@ -36,6 +36,7 @@ public class UserDtoConverter {
                 .password(request.getPassword())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
+                .birth(request.getBirth())
                 .gender(request.getGender())
                 .build();
     }
