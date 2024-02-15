@@ -1,7 +1,12 @@
 package peoplehere.peoplehere.controller.dto.user;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import peoplehere.peoplehere.domain.User;
+import peoplehere.peoplehere.domain.UserQuestion;
 
 public class UserDtoConverter {
 
@@ -11,6 +16,15 @@ public class UserDtoConverter {
      */
 
     public static GetUserResponse userToGetUserResponse(User user) {
+        List<String> languages = user.getLanguages().stream()
+                .map(userLanguage -> userLanguage.getLanguage().getKoreanName())
+                .toList();
+
+        Map<String, String> questions = user.getUserQuestions().stream()
+                .collect(Collectors.toMap(
+                        uq -> uq.getQuestion().getQuestion(),
+                        UserQuestion::getAnswer
+                ));
         return new GetUserResponse(
             user.getId(),
             user.getEmail(),
@@ -26,7 +40,8 @@ public class UserDtoConverter {
             user.getPet(),
             user.getFavourite(),
             user.getStatus(),
-            new ArrayList<>()
+            languages,
+            questions
         );
     }
 
@@ -36,6 +51,7 @@ public class UserDtoConverter {
                 .password(request.getPassword())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
+                .birth(request.getBirth())
                 .gender(request.getGender())
                 .build();
     }

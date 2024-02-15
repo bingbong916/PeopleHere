@@ -80,7 +80,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     JWT_TOKEN_NOT_PROVIDED(11005, HttpStatus.UNAUTHORIZED.value(), "JWT 토큰이 제공되지 않았습니다."),
 
     // Language 오류
-    LANGUAGE_NOT_FOUND(12000, HttpStatus.NOT_FOUND.value(), "언어를 찾을 수 없습니다.");
+    LANGUAGE_NOT_FOUND(12000, HttpStatus.NOT_FOUND.value(), "언어를 찾을 수 없습니다."),
+
+    // Question 오류
+    QUESTION_NOT_FOUND(13000, HttpStatus.NOT_FOUND.value(), "질문을 찾을 수 없습니다.");
+
 
 
 

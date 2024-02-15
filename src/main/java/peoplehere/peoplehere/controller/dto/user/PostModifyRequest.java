@@ -10,6 +10,7 @@ import peoplehere.peoplehere.domain.enums.Gender;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -22,6 +23,7 @@ public class PostModifyRequest {
 //    private LocalDate birth;
 //    private Gender gender;
     private PostImageRequest imageRequest;
+    private Map<Long, String> questions;
     private List<Long> languages;
     private String address;
     private String job;

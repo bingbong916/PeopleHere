@@ -2,7 +2,9 @@ package peoplehere.peoplehere.service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Base64;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -22,10 +24,6 @@ import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.repository.*;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
@@ -44,6 +42,8 @@ public class UserService {
     private final JwtBlackListRepository jwtBlackListRepository;
     private final S3Service s3Service;
     private final LanguageRepository languageRepository;
+    private final UserQuestionRepository userQuestionRepository;
+    private final QuestionRepository questionRepository;
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
@@ -154,15 +154,9 @@ public class UserService {
     /**
      * 특정 유저 조회
      */
-    public GetUserResponse getUser(Long userId) {
-        User user = getUserOrThrow(userId);
-        GetUserResponse getUserResponse = UserDtoConverter.userToGetUserResponse(user);
-        List<UserLanguage> userLanguages = userLanguageRepository.findByUserId(userId);
-
-        for (UserLanguage userLanguage : userLanguages) {
-            getUserResponse.getLanguages().add(userLanguage.getLanguage().getKoreanName());
-        }
-        return getUserResponse;
+    public User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
     /**
@@ -190,44 +184,53 @@ public class UserService {
 
         User user = getAuthenticatedUser(authentication);
 
-        // 현재 유저의 언어 리스트 초기화
-        userLanguageRepository.deleteByUserId(user.getId());
-
-        // 언어 id를 사용해 언어 리스트에 언어 추가
-        for (Long languageId : modifyRequest.getLanguages()) {
-            Language language = languageRepository.findById(languageId)
-                    .orElseThrow(() -> new UserException(LANGUAGE_NOT_FOUND));
-
-            UserLanguage userLanguage = new UserLanguage();
-            userLanguage.setUser(user);
-            userLanguage.setLanguage(language);
-            userLanguageRepository.save(userLanguage);
+        if (modifyRequest.getLanguages() != null) {
+            Set<Long> newLanguageIds = new HashSet<>(modifyRequest.getLanguages());
+            user.getLanguages().removeIf(userLanguage -> !newLanguageIds.contains(userLanguage.getLanguage().getId()));
+            newLanguageIds.forEach(languageId -> {
+                if (user.getLanguages().stream().noneMatch(ul -> ul.getLanguage().getId().equals(languageId))) {
+                    Language language = languageRepository.findById(languageId)
+                            .orElseThrow(() -> new UserException(LANGUAGE_NOT_FOUND));
+                    UserLanguage userLanguage = new UserLanguage();
+                    userLanguage.setUser(user);
+                    userLanguage.setLanguage(language);
+                    userLanguageRepository.save(userLanguage);
+                }
+            });
         }
 
 
-        if (modifyRequest.getAddress() != null) {
-            user.setAddress(modifyRequest.getAddress());
+        if (modifyRequest.getQuestions() != null) {
+            modifyRequest.getQuestions().forEach((questionId, answer) -> {
+                Optional<UserQuestion> existingUserQuestion = user.getUserQuestions().stream()
+                        .filter(uq -> uq.getQuestion().getId().equals(questionId))
+                        .findFirst();
+
+                if (existingUserQuestion.isPresent()) {
+                    existingUserQuestion.get().setAnswer(answer);
+                } else {
+                    Question question = questionRepository.findById(questionId)
+                            .orElseThrow(() -> new UserException(QUESTION_NOT_FOUND));
+                    UserQuestion newUserQuestion = new UserQuestion();
+                    newUserQuestion.setUser(user);
+                    newUserQuestion.setQuestion(question);
+                    newUserQuestion.setAnswer(answer);
+                    userQuestionRepository.save(newUserQuestion);
+                }
+            });
         }
-        if (modifyRequest.getJob() != null) {
-            user.setJob(modifyRequest.getJob());
-        }
-        if (modifyRequest.getAlmaMater() != null) {
-            user.setAlmaMater(modifyRequest.getAlmaMater());
-        }
-        if (modifyRequest.getHobby() != null) {
-            user.setHobby(modifyRequest.getHobby());
-        }
-        if (modifyRequest.getPet() != null) {
-            user.setPet(modifyRequest.getPet());
-        }
-        if (modifyRequest.getFavourite() != null) {
-            user.setFavourite(modifyRequest.getFavourite());
-        }
+
+        Optional.ofNullable(modifyRequest.getAddress()).ifPresent(user::setAddress);
+        Optional.ofNullable(modifyRequest.getJob()).ifPresent(user::setJob);
+        Optional.ofNullable(modifyRequest.getAlmaMater()).ifPresent(user::setAlmaMater);
+        Optional.ofNullable(modifyRequest.getHobby()).ifPresent(user::setHobby);
+        Optional.ofNullable(modifyRequest.getPet()).ifPresent(user::setPet);
+        Optional.ofNullable(modifyRequest.getFavourite()).ifPresent(user::setFavourite);
+        Optional.ofNullable(modifyRequest.getContent()).ifPresent(user::setContent);
+
         if (modifyRequest.getImageRequest() != null) {
-            user.setImageUrl(saveImage(modifyRequest.getImageRequest()));
-        }
-        if (modifyRequest.getContent() != null) {
-            user.setContent(modifyRequest.getContent());
+            String imageUrl = saveImage(modifyRequest.getImageRequest());
+            user.setImageUrl(imageUrl);
         }
 
         userRepository.save(user);

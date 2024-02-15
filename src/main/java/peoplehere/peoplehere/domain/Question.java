@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @RequiredArgsConstructor
-public class Question extends BaseTimeEntity {
+public class Question{
 
     public Question(String question) {
         this.question = question;
@@ -30,6 +30,4 @@ public class Question extends BaseTimeEntity {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<UserQuestion> userQuestion = new ArrayList<>();
 
-    @ColumnDefault("'일반'")
-    private String status = "일반";
 }

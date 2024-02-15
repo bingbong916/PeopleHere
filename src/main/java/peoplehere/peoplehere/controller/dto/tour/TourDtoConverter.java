@@ -9,6 +9,7 @@ import peoplehere.peoplehere.domain.TourDate;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TourDtoConverter {
@@ -46,7 +47,13 @@ public class TourDtoConverter {
         // 투어의 참여 유저 리스트 추가
         List<UserInfoDto> participants = tour.getTourHistories().stream()
                 .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(
+                        UserInfoDto::getId,
+                        Function.identity(),
+                        (existing, replacement) -> existing))
+                .values()
+                .stream()
+                .toList();
         getTourResponse.setParticipants(participants);
 
         // 투어 상태, 생성 및 수정 날짜 설정

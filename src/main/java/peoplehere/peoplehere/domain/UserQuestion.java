@@ -22,13 +22,22 @@ public class UserQuestion extends BaseTimeEntity {
     @JoinColumn(name = "question_id")
     private Question question;
 
+    private String answer;
+
     @ColumnDefault("'일반'")
     private String status = "일반";
 
     //==연관관계 편의 메서드==//
     public void setUser(User user) {
         this.user = user;
-        user.getUserQuestion().add(this);
+        user.getUserQuestions().add(this);
     }
 
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
 }
