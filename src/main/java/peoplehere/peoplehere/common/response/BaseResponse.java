@@ -8,9 +8,10 @@ import peoplehere.peoplehere.common.response.status.ResponseStatus;
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.SUCCESS;
 
 @Getter
-@JsonPropertyOrder({"code", "status", "message", "result"})
+@JsonPropertyOrder({"success", "code", "status", "message", "result"})
 public class BaseResponse<T> {
 
+    private final boolean success;
     private final int code;
     private final int status;
     private final String message;
@@ -19,6 +20,7 @@ public class BaseResponse<T> {
     private final T result;
 
     public BaseResponse(T result) {
+        this.success = true;
         this.code = SUCCESS.getCode();
         this.status = SUCCESS.getStatus();
         this.message = SUCCESS.getMessage();
@@ -26,6 +28,7 @@ public class BaseResponse<T> {
     }
 
     public BaseResponse(ResponseStatus status, T result) {
+        this.success = status.getSuccess();
         this.code = status.getCode();
         this.status = status.getStatus();
         this.message = status.getMessage();
