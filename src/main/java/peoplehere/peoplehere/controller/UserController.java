@@ -89,8 +89,9 @@ public class UserController {
     @GetMapping("/{id}")
     public BaseResponse<GetUserResponse> getUserInfo(@PathVariable Long id) {
         log.info("Get user info for ID: {}", id);
-        GetUserResponse userInfo = userService.getUser(id);
-        return new BaseResponse<>(userInfo);
+        User user = userService.getUser(id);
+        GetUserResponse response = UserDtoConverter.userToGetUserResponse(user);
+        return new BaseResponse<>(response);
     }
 
     @PatchMapping("/profile")

@@ -11,6 +11,7 @@ import peoplehere.peoplehere.domain.enums.Gender;
 import peoplehere.peoplehere.domain.enums.Status;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -32,6 +33,6 @@ public class GetUserResponse {
     private String favourite;
     private Status status;
     private List<String> languages;
-    // TODO: 문답에 대한 필드 추가 예정
+    private Map<String, String> questions;
 }
 

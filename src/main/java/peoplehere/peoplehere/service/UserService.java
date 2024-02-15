@@ -3,6 +3,7 @@ package peoplehere.peoplehere.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -153,15 +154,9 @@ public class UserService {
     /**
      * 특정 유저 조회
      */
-    public GetUserResponse getUser(Long userId) {
-        User user = getUserOrThrow(userId);
-        GetUserResponse getUserResponse = UserDtoConverter.userToGetUserResponse(user);
-        List<UserLanguage> userLanguages = userLanguageRepository.findByUserId(userId);
-
-        for (UserLanguage userLanguage : userLanguages) {
-            getUserResponse.getLanguages().add(userLanguage.getLanguage().getKoreanName());
-        }
-        return getUserResponse;
+    public User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
     /**
