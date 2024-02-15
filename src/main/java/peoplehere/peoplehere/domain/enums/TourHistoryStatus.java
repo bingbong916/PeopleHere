@@ -5,5 +5,5 @@ public enum TourHistoryStatus {
     CONFIRMED, // 참여 확정
     CANCELLED, // 참여 취소
     WITHDRAWN, // 참여 철회
-    FINISHED // 참여 완료
+    COMPLETED // 참여 완료
 }

@@ -43,7 +43,7 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserQuestion> userQuestion = new HashSet<>();
+    private Set<UserQuestion> userQuestions = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -126,5 +126,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    public void addLanguage(UserLanguage userLanguage) {
     }
 }
