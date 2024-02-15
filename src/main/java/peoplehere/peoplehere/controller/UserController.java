@@ -58,6 +58,12 @@ public class UserController {
         return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
+    @PutMapping("/password")
+    public BaseResponse<Void> updatePassword(Authentication authentication, @RequestBody String newPassword) {
+        userService.updatePassword(authentication, newPassword);
+        return new BaseResponse<>(null);
+    }
+
     @PatchMapping("/{id}/status")
     public BaseResponse<Void> updateUserStatus(@PathVariable Long id, @RequestParam Status status) {
         log.info("Update user status request for ID: {}, Status: {}", id, status);

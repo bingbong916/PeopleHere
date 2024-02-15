@@ -138,6 +138,19 @@ public class UserService {
         }
     }
 
+    /**
+     * 비밀번호 재설정
+     */
+    public void updatePassword(Authentication authentication, String newPassword) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new UserException(SAME_AS_OLD_PASSWORD);
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 
     /**
      * 모든 유저 조회
