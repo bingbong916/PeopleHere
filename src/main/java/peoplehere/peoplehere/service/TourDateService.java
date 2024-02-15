@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -71,8 +72,13 @@ public class TourDateService {
         if (tourDate.getTour().getStatus() != Status.ACTIVE) {
             throw new TourException(TOUR_INACTIVATED);
         }
+        // 해당 일정의 상태가 AVAILABLE이 아니면 참여 불가
         if (tourDate.getStatus() != TourDateStatus.AVAILABLE) {
             throw new TourException(TOUR_DATE_NOT_FOUND);
+        }
+        // 해당 일정의 투어 리더와 참여 유저가 같으면 참여 불가
+        if (Objects.equals(tourDate.getTour().getUser().getId(), userId)) {
+            throw new TourException(SAME_AS_TOUR_LEADER);
         }
 
         // 이미 참여한 경우 중복 참여 방지
