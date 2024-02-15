@@ -41,7 +41,10 @@ public class TourDateService {
     public List<GetTourDatesResponse> getTourDates(Long tourId) {
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new TourException(TOUR_NOT_FOUND));
+
+        LocalDate today = LocalDate.now();
         return tour.getTourDates().stream()
+                .filter(tourDate -> tourDate.getDate().isAfter(today) || tourDate.getDate().isEqual(today))
                 .filter(tourDate -> tourDate.getStatus() == TourDateStatus.AVAILABLE)
                 .map(tourDate -> {
                     GetTourDatesResponse response = TourDtoConverter.tourDateToGetTourDatesResponse(tourDate);
