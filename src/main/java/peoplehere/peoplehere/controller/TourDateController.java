@@ -3,6 +3,7 @@ package peoplehere.peoplehere.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.tour.*;
@@ -41,9 +42,9 @@ public class TourDateController {
 
 
     @PostMapping("/{tourDateId}/join")
-    public BaseResponse<String> joinTour(@PathVariable Long tourDateId, @RequestParam Long userId) {
-        tourDateService.joinTourDate(tourDateId, userId);
-        return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
+    public BaseResponse<String> joinTour(Authentication authentication, @PathVariable Long tourDateId) {
+        tourDateService.joinTourDate(authentication, tourDateId);
+        return new BaseResponse<>("Current user joined tour date " + tourDateId);
     }
 
     @PatchMapping("/{tourHistoryId}/reservation-status")

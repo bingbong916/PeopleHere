@@ -12,7 +12,7 @@ import peoplehere.peoplehere.domain.Place;
 
 public class PlaceDtoConverter {
 
-    private static final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326); // SRID 4326으로 설정
+    private static final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326); // SRID 4326(위도, 경도)으로 설정
 
     public static Place placeInfoDtoToPlace(PlaceInfoDto placeInfoDto) {
         return new Place(placeInfoDto.getContent(),

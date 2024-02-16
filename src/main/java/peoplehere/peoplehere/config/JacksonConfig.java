@@ -26,12 +26,10 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
-        // For handling Point type serialization
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(Point.class, new PointSerializer());
         mapper.registerModule(simpleModule);
 
-        // For handling Java Time (Date and Time API) serialization and deserialization
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addDeserializer(LocalTime.class, new CustomLocalTimeDeserializer());
         javaTimeModule.addSerializer(LocalDateTime.class, LOCAL_DATETIME_SERIALIZER);

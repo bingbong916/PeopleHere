@@ -37,7 +37,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_USER_STATUS(false, 5004, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     USER_NOT_ADULT(false, 5005, HttpStatus.BAD_REQUEST.value(), "만 18세 이상이 아닙니다."),
     USER_DELETED(false, 5006, HttpStatus.BAD_REQUEST.value(), "삭제된 사용자입니다."),
-    USER_NOT_LOGGED_IN(false, 5007, HttpStatus.BAD_REQUEST.value(), "로그인하지 않은 사용자입니다."),
+    USER_NOT_LOGGED_IN(false, 5007, HttpStatus.UNAUTHORIZED.value(), "로그인하지 않은 사용자입니다."),
     SAME_AS_OLD_PASSWORD(false, 5008, HttpStatus.BAD_REQUEST.value(), "새 비밀번호는 기존 비밀번호와 달라야 합니다."),
 
     // Tour 오류
