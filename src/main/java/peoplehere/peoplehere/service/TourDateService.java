@@ -52,11 +52,11 @@ public class TourDateService {
                     List<UserInfoDto> participants = tourDate.getTourHistories().stream()
                             .filter(th -> th.getStatus() == TourHistoryStatus.CONFIRMED)
                             .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
-                            .collect(Collectors.toList());
+                            .toList();
                     response.setParticipants(participants);
                     return response;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

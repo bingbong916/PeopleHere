@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.locationtech.jts.geom.Point;
+
 import java.util.List;
 
 @Getter
@@ -15,5 +17,6 @@ public class PlaceInfoDto {
     private String content;
     private List<String> imageUrls;
     private String address;
+    private Point latLng;
     private int order;
 }

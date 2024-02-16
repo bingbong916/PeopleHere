@@ -1,7 +1,9 @@
 package peoplehere.peoplehere.domain;
 
 import ch.qos.logback.core.util.Loader;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +59,7 @@ public class Tour extends BaseTimeEntity {
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Chat> chats = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Place> places = new ArrayList<>();
 

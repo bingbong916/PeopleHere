@@ -23,7 +23,7 @@ public class PlaceService {
 
     //이미지를 Decoding 하고 S3에 저장한 뒤, 저장 된 URL을 place에 담아줌
     public void saveImages(Place place, PostPlaceRequest postPlaceRequests) {
-        for (PostImageRequest imageRequest : postPlaceRequests.getImageRequests()) {
+        for (PostImageRequest imageRequest : postPlaceRequests.getPlaceImage()) {
             byte[] decodingImage = decodeBase64ToFile(imageRequest.getEncodingString()); //decoding
             String storedFileName = s3Service.saveByteArrayToS3(decodingImage,
                 imageRequest.getOriginalFileName()); //S3에 파일 저장

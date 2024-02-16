@@ -1,8 +1,12 @@
 package peoplehere.peoplehere.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.locationtech.jts.geom.Point;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
@@ -16,10 +20,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Place extends BaseTimeEntity {
 
-    public Place(String content, List<String> imageUrls, String address, int order) {
+    public Place(String content, List<String> imageUrls, String address, Point latLng, int order) {
         this.content = content;
         this.imageUrls = imageUrls;
         this.address = address;
+        this.latLng = latLng;
         this.order = order;
     }
 
@@ -37,9 +42,14 @@ public class Place extends BaseTimeEntity {
 
     private String address;
 
+    // TODO: 위도 경도 추가하기
+    @Column(columnDefinition = "POINT")
+    private Point latLng;
+
     @Column(name = "`order`")
     private int order;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;

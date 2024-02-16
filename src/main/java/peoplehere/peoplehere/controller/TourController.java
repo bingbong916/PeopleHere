@@ -38,7 +38,7 @@ public class TourController {
             String errorMessages = BindingResultUtils.getErrorMessages(bindingResult);
             throw new TourException(INVALID_TOUR_VALUE, errorMessages);
         }
-        log.info("Create tour request: {}", request.getName());
+        log.info("Create tour request: {}", request.getTourName());
         Tour tour = tourService.createTour(request);
         return new BaseResponse<>(TourDtoConverter.tourToGetTourResponse(tour, false));
     }
