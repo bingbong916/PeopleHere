@@ -3,27 +3,16 @@ package peoplehere.peoplehere.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.common.response.BaseResponse;
-import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
-import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.controller.dto.user.*;
-import peoplehere.peoplehere.domain.Tour;
-import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.domain.enums.Status;
-import peoplehere.peoplehere.repository.UserRepository;
-import peoplehere.peoplehere.service.UserService;
+import peoplehere.peoplehere.service.user.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
-import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
 @RestController
@@ -32,31 +21,6 @@ import static peoplehere.peoplehere.util.BindingResultUtils.getErrorMessages;
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
-
-
-    @GetMapping("/check-email")
-    public BaseResponse<GetEmailCheckResponse> checkEmail(@RequestParam String email) {
-        boolean isEmailAvailable = userService.isEmailAvailable(email);
-        GetEmailCheckResponse response;
-        if (isEmailAvailable) {
-            response = new GetEmailCheckResponse(true, "새로운 이메일입니다.");
-        } else {
-            response = new GetEmailCheckResponse(false, "중복된 이메일입니다.");
-        }
-        return new BaseResponse<>(response);
-    }
-
-
-    @PostMapping("/signup")
-    public BaseResponse<PostUserResponse> signUp(@Validated @RequestBody PostUserRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
-        }
-        log.info("User sign-up request: {}", request.getEmail());
-        User user = userService.createUser(request);
-        return new BaseResponse<>(new PostUserResponse(user.getId()));
-    }
 
     @PutMapping("/password")
     public BaseResponse<Void> updatePassword(Authentication authentication, @RequestBody String newPassword) {
@@ -68,27 +32,6 @@ public class UserController {
     public BaseResponse<Void> updateUserStatus(@PathVariable Long id, @RequestParam Status status) {
         log.info("Update user status request for ID: {}, Status: {}", id, status);
         userService.updateUserStatus(id, status);
-        return new BaseResponse<>(null);
-    }
-
-    @PostMapping("/login")
-    public BaseResponse<PostLoginResponse> login(@Validated @RequestBody PostLoginRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
-        }
-        log.info("User login request: {}", request.getEmail());
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-
-        JwtTokenResponse tokenResponse = userService.login(request);
-        return new BaseResponse<>(new PostLoginResponse(user.getId(), tokenResponse));
-    }
-
-    @PostMapping("/logout")
-    public BaseResponse<Void> logout(@RequestHeader("Authorization") String tokenRequest) {
-        log.info("User logout request");
-        String token = tokenRequest.split(" ")[1];
-        userService.logout(token);
         return new BaseResponse<>(null);
     }
 
