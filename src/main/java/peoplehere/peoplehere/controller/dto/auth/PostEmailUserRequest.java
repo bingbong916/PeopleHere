@@ -27,7 +27,7 @@ public class PostEmailUserRequest {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Length(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$",
+    @Pattern(regexp = "^(?=.*[0-9!@#$%^&*]).{8,}$",
         message = "비밀번호는 특수문자나 숫자를 최소 1자 이상 포함해야 합니다.")
     private String password;
 
