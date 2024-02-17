@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import peoplehere.peoplehere.controller.dto.auth.PostEmailUserRequest;
+import peoplehere.peoplehere.controller.dto.auth.PostPhoneNumberUserRequest;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.domain.UserQuestion;
 
@@ -45,14 +47,26 @@ public class UserDtoConverter {
         );
     }
 
-    public static User postUserRequestToUser(PostUserRequest request) {
+    public static User postEmailUserRequestToUser(PostEmailUserRequest request) {
         return User.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .birth(request.getBirth())
-                .gender(request.getGender())
-                .build();
+            .email(request.getEmail())
+            .password(request.getPassword())
+            .firstName(request.getFirstName())
+            .lastName(request.getLastName())
+            .birth(request.getBirth())
+            .gender(request.getGender())
+            .build();
+    }
+
+    public static User postPhoneNumberRequestToUser(PostPhoneNumberUserRequest request) {
+        return User.builder()
+            .email(request.getEmail())
+            .phoneNumber(request.getPhoneNumber())
+            .password(request.getPassword())
+            .firstName(request.getFirstName())
+            .lastName(request.getLastName())
+            .birth(request.getBirth())
+            .gender(request.getGender())
+            .build();
     }
 }

@@ -1,4 +1,4 @@
-package peoplehere.peoplehere.controller.dto.user;
+package peoplehere.peoplehere.controller.dto.auth;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
