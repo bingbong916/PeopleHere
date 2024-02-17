@@ -45,6 +45,9 @@ public class PostEmailUserRequest {
     @NotNull(message = "성별을 선택해주세요.")
     private Gender gender;
 
+    @NotNull(message = "마케팅 수신 동의 여부를 선택해주세요.")
+    private Boolean marketingConsent;
+
     public void resetPassword(String encodedPassword) {
         this.password = encodedPassword;
     }

@@ -55,6 +55,7 @@ public class UserDtoConverter {
             .lastName(request.getLastName())
             .birth(request.getBirth())
             .gender(request.getGender())
+            .marketingConsent(request.getMarketingConsent())
             .build();
     }
 
@@ -67,6 +68,7 @@ public class UserDtoConverter {
             .lastName(request.getLastName())
             .birth(request.getBirth())
             .gender(request.getGender())
+            .marketingConsent(request.getMarketingConsent())
             .build();
     }
 }
