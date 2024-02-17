@@ -1,4 +1,4 @@
-package peoplehere.peoplehere.controller.dto.user;
+package peoplehere.peoplehere.controller.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostLoginRequest {
+public class PostEmailLoginRequest {
 
     @Email(message = "이메일 형식이 유효하지 않습니다.")
     @NotBlank(message = "이메일을 입력해주세요")

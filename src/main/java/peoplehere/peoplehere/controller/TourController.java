@@ -10,17 +10,13 @@ import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.tour.*;
 import peoplehere.peoplehere.domain.Tour;
-import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.service.TourService;
-import peoplehere.peoplehere.service.UserService;
 import peoplehere.peoplehere.util.BindingResultUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import peoplehere.peoplehere.util.security.UserDetailsImpl;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 

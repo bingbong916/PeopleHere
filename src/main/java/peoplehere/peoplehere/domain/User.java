@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import peoplehere.peoplehere.domain.enums.Gender;
+import peoplehere.peoplehere.domain.enums.LoginType;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
@@ -29,6 +30,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(length = 50, nullable = false)
     private String email;
 
+    @Column(length = 20)
+    private String phoneNumber;
+
     @Column(length = 30, nullable = false)
     private String firstName;
 
@@ -50,6 +54,9 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @Column(length = 100)
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
 
     private LocalDate birth;
 

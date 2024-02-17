@@ -1,4 +1,4 @@
-package peoplehere.peoplehere.controller.dto.user;
+package peoplehere.peoplehere.controller.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
+import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.domain.enums.Gender;
 
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostUserRequest {
+public class PostEmailUserRequest {
 
     @Email(message = "이메일 형식이 유효하지 않습니다.")
     @NotBlank(message = "이메일을 입력해주세요.")
@@ -26,8 +27,8 @@ public class PostUserRequest {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Length(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
-    @Pattern(regexp = "^(?=.*[0-9!@#$%^&*]).{8,}$",
-            message = "비밀번호는 특수문자나 숫자를 최소 1자 이상 포함해야 합니다.")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$",
+        message = "비밀번호는 특수문자나 숫자를 최소 1자 이상 포함해야 합니다.")
     private String password;
 
     @NotBlank(message = "이름을 입력해주세요.")
@@ -46,5 +47,16 @@ public class PostUserRequest {
 
     public void resetPassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    public static User postEmailUserRequestToUser(PostEmailUserRequest request) {
+        return User.builder()
+            .email(request.getEmail())
+            .password(request.getPassword())
+            .firstName(request.getFirstName())
+            .lastName(request.getLastName())
+            .birth(request.getBirth())
+            .gender(request.getGender())
+            .build();
     }
 }
