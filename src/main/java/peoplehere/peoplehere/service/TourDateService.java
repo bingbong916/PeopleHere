@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.tour.GetTourDatesResponse;
-import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.controller.dto.tour.TourDateDtoConverter;
+import peoplehere.peoplehere.controller.dto.tour.TourDateInfoDto;
 import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
@@ -23,7 +24,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -51,7 +51,7 @@ public class TourDateService {
                 .filter(tourDate -> tourDate.getDate().isAfter(today) || tourDate.getDate().isEqual(today))
                 .filter(tourDate -> tourDate.getStatus() == TourDateStatus.AVAILABLE)
                 .map(tourDate -> {
-                    GetTourDatesResponse response = TourDtoConverter.tourDateToGetTourDatesResponse(tourDate);
+                    GetTourDatesResponse response = TourDateDtoConverter.tourDateToGetTourDatesResponse(tourDate);
                     List<UserInfoDto> participants = tourDate.getTourHistories().stream()
                             .filter(th -> th.getStatus() == TourHistoryStatus.CONFIRMED)
                             .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
@@ -60,6 +60,15 @@ public class TourDateService {
                     return response;
                 })
                 .toList();
+    }
+
+    /**
+     * 특정 투어 일정 조회
+     */
+    public TourDateInfoDto getTourDateInfo(Long tourDateId) {
+        TourDate tourDate = tourDateRepository.findById(tourDateId)
+                .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
+        return TourDateDtoConverter.convertToTourDateInfoDto(tourDate);
     }
 
     /**

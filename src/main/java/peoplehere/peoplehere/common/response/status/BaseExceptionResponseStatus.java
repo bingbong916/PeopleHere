@@ -46,6 +46,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     DUPLICATE_TOUR_NAME(false, 6002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 투어 이름입니다."),
     TOUR_INACTIVATED(false, 6003, HttpStatus.BAD_REQUEST.value(), "비활성화된 투어입니다."),
     TOUR_ALREADY_JOINED(false, 6004, HttpStatus.BAD_REQUEST.value(), "이미 참여한 투어입니다."),
+
+    // TourDate 오류
     TOUR_DATE_NOT_FOUND(false, 6005, HttpStatus.NOT_FOUND.value(), "존재하지 않는 일정입니다."),
     TOUR_DATE_IN_PAST(false, 6006, HttpStatus.BAD_REQUEST.value(), "과거의 날짜입니다."),
     SAME_AS_TOUR_LEADER(false, 6007, HttpStatus.BAD_REQUEST.value(), "투어 리더는 본인의 투어에 참여할 수 없습니다."),

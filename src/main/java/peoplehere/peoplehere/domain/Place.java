@@ -68,14 +68,14 @@ public class Place extends BaseTimeEntity {
     }
 
     public void update(PlaceInfoDto placeInfoDto) {
-        if (placeInfoDto.getContent() != null) {
-            this.content = placeInfoDto.getContent();
+        if (placeInfoDto.getPlaceName() != null) {
+            this.content = placeInfoDto.getPlaceName();
         }
-        if (placeInfoDto.getImageUrls() != null) {
-            this.imageUrls = placeInfoDto.getImageUrls();
+        if (placeInfoDto.getPlaceImages() != null) {
+            this.imageUrls = placeInfoDto.getPlaceImages();
         }
-        if (placeInfoDto.getAddress() != null) {
-            this.address = placeInfoDto.getAddress();
+        if (placeInfoDto.getPlaceAddress() != null) {
+            this.address = placeInfoDto.getPlaceAddress();
         }
     }
 }

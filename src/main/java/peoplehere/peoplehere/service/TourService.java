@@ -172,7 +172,7 @@ public class TourService {
 
         for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
             Place place = tour.getPlaces().stream()
-                .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getId()))
+                .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getPlaceId()))
                 .findFirst()
                 .orElseGet(() -> {
                     Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);

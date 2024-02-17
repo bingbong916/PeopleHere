@@ -34,10 +34,16 @@ public class TourDateController {
     }
 
     @GetMapping("/{tourId}/dates")
-    public BaseResponse<List<GetTourDatesResponse>> getTourDates(
+    public BaseResponse<List<GetTourDatesResponse>> getAllTourDates(
             @PathVariable Long tourId) {
         List<GetTourDatesResponse> responses = tourDateService.getTourDates(tourId);
         return new BaseResponse<>(responses);
+    }
+
+    @GetMapping("/{tourDateId}/date")
+    public BaseResponse<TourDateInfoDto> getTourDate(@PathVariable Long tourDateId) {
+        TourDateInfoDto response = tourDateService.getTourDateInfo(tourDateId);
+        return new BaseResponse<>(response);
     }
 
 

@@ -46,7 +46,6 @@ public class PlaceService {
 
     public GetPlaceResponse getPlace(Long id) {
         Place place = placeRepository.findById(id).orElseThrow();
-        return new GetPlaceResponse(id, place.getImageUrls(), place.getAddress(), place.getOrder(),
-            place.getTour().getId());
+        return new GetPlaceResponse(place.getTour().getId(), id, place.getImageUrls(), place.getAddress(), place.getOrder());
     }
 }

@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserInfoDto {
     private Long id;
-    private String name;
+    private String firstName;
     private String imageUrl;
 }

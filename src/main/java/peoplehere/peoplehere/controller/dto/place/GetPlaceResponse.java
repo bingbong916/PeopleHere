@@ -11,9 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetPlaceResponse {
-    private Long id;
-    private List<String> imageUrls;
-    private String address;
-    private int order;
     private Long tourId;
+    private Long placeId;
+    private List<String> placeImages;
+    private String placeAddress;
+    private int placeOrder;
 }

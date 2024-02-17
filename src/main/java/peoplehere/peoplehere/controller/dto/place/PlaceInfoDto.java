@@ -13,10 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceInfoDto {
-    private Long id;
-    private String content;
-    private List<String> imageUrls;
-    private String address;
+    private Long placeId;
+    private String placeName;
+    private List<String> placeImages;
+    private String placeAddress;
     private Point latLng;
-    private int order;
+    private int placeOrder;
 }
