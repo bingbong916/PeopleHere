@@ -30,6 +30,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(length = 50, nullable = false)
     private String email;
 
+    @Column(length = 20)
+    private String phoneNumber;
+
     @Column(length = 30, nullable = false)
     private String firstName;
 
