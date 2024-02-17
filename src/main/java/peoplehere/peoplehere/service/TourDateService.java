@@ -2,24 +2,28 @@ package peoplehere.peoplehere.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
+import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.tour.GetTourDatesResponse;
-import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.controller.dto.tour.TourDateDtoConverter;
+import peoplehere.peoplehere.controller.dto.tour.TourDateInfoDto;
 import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.domain.enums.TourDateStatus;
 import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.repository.*;
+import peoplehere.peoplehere.util.security.UserDetailsImpl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -47,37 +51,55 @@ public class TourDateService {
                 .filter(tourDate -> tourDate.getDate().isAfter(today) || tourDate.getDate().isEqual(today))
                 .filter(tourDate -> tourDate.getStatus() == TourDateStatus.AVAILABLE)
                 .map(tourDate -> {
-                    GetTourDatesResponse response = TourDtoConverter.tourDateToGetTourDatesResponse(tourDate);
+                    GetTourDatesResponse response = TourDateDtoConverter.tourDateToGetTourDatesResponse(tourDate);
                     List<UserInfoDto> participants = tourDate.getTourHistories().stream()
                             .filter(th -> th.getStatus() == TourHistoryStatus.CONFIRMED)
                             .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
-                            .collect(Collectors.toList());
+                            .toList();
                     response.setParticipants(participants);
                     return response;
                 })
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    /**
+     * 특정 투어 일정 조회
+     */
+    public TourDateInfoDto getTourDateInfo(Long tourDateId) {
+        TourDate tourDate = tourDateRepository.findById(tourDateId)
+                .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
+        return TourDateDtoConverter.convertToTourDateInfoDto(tourDate);
     }
 
     /**
      * 투어 참여
      */
-    public void joinTourDate(Long tourDateId, Long userId) {
+    public void joinTourDate(Authentication authentication, Long tourDateId) {
         TourDate tourDate  = tourDateRepository.findById(tourDateId)
                 .orElseThrow(() -> new TourException(TOUR_DATE_NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new TourException(USER_NOT_FOUND));
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UserException(USER_NOT_LOGGED_IN);
+        }
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
         // 해당 일정의 투어 상태가 ACTIVE가 아니면 참여 불가
         if (tourDate.getTour().getStatus() != Status.ACTIVE) {
             throw new TourException(TOUR_INACTIVATED);
         }
+        // 해당 일정의 상태가 AVAILABLE이 아니면 참여 불가
         if (tourDate.getStatus() != TourDateStatus.AVAILABLE) {
             throw new TourException(TOUR_DATE_NOT_FOUND);
+        }
+        // 해당 일정의 투어 리더와 참여 유저가 같으면 참여 불가
+        if (Objects.equals(tourDate.getTour().getUser().getId(), user.getId())) {
+            throw new TourException(SAME_AS_TOUR_LEADER);
         }
 
         // 이미 참여한 경우 중복 참여 방지
         boolean alreadyJoined = tourDate.getTour().getTourHistories().stream()
-                .anyMatch(th -> th.getUser().getId().equals(userId) && th.getTourDate().equals(tourDate));
+                .anyMatch(th -> th.getUser().getId().equals(user.getId()) && th.getTourDate().equals(tourDate));
         if (alreadyJoined) {
             throw new TourException(TOUR_ALREADY_JOINED);
         }

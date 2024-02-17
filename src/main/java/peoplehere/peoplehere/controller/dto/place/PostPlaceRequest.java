@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.locationtech.jts.geom.Point;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 
 @Getter
@@ -12,8 +13,9 @@ import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostPlaceRequest {
-    private String content;
-    private List<PostImageRequest> imageRequests;
-    private String address;
-    private int order;
+    private String placeName;
+    private List<PostImageRequest> placeImage;
+    private String placeAddress;
+    private LatLngDto latLng;
+    private int placeOrder;
 }

@@ -1,12 +1,15 @@
 package peoplehere.peoplehere.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import org.locationtech.jts.geom.Point;
 import peoplehere.peoplehere.util.CustomLocalTimeDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import peoplehere.peoplehere.util.PointSerializer;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,10 +25,15 @@ public class JacksonConfig {
     @Primary
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        module.addDeserializer(LocalTime.class, new CustomLocalTimeDeserializer());
-        module.addSerializer(LocalDateTime.class, LOCAL_DATETIME_SERIALIZER);
-        mapper.registerModule(module);
+
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(Point.class, new PointSerializer());
+        mapper.registerModule(simpleModule);
+
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addDeserializer(LocalTime.class, new CustomLocalTimeDeserializer());
+        javaTimeModule.addSerializer(LocalDateTime.class, LOCAL_DATETIME_SERIALIZER);
+        mapper.registerModule(javaTimeModule);
 
         return mapper;
     }

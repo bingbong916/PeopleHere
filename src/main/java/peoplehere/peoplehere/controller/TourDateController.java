@@ -3,6 +3,7 @@ package peoplehere.peoplehere.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import peoplehere.peoplehere.common.response.BaseResponse;
 import peoplehere.peoplehere.controller.dto.tour.*;
@@ -33,17 +34,23 @@ public class TourDateController {
     }
 
     @GetMapping("/{tourId}/dates")
-    public BaseResponse<List<GetTourDatesResponse>> getTourDates(
+    public BaseResponse<List<GetTourDatesResponse>> getAllTourDates(
             @PathVariable Long tourId) {
         List<GetTourDatesResponse> responses = tourDateService.getTourDates(tourId);
         return new BaseResponse<>(responses);
     }
 
+    @GetMapping("/{tourDateId}/date")
+    public BaseResponse<TourDateInfoDto> getTourDate(@PathVariable Long tourDateId) {
+        TourDateInfoDto response = tourDateService.getTourDateInfo(tourDateId);
+        return new BaseResponse<>(response);
+    }
+
 
     @PostMapping("/{tourDateId}/join")
-    public BaseResponse<String> joinTour(@PathVariable Long tourDateId, @RequestParam Long userId) {
-        tourDateService.joinTourDate(tourDateId, userId);
-        return new BaseResponse<>("User " + userId + " joined tour date " + tourDateId);
+    public BaseResponse<String> joinTour(Authentication authentication, @PathVariable Long tourDateId) {
+        tourDateService.joinTourDate(authentication, tourDateId);
+        return new BaseResponse<>("Current user joined tour date " + tourDateId);
     }
 
     @PatchMapping("/{tourHistoryId}/reservation-status")

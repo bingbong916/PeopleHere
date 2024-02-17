@@ -1,6 +1,5 @@
 package peoplehere.peoplehere.controller.dto.place;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetPlaceResponse {
-    private Long tourId;
-    private Long placeId;
-    private List<String> placeImages;
-    private String placeAddress;
-    private int placeOrder;
+public class LatLngDto {
+    private double x;
+    private double y;
 }

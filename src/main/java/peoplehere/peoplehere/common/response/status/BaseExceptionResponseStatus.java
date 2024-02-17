@@ -37,7 +37,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_USER_STATUS(false, 5004, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     USER_NOT_ADULT(false, 5005, HttpStatus.BAD_REQUEST.value(), "만 18세 이상이 아닙니다."),
     USER_DELETED(false, 5006, HttpStatus.BAD_REQUEST.value(), "삭제된 사용자입니다."),
-    USER_NOT_LOGGED_IN(false, 5007, HttpStatus.BAD_REQUEST.value(), "로그인하지 않은 사용자입니다."),
+    USER_NOT_LOGGED_IN(false, 5007, HttpStatus.UNAUTHORIZED.value(), "로그인하지 않은 사용자입니다."),
     SAME_AS_OLD_PASSWORD(false, 5008, HttpStatus.BAD_REQUEST.value(), "새 비밀번호는 기존 비밀번호와 달라야 합니다."),
 
     // Tour 오류
@@ -46,9 +46,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     DUPLICATE_TOUR_NAME(false, 6002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 투어 이름입니다."),
     TOUR_INACTIVATED(false, 6003, HttpStatus.BAD_REQUEST.value(), "비활성화된 투어입니다."),
     TOUR_ALREADY_JOINED(false, 6004, HttpStatus.BAD_REQUEST.value(), "이미 참여한 투어입니다."),
+
+    // TourDate 오류
     TOUR_DATE_NOT_FOUND(false, 6005, HttpStatus.NOT_FOUND.value(), "존재하지 않는 일정입니다."),
     TOUR_DATE_IN_PAST(false, 6006, HttpStatus.BAD_REQUEST.value(), "과거의 날짜입니다."),
-    DUPLICATE_TOUR_DATE(false, 6007, HttpStatus.BAD_REQUEST.value(), "중복된 일정입니다."),
+    SAME_AS_TOUR_LEADER(false, 6007, HttpStatus.BAD_REQUEST.value(), "투어 리더는 본인의 투어에 참여할 수 없습니다."),
     TOUR_HISTORY_NOT_FOUND(false, 6008, HttpStatus.NOT_FOUND.value(), "존재하지 않는 참여 정보입니다."),
     INVALID_TOUR_HISTORY_STATUS(false, 6009, HttpStatus.BAD_REQUEST.value(), "잘못된 참여 정보 status 값입니다."),
 

@@ -116,7 +116,7 @@ public class TourService {
         List<Place> places = new ArrayList<>();
         int order = 1;
         for (PostPlaceRequest postPlaceRequest : postTourRequest.getPlaces()) {
-            postPlaceRequest.setOrder(order++);
+            postPlaceRequest.setPlaceOrder(order++);
             Place place = placeService.createPlace(postPlaceRequest);
             place.setTour(tour);
             places.add(place);
@@ -172,7 +172,7 @@ public class TourService {
 
         for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
             Place place = tour.getPlaces().stream()
-                .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getId()))
+                .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getPlaceId()))
                 .findFirst()
                 .orElseGet(() -> {
                     Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
