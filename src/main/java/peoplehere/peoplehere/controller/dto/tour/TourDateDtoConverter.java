@@ -4,9 +4,11 @@ import peoplehere.peoplehere.controller.dto.place.GetPlaceResponse;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.user.UserDetailInfoDto;
 import peoplehere.peoplehere.domain.Language;
+import peoplehere.peoplehere.domain.Place;
 import peoplehere.peoplehere.domain.TourDate;
 import peoplehere.peoplehere.domain.UserLanguage;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class TourDateDtoConverter {
@@ -25,6 +27,7 @@ public class TourDateDtoConverter {
         var tourLeader = tour.getUser();
 
         List<PlaceInfoDto> places = tour.getPlaces().stream()
+                .sorted(Comparator.comparingInt(Place::getOrder))
                 .map(place -> new PlaceInfoDto(
                         place.getId(),
                         place.getContent(),
