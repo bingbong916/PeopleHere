@@ -49,6 +49,7 @@ public class TourDateDtoConverter {
 
         return new TourDateInfoDto(
                 tour.getId(),
+                tour.getName(),
                 tour.getTime(),
                 tourLeaderInfo,
                 places,
