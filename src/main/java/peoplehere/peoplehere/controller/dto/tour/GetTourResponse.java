@@ -21,8 +21,8 @@ public class GetTourResponse {
     private Long userId;
     private String userName;
     private String userImageUrl;
-    private int time;
-    private String content;
+    private int tourTime;
+    private String tourContent;
     private List<PlaceInfoDto> places;
     private List<String> categoryNames;
     private List<UserInfoDto> participants;

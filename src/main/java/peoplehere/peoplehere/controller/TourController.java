@@ -49,7 +49,7 @@ public class TourController {
             String errorMessages = BindingResultUtils.getErrorMessages(bindingResult);
             throw new TourException(INVALID_TOUR_VALUE, errorMessages);
         }
-        log.info("Update tour request for ID: {}, {}", id, request.getName());
+        log.info("Update tour request for ID: {}, {}", id, request.getTourName());
         tourService.modifyTour(id, request);
         return new BaseResponse<>(new GetTourResponse());
     }
