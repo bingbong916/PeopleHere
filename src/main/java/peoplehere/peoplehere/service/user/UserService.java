@@ -1,9 +1,6 @@
-package peoplehere.peoplehere.service;
+package peoplehere.peoplehere.service.user;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,14 +12,13 @@ import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.service.S3Service;
 import peoplehere.peoplehere.util.security.UserDetailsImpl;
-import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.*;
 import peoplehere.peoplehere.domain.*;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 import peoplehere.peoplehere.repository.*;
-import peoplehere.peoplehere.util.jwt.JwtProvider;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -32,51 +28,21 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 @Transactional
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final WishlistRepository wishlistRepository;
-    private final TourRepository tourRepository;
-    private final UserBlockRepository userBlockRepository;
-    private final UserLanguageRepository userLanguageRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
-    private final JwtBlackListRepository jwtBlackListRepository;
-    private final S3Service s3Service;
-    private final LanguageRepository languageRepository;
-    private final UserQuestionRepository userQuestionRepository;
-    private final QuestionRepository questionRepository;
+    protected final UserRepository userRepository;
+    protected final WishlistRepository wishlistRepository;
+    protected final TourRepository tourRepository;
+    protected final UserBlockRepository userBlockRepository;
+    protected final UserLanguageRepository userLanguageRepository;
+    protected final PasswordEncoder passwordEncoder;
+    protected final JwtBlackListRepository jwtBlackListRepository;
+    protected final S3Service s3Service;
+    protected final LanguageRepository languageRepository;
+    protected final UserQuestionRepository userQuestionRepository;
+    protected final QuestionRepository questionRepository;
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-    }
-
-    /**
-     * 회원 가입
-     */
-    public User createUser(PostUserRequest postUserRequest) {
-        log.info("[UserService.createUser]");
-
-        // 이메일 중복 검사
-        validateEmail(postUserRequest.getEmail());
-
-        // 만 18세 이상 검사
-        LocalDate today = LocalDate.now();
-        LocalDate birthDate = postUserRequest.getBirth();
-        int age = Period.between(birthDate, today).getYears();
-
-        if (age < 18) {
-            throw new UserException(USER_NOT_ADULT);
-        }
-
-        //패스워드 암호화
-        String encodedPassword = passwordEncoder.encode(postUserRequest.getPassword());
-        postUserRequest.resetPassword(encodedPassword);
-
-        //DB 저장
-        User user = UserDtoConverter.postUserRequestToUser(postUserRequest);
-        userRepository.save(user);
-
-        return user;
     }
 
     private String saveImage(PostImageRequest postImageRequest) {
@@ -84,17 +50,6 @@ public class UserService {
         String storedFileName = s3Service.saveByteArrayToS3(decodingImage, postImageRequest.getOriginalFileName()); //S3에 파일 저장
         return s3Service.getPictureS3Url(storedFileName);
     }
-
-    private void validateEmail(String email) {
-        if(userRepository.findByEmail(email).isPresent()){
-            throw new UserException(DUPLICATE_EMAIL);
-        }
-    }
-
-    public boolean isEmailAvailable(String email) {
-        return userRepository.findByEmail(email).isEmpty();
-    }
-
 
     /**
      * 회원 탈퇴
@@ -105,22 +60,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    /**
-     * 로그인
-     */
-    public JwtTokenResponse login(PostLoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-        if (user.getStatus() == Status.DELETED) {
-            throw new UserException(USER_DELETED);
-        }
-        validatePassword(request.getPassword(),user.getPassword());
-        String accessToken = jwtProvider.createAccessToken(user.getEmail());
-        String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
-        return new JwtTokenResponse(accessToken, refreshToken);
-    }
-
-    private void validatePassword(String password, String encodedPassword) {
+    protected void validatePassword(String password, String encodedPassword) {
         log.info("password: " + password);
         log.info("encodedPassword: " + encodedPassword);
         if (!passwordEncoder.matches(password, encodedPassword)) {
