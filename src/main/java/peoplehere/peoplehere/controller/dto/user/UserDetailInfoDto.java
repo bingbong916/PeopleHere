@@ -14,8 +14,8 @@ import java.util.List;
 public class UserDetailInfoDto extends UserInfoDto {
     private List<String> languages;
 
-    public UserDetailInfoDto(Long id, String firstName, String imageUrl, List<String> languages) {
-        super(id, firstName, imageUrl);
+    public UserDetailInfoDto(Long userId, String userName, String userImage, List<String> languages) {
+        super(userId, userName, userImage);
         this.languages = languages;
     }
 }

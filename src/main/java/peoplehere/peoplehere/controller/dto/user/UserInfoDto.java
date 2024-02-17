@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoDto {
-    private Long id;
-    private String firstName;
-    private String imageUrl;
+    private Long userId;
+    private String userName;
+    private String userImage;
 }

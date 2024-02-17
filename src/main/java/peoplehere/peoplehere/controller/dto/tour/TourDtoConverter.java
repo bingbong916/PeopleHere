@@ -48,7 +48,7 @@ public class TourDtoConverter {
         List<UserInfoDto> participants = tour.getTourHistories().stream()
                 .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
                 .collect(Collectors.toMap(
-                        UserInfoDto::getId,
+                        UserInfoDto::getUserId,
                         Function.identity(),
                         (existing, replacement) -> existing))
                 .values()
