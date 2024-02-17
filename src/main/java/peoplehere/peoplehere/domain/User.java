@@ -45,6 +45,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private boolean isAdmin = false;
 
+    @Column(nullable = false)
+    private boolean marketingConsent;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserQuestion> userQuestions = new HashSet<>();
