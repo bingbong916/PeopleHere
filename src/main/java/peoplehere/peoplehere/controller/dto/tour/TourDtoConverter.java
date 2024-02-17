@@ -28,8 +28,8 @@ public class TourDtoConverter {
         getTourResponse.setUserId(tour.getUser().getId());
         getTourResponse.setUserName(tour.getUser().getFirstName());
         getTourResponse.setUserImageUrl(tour.getUser().getImageUrl());
-        getTourResponse.setTime(tour.getTime());
-        getTourResponse.setContent(tour.getContent());
+        getTourResponse.setTourTime(tour.getTime());
+        getTourResponse.setTourContent(tour.getContent());
 
         // 투어에 속한 장소들을 PlaceInfoDto로 변환하여 추가
         List<PlaceInfoDto> placeInfoDtos = tour.getPlaces().stream()

@@ -1,6 +1,5 @@
 package peoplehere.peoplehere.controller.dto.tour;
 
-import peoplehere.peoplehere.controller.dto.place.GetPlaceResponse;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.user.UserDetailInfoDto;
 import peoplehere.peoplehere.domain.Language;
@@ -15,7 +14,7 @@ public class TourDateDtoConverter {
 
     public static GetTourDatesResponse tourDateToGetTourDatesResponse(TourDate tourDate) {
         GetTourDatesResponse response = new GetTourDatesResponse();
-        response.setId(tourDate.getId());
+        response.setTourDateId(tourDate.getId());
         response.setDate(tourDate.getDate());
         response.setTime(tourDate.getTime());
         response.setStatus(tourDate.getStatus());

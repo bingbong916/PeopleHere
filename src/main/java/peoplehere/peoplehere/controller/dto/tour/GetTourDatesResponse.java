@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetTourDatesResponse {
-    private Long id;
+    private Long tourDateId;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     @JsonFormat(pattern = "HH:mm:ss")

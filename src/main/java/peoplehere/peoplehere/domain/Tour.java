@@ -38,8 +38,6 @@ public class Tour extends BaseTimeEntity {
 
     private int time;
 
-    private String imageUrl;
-
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -102,9 +100,9 @@ public class Tour extends BaseTimeEntity {
 
     //TODO: 타워 update 구현
     public Tour update(PutTourRequest putTourRequest) {
-        this.name = putTourRequest.getName();
-        this.time = putTourRequest.getTime();
-        this.content = putTourRequest.getContent();
+        this.name = putTourRequest.getTourName();
+        this.time = putTourRequest.getTourTime();
+        this.content = putTourRequest.getTourContent();
         return this;
     }
 

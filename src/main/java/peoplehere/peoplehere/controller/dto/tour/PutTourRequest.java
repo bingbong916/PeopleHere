@@ -17,14 +17,14 @@ import java.util.List;
 public class PutTourRequest {
     @NotBlank(message = "투어 이름은 필수입니다.")
     @Size(max = 100, message = "투어 이름은 최대 100자까지 가능합니다.")
-    private String name;
+    private String tourName;
 
     @Min(value = 0, message = "시간은 0 이상이어야 합니다.")
-    private int time;
+    private int tourTime;
 
-    private String imageUrl;
+    private String tourImageUrl;
 
-    private String content;
+    private String tourContent;
 
     private List<PlaceInfoDto> places;
 
