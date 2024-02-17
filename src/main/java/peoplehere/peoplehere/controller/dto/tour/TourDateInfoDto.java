@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TourDateInfoDto {
     private Long tourId;
+    private String tourName;
     private int tourTime;
     private UserDetailInfoDto tourLeader;
     private List<PlaceInfoDto> places;
