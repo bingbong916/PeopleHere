@@ -135,6 +135,9 @@ public class TourService {
                 }
             });
         }
+        // 유저가 투어를 한번이라도 생성하면 hasCreatedTour 필드 true로 설정
+        user.setHasCreatedTour(true);
+        userRepository.save(user);
         tourRepository.save(tour);
 
         return tour;

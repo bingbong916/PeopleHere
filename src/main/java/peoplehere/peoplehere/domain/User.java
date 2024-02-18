@@ -46,6 +46,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     private boolean isAdmin = false;
 
     @Column(nullable = false)
+    private boolean hasCreatedTour = false;
+
+    @Column(nullable = false)
     private boolean marketingConsent;
 
     @JsonManagedReference

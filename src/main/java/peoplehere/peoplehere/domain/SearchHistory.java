@@ -10,6 +10,12 @@ import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 @RequiredArgsConstructor
 public class SearchHistory extends BaseTimeEntity {
 
+    public SearchHistory(User user, String placeName, String placeAddress) {
+        this.user = user;
+        this.placeName = placeName;
+        this.placeAddress = placeAddress;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "search_history_id")

@@ -58,6 +58,12 @@ public class UserController {
         return new BaseResponse<>(responses);
     }
 
+    @GetMapping("/tour-dates")
+    public BaseResponse<UserTourDatesInfoDto> getUserTourParticipations(Authentication authentication) {
+        UserTourDatesInfoDto participationInfoDtos = userService.getUserTourDatesInfo(authentication);
+        return new BaseResponse<>(participationInfoDtos);
+    }
+
     @PostMapping("/wishlist/{tourId}")
     public BaseResponse<Void> toggleWishlist(Authentication authentication, @PathVariable Long tourId) {
         log.info("Toggle wishlist for tour ID: {}", tourId);
@@ -71,9 +77,26 @@ public class UserController {
         List<GetTourResponse> responses = userService.getUserWishlist(authentication);
         return new BaseResponse<>(responses);
     }
-//
-//    @PostMapping("/search")
-//    public BaseResponse<Void> addSearchHistory(Authentication)
+
+    @PostMapping("/search-history")
+    public BaseResponse<Void> addSearchHistory(Authentication authentication, PostSearchHistoryRequest request) {
+        log.info("Add search history for current user");
+        userService.addSearchHistory(authentication, request);
+        return new BaseResponse<>(null);
+    }
+
+    @GetMapping("/search-histories")
+    public BaseResponse<List<GetSearchHistoryResponse>> getSearchHistories(Authentication authentication) {
+        log.info("Get search histories for current user");
+        List<GetSearchHistoryResponse> searchHistories = userService.getSearchHistories(authentication);
+        return new BaseResponse<>(searchHistories);
+    }
+
+    @GetMapping("/user/onboarding")
+    public BaseResponse<GetOnboardingStatusResponse> getOnboardingStatus(Authentication authentication) {
+        GetOnboardingStatusResponse response = userService.getOnboardingStatus(authentication);
+        return new BaseResponse<>(response);
+    }
 
     @GetMapping("/{id}/chats")
     public BaseResponse<GetUserChatsResponse> getUserChats(@PathVariable Long id, @RequestParam String option) {
