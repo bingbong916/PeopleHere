@@ -2,6 +2,7 @@ package peoplehere.peoplehere.service.user;
 
 import java.time.LocalDate;
 import java.time.Period;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,11 @@ import peoplehere.peoplehere.controller.dto.auth.PostPhoneNumberLoginRequest;
 import peoplehere.peoplehere.controller.dto.auth.PostPhoneNumberUserRequest;
 import peoplehere.peoplehere.controller.dto.jwt.JwtTokenResponse;
 import peoplehere.peoplehere.controller.dto.user.UserDtoConverter;
+import peoplehere.peoplehere.domain.JwtBlackList;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.domain.enums.LoginType;
 import peoplehere.peoplehere.domain.enums.Status;
 import peoplehere.peoplehere.repository.*;
-import peoplehere.peoplehere.service.S3Service;
 import peoplehere.peoplehere.util.jwt.JwtProvider;
 
 import static peoplehere.peoplehere.common.response.status.BaseExceptionResponseStatus.*;
@@ -25,16 +26,23 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional
-public class AuthService extends UserService {
+public class AuthService {
 
+    private final UserRepository userRepository;
+    private final JwtBlackListRepository jwtBlackListRepository;
+    protected final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
+<<<<<<< HEAD
     public AuthService(UserRepository userRepository, WishlistRepository wishlistRepository, SearchHistoryRepository searchHistoryRepository, TourRepository tourRepository, UserBlockRepository userBlockRepository, UserLanguageRepository userLanguageRepository, PasswordEncoder passwordEncoder, JwtBlackListRepository jwtBlackListRepository, S3Service s3Service, LanguageRepository languageRepository, UserQuestionRepository userQuestionRepository, QuestionRepository questionRepository, JwtProvider jwtProvider) {
         super(userRepository, wishlistRepository, searchHistoryRepository, tourRepository, userBlockRepository, userLanguageRepository, passwordEncoder, jwtBlackListRepository, s3Service, languageRepository, userQuestionRepository, questionRepository);
         this.jwtProvider = jwtProvider;
     }
 
+=======
+>>>>>>> upstream/master
 
     public User createUser(Object request) {
         User user;
@@ -59,6 +67,15 @@ public class AuthService extends UserService {
 
         userRepository.save(user);
         return user;
+    }
+
+
+    protected void validatePassword(String password, String encodedPassword) {
+        log.info("password: " + password);
+        log.info("encodedPassword: " + encodedPassword);
+        if (!passwordEncoder.matches(password, encodedPassword)) {
+            throw new UserException(PASSWORD_NO_MATCH);
+        }
     }
 
     private void validateEmail(String email) {
@@ -92,12 +109,12 @@ public class AuthService extends UserService {
 
         if (request instanceof PostEmailLoginRequest emailLoginRequest) {
             user = userRepository.findByEmail(emailLoginRequest.getEmail())
-                    .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
             password = emailLoginRequest.getPassword();
             identifier = emailLoginRequest.getEmail();
         } else if (request instanceof PostPhoneNumberLoginRequest phoneLoginRequest) {
             user = userRepository.findByPhoneNumber(phoneLoginRequest.getPhoneNumber())
-                    .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
             password = phoneLoginRequest.getPassword();
             identifier = phoneLoginRequest.getPhoneNumber();
         } else {
@@ -112,13 +129,23 @@ public class AuthService extends UserService {
         return new JwtTokenResponse(accessToken, refreshToken);
     }
 
+    /**
+     * 로그아웃
+     */
+    public void logout(String token) {
+        JwtBlackList blackList = jwtBlackListRepository.findByToken(token);
+        if (blackList == null) {
+            jwtBlackListRepository.save(new JwtBlackList(token));
+        }
+    }
+
     public boolean isPhoneNumberAvailable(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber).isEmpty();
     }
+
     public boolean isEmailAvailable(String email) {
         return userRepository.findByEmail(email).isEmpty();
     }
-
 
 
 }
