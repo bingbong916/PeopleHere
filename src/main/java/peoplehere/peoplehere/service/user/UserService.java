@@ -1,7 +1,5 @@
 package peoplehere.peoplehere.service.user;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -11,12 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.UserException;
-import peoplehere.peoplehere.controller.dto.auth.PostEmailUserRequest;
-import peoplehere.peoplehere.controller.dto.auth.PostPhoneNumberUserRequest;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
-import peoplehere.peoplehere.domain.enums.LoginType;
 import peoplehere.peoplehere.service.S3Service;
 import peoplehere.peoplehere.util.security.UserDetailsImpl;
 import peoplehere.peoplehere.controller.dto.user.*;
@@ -33,27 +28,27 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 @Transactional
 public class UserService {
 
-    protected final UserRepository userRepository;
-    protected final WishlistRepository wishlistRepository;
-//    protected final SearchHistoryRepository searchHistoryRepository;
-    protected final TourRepository tourRepository;
-    protected final UserBlockRepository userBlockRepository;
-    protected final UserLanguageRepository userLanguageRepository;
-    protected final PasswordEncoder passwordEncoder;
-    protected final JwtBlackListRepository jwtBlackListRepository;
-    protected final S3Service s3Service;
-    protected final LanguageRepository languageRepository;
-    protected final UserQuestionRepository userQuestionRepository;
-    protected final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
+    private final WishlistRepository wishlistRepository;
+    //    protected final SearchHistoryRepository searchHistoryRepository;
+    private final TourRepository tourRepository;
+    private final UserBlockRepository userBlockRepository;
+    private final UserLanguageRepository userLanguageRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
+    private final LanguageRepository languageRepository;
+    private final UserQuestionRepository userQuestionRepository;
+    private final QuestionRepository questionRepository;
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
     private String saveImage(PostImageRequest postImageRequest) {
         byte[] decodingImage = Base64.getDecoder().decode(postImageRequest.getEncodingString());
-        String storedFileName = s3Service.saveByteArrayToS3(decodingImage, postImageRequest.getOriginalFileName()); //S3에 파일 저장
+        String storedFileName = s3Service.saveByteArrayToS3(decodingImage,
+            postImageRequest.getOriginalFileName()); //S3에 파일 저장
         return s3Service.getPictureS3Url(storedFileName);
     }
 
@@ -66,23 +61,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    protected void validatePassword(String password, String encodedPassword) {
-        log.info("password: " + password);
-        log.info("encodedPassword: " + encodedPassword);
-        if (!passwordEncoder.matches(password, encodedPassword)) {
-            throw new UserException(PASSWORD_NO_MATCH);
-        }
-    }
-
-    /**
-     * 로그아웃
-     */
-    public void logout(String token) {
-        JwtBlackList blackList = jwtBlackListRepository.findByToken(token);
-        if (blackList == null) {
-            jwtBlackListRepository.save(new JwtBlackList(token));
-        }
-    }
 
     /**
      * 비밀번호 재설정
@@ -90,7 +68,7 @@ public class UserService {
     public void updatePassword(Authentication authentication, String newPassword) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
         if (passwordEncoder.matches(newPassword, user.getPassword())) {
             throw new UserException(SAME_AS_OLD_PASSWORD);
         }
@@ -115,7 +93,7 @@ public class UserService {
      */
     public User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
     /**
@@ -145,11 +123,13 @@ public class UserService {
 
         if (modifyRequest.getLanguages() != null) {
             Set<Long> newLanguageIds = new HashSet<>(modifyRequest.getLanguages());
-            user.getLanguages().removeIf(userLanguage -> !newLanguageIds.contains(userLanguage.getLanguage().getId()));
+            user.getLanguages().removeIf(
+                userLanguage -> !newLanguageIds.contains(userLanguage.getLanguage().getId()));
             newLanguageIds.forEach(languageId -> {
-                if (user.getLanguages().stream().noneMatch(ul -> ul.getLanguage().getId().equals(languageId))) {
+                if (user.getLanguages().stream()
+                    .noneMatch(ul -> ul.getLanguage().getId().equals(languageId))) {
                     Language language = languageRepository.findById(languageId)
-                            .orElseThrow(() -> new UserException(LANGUAGE_NOT_FOUND));
+                        .orElseThrow(() -> new UserException(LANGUAGE_NOT_FOUND));
                     UserLanguage userLanguage = new UserLanguage();
                     userLanguage.setUser(user);
                     userLanguage.setLanguage(language);
@@ -158,18 +138,17 @@ public class UserService {
             });
         }
 
-
         if (modifyRequest.getQuestions() != null) {
             modifyRequest.getQuestions().forEach((questionId, answer) -> {
                 Optional<UserQuestion> existingUserQuestion = user.getUserQuestions().stream()
-                        .filter(uq -> uq.getQuestion().getId().equals(questionId))
-                        .findFirst();
+                    .filter(uq -> uq.getQuestion().getId().equals(questionId))
+                    .findFirst();
 
                 if (existingUserQuestion.isPresent()) {
                     existingUserQuestion.get().setAnswer(answer);
                 } else {
                     Question question = questionRepository.findById(questionId)
-                            .orElseThrow(() -> new UserException(QUESTION_NOT_FOUND));
+                        .orElseThrow(() -> new UserException(QUESTION_NOT_FOUND));
                     UserQuestion newUserQuestion = new UserQuestion();
                     newUserQuestion.setUser(user);
                     newUserQuestion.setQuestion(question);
@@ -200,7 +179,8 @@ public class UserService {
      * 유저가 만든 투어 조회
      */
     @Transactional(readOnly = true)
-    public List<GetTourResponse> getUserTours(Long userId, String option, Authentication authentication) {
+    public List<GetTourResponse> getUserTours(Long userId, String option,
+        Authentication authentication) {
         User user = getUserOrThrow(userId);
 
         User currentUser;
@@ -228,14 +208,15 @@ public class UserService {
         // 참여한 투어 조회
         if (option == null || "attended".equals(option)) {
             user.getTourHistories().stream()
-                    .filter(th -> th.getStatus().equals(TourHistoryStatus.CONFIRMED))
-                    .forEach(th -> {
-                        boolean isWished = false;
-                        if (currentUser != null) {
-                            isWished = wishlistRepository.findByUserAndTour(currentUser, th.getTour()).isPresent();
-                        }
-                        responses.add(TourDtoConverter.tourToGetTourResponse(th.getTour(), isWished));
-                    });
+                .filter(th -> th.getStatus().equals(TourHistoryStatus.CONFIRMED))
+                .forEach(th -> {
+                    boolean isWished = false;
+                    if (currentUser != null) {
+                        isWished = wishlistRepository.findByUserAndTour(currentUser, th.getTour())
+                            .isPresent();
+                    }
+                    responses.add(TourDtoConverter.tourToGetTourResponse(th.getTour(), isWished));
+                });
         }
 
         return responses;
@@ -254,9 +235,9 @@ public class UserService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         Long userId = userDetails.getId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
         Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new UserException(TOUR_NOT_FOUND));
+            .orElseThrow(() -> new UserException(TOUR_NOT_FOUND));
 
         Optional<Wishlist> wishlistOpt = wishlistRepository.findByUserAndTour(user, tour);
         if (wishlistOpt.isPresent()) {
@@ -293,14 +274,13 @@ public class UserService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
     /**
      * 검색 내역 저장
      */
 //    private
-
 
     /**
      * 유저 채팅 조회

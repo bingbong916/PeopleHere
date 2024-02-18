@@ -138,7 +138,7 @@ public class AuthController {
     public BaseResponse<Void> logout(@RequestHeader("Authorization") String tokenRequest) {
         log.info("User logout request");
         String token = tokenRequest.split(" ")[1];
-        userService.logout(token);
+        authService.logout(token);
         return new BaseResponse<>(null);
     }
 
