@@ -43,6 +43,13 @@ public class UserController {
         return new BaseResponse<>(response);
     }
 
+    @GetMapping("/simple-profile")
+    public BaseResponse<UserInfoDto> getSimpleUserInfo(Authentication authentication) {
+        log.info("Get simple user info for current user");
+        UserInfoDto response = userService.getSimpleUserInfo(authentication);
+        return new BaseResponse<>(response);
+    }
+
     @PatchMapping("/profile")
     public BaseResponse<Void> modifyUser(Authentication authentication, @RequestBody PostModifyRequest modifyRequest) {
         log.info("Modify user profile request for current user");

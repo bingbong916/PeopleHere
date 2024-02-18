@@ -101,6 +101,14 @@ public class UserService {
     }
 
     /**
+     * 현재 로그인한 유저의 간단한 정보 조회
+     */
+    public UserInfoDto getSimpleUserInfo(Authentication authentication) {
+        User currentUser = getAuthenticatedUser(authentication);
+        return new UserInfoDto(currentUser.getId(), currentUser.getFirstName(), currentUser.getImageUrl());
+    }
+
+    /**
      * 화원 정보 수정
      * TODO: userModifyRequest 형식 만들기
      */
