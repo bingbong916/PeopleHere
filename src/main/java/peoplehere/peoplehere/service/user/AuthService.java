@@ -35,14 +35,6 @@ public class AuthService {
     protected final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-<<<<<<< HEAD
-    public AuthService(UserRepository userRepository, WishlistRepository wishlistRepository, SearchHistoryRepository searchHistoryRepository, TourRepository tourRepository, UserBlockRepository userBlockRepository, UserLanguageRepository userLanguageRepository, PasswordEncoder passwordEncoder, JwtBlackListRepository jwtBlackListRepository, S3Service s3Service, LanguageRepository languageRepository, UserQuestionRepository userQuestionRepository, QuestionRepository questionRepository, JwtProvider jwtProvider) {
-        super(userRepository, wishlistRepository, searchHistoryRepository, tourRepository, userBlockRepository, userLanguageRepository, passwordEncoder, jwtBlackListRepository, s3Service, languageRepository, userQuestionRepository, questionRepository);
-        this.jwtProvider = jwtProvider;
-    }
-
-=======
->>>>>>> upstream/master
 
     public User createUser(Object request) {
         User user;

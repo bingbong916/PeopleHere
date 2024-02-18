@@ -28,7 +28,6 @@ import static peoplehere.peoplehere.common.response.status.BaseExceptionResponse
 @Transactional
 public class UserService {
 
-<<<<<<< HEAD
     protected final UserRepository userRepository;
     protected final WishlistRepository wishlistRepository;
     protected final SearchHistoryRepository searchHistoryRepository;
@@ -41,19 +40,6 @@ public class UserService {
     protected final LanguageRepository languageRepository;
     protected final UserQuestionRepository userQuestionRepository;
     protected final QuestionRepository questionRepository;
-=======
-    private final UserRepository userRepository;
-    private final WishlistRepository wishlistRepository;
-    //    protected final SearchHistoryRepository searchHistoryRepository;
-    private final TourRepository tourRepository;
-    private final UserBlockRepository userBlockRepository;
-    private final UserLanguageRepository userLanguageRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final S3Service s3Service;
-    private final LanguageRepository languageRepository;
-    private final UserQuestionRepository userQuestionRepository;
-    private final QuestionRepository questionRepository;
->>>>>>> upstream/master
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
@@ -243,18 +229,7 @@ public class UserService {
      */
     public void toggleWishlist(Authentication authentication, Long tourId) {
 
-<<<<<<< HEAD
         User user = getAuthenticatedUser(authentication);
-=======
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new UserException(USER_NOT_LOGGED_IN);
-        }
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        Long userId = userDetails.getId();
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
->>>>>>> upstream/master
         Tour tour = tourRepository.findById(tourId)
             .orElseThrow(() -> new UserException(TOUR_NOT_FOUND));
 
@@ -311,6 +286,17 @@ public class UserService {
         return responses;
     }
 
+    /**
+     * 온보딩 표시 여부 반환
+     */
+    public GetOnboardingStatusResponse getOnboardingStatus(Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        boolean hasCreatedTour = !user.isHasCreatedTour();
+
+        String message = hasCreatedTour ? "온보딩 없다" : "온보딩 있다";
+
+        return new GetOnboardingStatusResponse(hasCreatedTour, message);
+    }
 
     private User getAuthenticatedUser(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
@@ -321,19 +307,6 @@ public class UserService {
         return userRepository.findById(userDetails.getId())
             .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
-
-    /**
-<<<<<<< HEAD
-=======
-     * 검색 내역 저장
-     */
-//    private
-
-    /**
->>>>>>> upstream/master
-     * 유저 채팅 조회
-     */
-
 
     /**
      * 차단하기

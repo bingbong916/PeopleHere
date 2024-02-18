@@ -86,6 +86,12 @@ public class UserController {
         return new BaseResponse<>(searchHistories);
     }
 
+    @GetMapping("/user/onboarding")
+    public BaseResponse<GetOnboardingStatusResponse> getOnboardingStatus(Authentication authentication) {
+        GetOnboardingStatusResponse response = userService.getOnboardingStatus(authentication);
+        return new BaseResponse<>(response);
+    }
+
     @GetMapping("/{id}/chats")
     public BaseResponse<GetUserChatsResponse> getUserChats(@PathVariable Long id, @RequestParam String option) {
         log.info("Get chats for user ID: {}, Option: {}", id, option); // option값: traveler, leader
