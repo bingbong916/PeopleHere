@@ -35,7 +35,7 @@ public class UserService {
 
     protected final UserRepository userRepository;
     protected final WishlistRepository wishlistRepository;
-//    protected final SearchHistoryRepository searchHistoryRepository;
+    protected final SearchHistoryRepository searchHistoryRepository;
     protected final TourRepository tourRepository;
     protected final UserBlockRepository userBlockRepository;
     protected final UserLanguageRepository userLanguageRepository;
@@ -247,14 +247,7 @@ public class UserService {
      */
     public void toggleWishlist(Authentication authentication, Long tourId) {
 
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new UserException(USER_NOT_LOGGED_IN);
-        }
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        Long userId = userDetails.getId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = getAuthenticatedUser(authentication);
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new UserException(TOUR_NOT_FOUND));
 
@@ -286,6 +279,32 @@ public class UserService {
         return responses;
     }
 
+    /**
+     * 검색 내역 저장
+     */
+    public void addSearchHistory(Authentication authentication, PostSearchHistoryRequest request) {
+        User user = getAuthenticatedUser(authentication);
+        SearchHistory searchHistory = new SearchHistory(user, request.getPlaceName(), request.getPlaceAddress());
+        searchHistoryRepository.save(searchHistory);
+    }
+
+    /**
+     * 검색 내역 반환
+     */
+    public List<GetSearchHistoryResponse> getSearchHistories (Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        List<SearchHistory> searchHistories = searchHistoryRepository.findByUser(user);
+        List<GetSearchHistoryResponse> responses = new ArrayList<>();
+        for (SearchHistory searchHistory : searchHistories) {
+            GetSearchHistoryResponse response = new GetSearchHistoryResponse();
+            response.setPlaceName(searchHistory.getPlaceName());
+            response.setPlaceAddress(searchHistory.getPlaceAddress());
+            responses.add(response);
+        }
+        return responses;
+    }
+
+
     private User getAuthenticatedUser(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new UserException(USER_NOT_LOGGED_IN);
@@ -295,12 +314,6 @@ public class UserService {
         return userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
-
-    /**
-     * 검색 내역 저장
-     */
-//    private
-
 
     /**
      * 유저 채팅 조회

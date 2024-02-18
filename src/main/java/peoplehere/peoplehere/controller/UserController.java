@@ -71,9 +71,20 @@ public class UserController {
         List<GetTourResponse> responses = userService.getUserWishlist(authentication);
         return new BaseResponse<>(responses);
     }
-//
-//    @PostMapping("/search")
-//    public BaseResponse<Void> addSearchHistory(Authentication)
+
+    @PostMapping("/search-history")
+    public BaseResponse<Void> addSearchHistory(Authentication authentication, PostSearchHistoryRequest request) {
+        log.info("Add search history for current user");
+        userService.addSearchHistory(authentication, request);
+        return new BaseResponse<>(null);
+    }
+
+    @GetMapping("/search-histories")
+    public BaseResponse<List<GetSearchHistoryResponse>> getSearchHistories(Authentication authentication) {
+        log.info("Get search histories for current user");
+        List<GetSearchHistoryResponse> searchHistories = userService.getSearchHistories(authentication);
+        return new BaseResponse<>(searchHistories);
+    }
 
     @GetMapping("/{id}/chats")
     public BaseResponse<GetUserChatsResponse> getUserChats(@PathVariable Long id, @RequestParam String option) {
