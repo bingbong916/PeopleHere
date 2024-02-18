@@ -1,5 +1,7 @@
 package peoplehere.peoplehere.service.user;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -9,9 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.UserException;
+import peoplehere.peoplehere.controller.dto.auth.PostEmailUserRequest;
+import peoplehere.peoplehere.controller.dto.auth.PostPhoneNumberUserRequest;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
+import peoplehere.peoplehere.domain.enums.LoginType;
 import peoplehere.peoplehere.service.S3Service;
 import peoplehere.peoplehere.util.security.UserDetailsImpl;
 import peoplehere.peoplehere.controller.dto.user.*;
@@ -30,6 +35,7 @@ public class UserService {
 
     protected final UserRepository userRepository;
     protected final WishlistRepository wishlistRepository;
+//    protected final SearchHistoryRepository searchHistoryRepository;
     protected final TourRepository tourRepository;
     protected final UserBlockRepository userBlockRepository;
     protected final UserLanguageRepository userLanguageRepository;
@@ -289,6 +295,12 @@ public class UserService {
         return userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
+
+    /**
+     * 검색 내역 저장
+     */
+//    private
+
 
     /**
      * 유저 채팅 조회

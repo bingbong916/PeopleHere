@@ -28,8 +28,7 @@ import peoplehere.peoplehere.controller.dto.auth.PostPhoneNumberUserRequest;
 import peoplehere.peoplehere.controller.dto.user.PostUserResponse;
 import peoplehere.peoplehere.domain.User;
 import peoplehere.peoplehere.repository.UserRepository;
-import peoplehere.peoplehere.service.user.EmailUserService;
-import peoplehere.peoplehere.service.user.PhoneNumberUserService;
+import peoplehere.peoplehere.service.user.AuthService;
 import peoplehere.peoplehere.service.user.UserService;
 
 
@@ -40,8 +39,7 @@ import peoplehere.peoplehere.service.user.UserService;
 public class AuthController {
 
     private final UserService userService;
-    private final PhoneNumberUserService phoneNumberUserService;
-    private final EmailUserService emailUserService;
+    private final AuthService authService;
     private final UserRepository userRepository;
 
     /**
@@ -49,7 +47,7 @@ public class AuthController {
      */
     @GetMapping("/check-email")
     public BaseResponse<GetEmailCheckResponse> checkEmail(@RequestParam String email) {
-        boolean isEmailAvailable = emailUserService.isEmailAvailable(email);
+        boolean isEmailAvailable = authService.isEmailAvailable(email);
         GetEmailCheckResponse response;
         if (isEmailAvailable) {
             response = new GetEmailCheckResponse(true, "새로운 이메일입니다.");
@@ -64,7 +62,7 @@ public class AuthController {
      */
     @GetMapping("/check-phone")
     public BaseResponse<GetPhoneNumberCheckResponse> checkPhone(@RequestParam String phoneNumber) {
-        boolean isPhoneNumberAvailable = phoneNumberUserService.isPhoneNumberAvailable(phoneNumber);
+        boolean isPhoneNumberAvailable = authService.isPhoneNumberAvailable(phoneNumber);
         GetPhoneNumberCheckResponse response;
         if (isPhoneNumberAvailable) {
             response = new GetPhoneNumberCheckResponse(true, "새로운 핸드폰 번호입니다.");
@@ -84,7 +82,7 @@ public class AuthController {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
         log.info("Email User sign-up request: {}", request.getEmail());
-        User user = emailUserService.createUser(request);
+        User user = authService.createUser(request);
         return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
@@ -96,8 +94,8 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-        log.info("PhoneNumber User sign-up request: {}", request.getEmail());
-        User user = phoneNumberUserService.createUser(request);
+        log.info("PhoneNumber User sign-up request: {}", request.getPhoneNumber());
+        User user = authService.createUser(request);
         return new BaseResponse<>(new PostUserResponse(user.getId()));
     }
 
@@ -113,7 +111,7 @@ public class AuthController {
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        JwtTokenResponse tokenResponse = emailUserService.login(request);
+        JwtTokenResponse tokenResponse = authService.login(request);
         return new BaseResponse<>(new PostLoginResponse(user.getId(), tokenResponse));
     }
 
@@ -129,7 +127,7 @@ public class AuthController {
         User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
             .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        JwtTokenResponse tokenResponse = phoneNumberUserService.login(request);
+        JwtTokenResponse tokenResponse = authService.login(request);
         return new BaseResponse<>(new PostLoginResponse(user.getId(), tokenResponse));
     }
 
