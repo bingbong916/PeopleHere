@@ -49,9 +49,6 @@ public class Tour extends BaseTimeEntity {
     private List<TourCategory> tourCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<TourReview> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<TourHistory> tourHistories = new ArrayList<>();
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)

@@ -101,7 +101,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<TourHistory> tourHistories = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<TourReview> tourReviews = new ArrayList<>();
+    private List<UserReview> userReviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();

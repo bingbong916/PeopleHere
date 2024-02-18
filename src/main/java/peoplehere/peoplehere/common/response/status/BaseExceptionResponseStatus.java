@@ -64,6 +64,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     REVIEW_NOT_FOUND(false, 8000, HttpStatus.NOT_FOUND.value(), "리뷰를 찾을 수 없습니다."),
     INVALID_REVIEW_VALUE(false, 8001, HttpStatus.BAD_REQUEST.value(), "리뷰 요청 데이터가 유효하지 않습니다."),
     DUPLICATE_REVIEW(false, 8002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 리뷰입니다."),
+    SAME_AS_REVIEWEE_USER(false, 8003, HttpStatus.BAD_REQUEST.value(), "본인에게 리뷰를 작성할 수 없습니다."),
 
     // Message 오류
     MESSAGE_NOT_FOUND(false, 9000, HttpStatus.NOT_FOUND.value(), "메시지를 찾을 수 없습니다."),
