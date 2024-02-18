@@ -106,6 +106,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Wishlist> wishlists = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SearchHistory> searchHistories = new ArrayList<>();
+
 
     //TODO: 유저 권한 설정
     @Override

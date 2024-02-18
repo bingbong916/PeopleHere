@@ -71,6 +71,9 @@ public class UserController {
         List<GetTourResponse> responses = userService.getUserWishlist(authentication);
         return new BaseResponse<>(responses);
     }
+//
+//    @PostMapping("/search")
+//    public BaseResponse<Void> addSearchHistory(Authentication)
 
     @GetMapping("/{id}/chats")
     public BaseResponse<GetUserChatsResponse> getUserChats(@PathVariable Long id, @RequestParam String option) {

@@ -47,10 +47,10 @@ public class UserDtoConverter {
         );
     }
 
-    public static User postEmailUserRequestToUser(PostEmailUserRequest request) {
+    public static User postEmailUserRequestToUser(PostEmailUserRequest request, String encondedPassword) {
         return User.builder()
             .email(request.getEmail())
-            .password(request.getPassword())
+            .password(encondedPassword)
             .firstName(request.getFirstName())
             .lastName(request.getLastName())
             .birth(request.getBirth())
@@ -59,11 +59,11 @@ public class UserDtoConverter {
             .build();
     }
 
-    public static User postPhoneNumberRequestToUser(PostPhoneNumberUserRequest request) {
+    public static User postPhoneNumberRequestToUser(PostPhoneNumberUserRequest request, String encodedPassword) {
         return User.builder()
             .email(request.getEmail())
             .phoneNumber(request.getPhoneNumber())
-            .password(request.getPassword())
+            .password(encodedPassword)
             .firstName(request.getFirstName())
             .lastName(request.getLastName())
             .birth(request.getBirth())
