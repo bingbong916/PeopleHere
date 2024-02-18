@@ -1,5 +1,6 @@
 package peoplehere.peoplehere.service.user;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.UserException;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
+import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.TourDtoConverter;
 import peoplehere.peoplehere.service.S3Service;
@@ -32,6 +34,7 @@ public class UserService {
     protected final WishlistRepository wishlistRepository;
     protected final SearchHistoryRepository searchHistoryRepository;
     protected final TourRepository tourRepository;
+    protected final TourHistoryRepository tourHistoryRepository;
     protected final UserBlockRepository userBlockRepository;
     protected final UserLanguageRepository userLanguageRepository;
     protected final PasswordEncoder passwordEncoder;
@@ -221,6 +224,72 @@ public class UserService {
         }
 
         return responses;
+    }
+
+    /**
+     * 본인의 투어 일정 정보 조회
+     */
+    public UserTourDatesInfoDto getUserTourDatesInfo(Authentication authentication) {
+        User currentUser = getAuthenticatedUser(authentication);
+        UserInfoDto currentUserInfo = new UserInfoDto(currentUser.getId(), currentUser.getFirstName(), currentUser.getImageUrl());
+
+        List<TourDatesInfoDto> upcomingTours = new ArrayList<>();
+        List<TourDatesInfoDto> pastTours = new ArrayList<>();
+        HashSet<Long> processedTourDateIds = new HashSet<>();
+
+        // 현재 유저가 참여하거나 현재 유저의 투어에 참여한 TourHistoryStatus가 CONFIRMED인 모든 TourHistory 조회
+        List<TourHistory> combinedTourHistories = new ArrayList<>();
+        combinedTourHistories.addAll(tourHistoryRepository.findAllByUserAndStatus(currentUser, TourHistoryStatus.CONFIRMED));
+        combinedTourHistories.addAll(tourHistoryRepository.findAllByTourUserAndStatus(currentUser, TourHistoryStatus.CONFIRMED));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        combinedTourHistories.stream()
+                .filter(th -> processedTourDateIds.add(th.getTourDate().getId()))
+                .forEach(th -> {
+                    Tour tour = th.getTour();
+                    LocalDateTime tourDateTime = th.getTourDate().getDateTime();
+                    UserInfoDto oppositeUserInfo = getUserInfoDto(th, tour, currentUser);
+                    PlaceInfoDto firstPlaceInfo = getFirstPlaceInfoByOrder(tour);
+
+                    TourDatesInfoDto tourDatesInfoDto = new TourDatesInfoDto(tour.getName(), th.getTourDate().getId(), tourDateTime, oppositeUserInfo, firstPlaceInfo);
+
+                    if (tourDateTime.isAfter(now)) {
+                        upcomingTours.add(tourDatesInfoDto);
+                    } else {
+                        pastTours.add(tourDatesInfoDto);
+                    }
+                });
+
+        return new UserTourDatesInfoDto(currentUserInfo, upcomingTours, pastTours);
+    }
+
+    private PlaceInfoDto getFirstPlaceInfoByOrder(Tour tour) {
+        return tour.getPlaces().stream()
+                .filter(place -> place.getOrder() == 1)
+                .findFirst()
+                .map(place -> new PlaceInfoDto(
+                        place.getId(),
+                        place.getContent(),
+                        place.getImageUrls(),
+                        place.getAddress(),
+                        place.getLatLng(),
+                        place.getOrder()))
+                .orElse(null);
+    }
+
+    private static UserInfoDto getUserInfoDto(TourHistory th, Tour tour, User currentUser) {
+        UserInfoDto oppositeUserInfo;
+        // 현재 유저가 투어를 만든 경우
+        if (tour.getUser().equals(currentUser)) {
+            // 참여 유저 정보 설정
+            oppositeUserInfo = th.getUser().getId().equals(currentUser.getId()) ? null :
+                    new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl());
+        } else { // 현재 유저가 투어에 참여한 경우
+            // 투어 리더 정보 설정
+            oppositeUserInfo = new UserInfoDto(tour.getUser().getId(), tour.getUser().getFirstName(), tour.getUser().getImageUrl());
+        }
+        return oppositeUserInfo;
     }
 
 

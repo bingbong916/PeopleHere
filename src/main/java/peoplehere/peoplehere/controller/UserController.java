@@ -58,6 +58,12 @@ public class UserController {
         return new BaseResponse<>(responses);
     }
 
+    @GetMapping("/tour-dates")
+    public BaseResponse<UserTourDatesInfoDto> getUserTourParticipations(Authentication authentication) {
+        UserTourDatesInfoDto participationInfoDtos = userService.getUserTourDatesInfo(authentication);
+        return new BaseResponse<>(participationInfoDtos);
+    }
+
     @PostMapping("/wishlist/{tourId}")
     public BaseResponse<Void> toggleWishlist(Authentication authentication, @PathVariable Long tourId) {
         log.info("Toggle wishlist for tour ID: {}", tourId);

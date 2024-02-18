@@ -6,6 +6,7 @@ import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.Place;
 import peoplehere.peoplehere.domain.TourDate;
+import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 
 import java.util.Comparator;
 import java.util.List;
@@ -46,6 +47,7 @@ public class TourDtoConverter {
 
         // 투어의 참여 유저 리스트 추가
         List<UserInfoDto> participants = tour.getTourHistories().stream()
+                .filter(tourHistory -> tourHistory.getStatus() == TourHistoryStatus.CONFIRMED)
                 .map(th -> new UserInfoDto(th.getUser().getId(), th.getUser().getFirstName(), th.getUser().getImageUrl()))
                 .collect(Collectors.toMap(
                         UserInfoDto::getUserId,
