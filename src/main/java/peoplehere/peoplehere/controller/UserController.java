@@ -92,7 +92,7 @@ public class UserController {
         return new BaseResponse<>(searchHistories);
     }
 
-    @GetMapping("/user/onboarding")
+    @GetMapping("/onboarding")
     public BaseResponse<GetOnboardingStatusResponse> getOnboardingStatus(Authentication authentication) {
         GetOnboardingStatusResponse response = userService.getOnboardingStatus(authentication);
         return new BaseResponse<>(response);
