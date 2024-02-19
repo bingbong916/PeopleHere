@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PostSearchHistoryRequest {
+    private Long placeKey;
     private String placeName;
     private String placeAddress;
 }
