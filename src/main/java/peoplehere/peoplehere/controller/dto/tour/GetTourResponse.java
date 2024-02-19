@@ -1,11 +1,13 @@
 package peoplehere.peoplehere.controller.dto.tour;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
-import peoplehere.peoplehere.controller.dto.user.TourContentsUserInfoDto;
+import peoplehere.peoplehere.controller.dto.review.GetReviewResponse;
+import peoplehere.peoplehere.controller.dto.user.UserDetailInfoDto;
 import peoplehere.peoplehere.domain.enums.Status;
 
 import java.util.List;
@@ -23,8 +25,12 @@ public class GetTourResponse {
     private String userImageUrl;
     private int tourTime;
     private String tourContent;
+
+    private Map<String, String> questions;
+    private List<GetReviewResponse> getReviewResponses;
+
     private List<PlaceInfoDto> places;
     private List<String> categoryNames;
-    private List<TourContentsUserInfoDto> participants;
+    private List<UserDetailInfoDto> participants;
     private Status status;
 }
