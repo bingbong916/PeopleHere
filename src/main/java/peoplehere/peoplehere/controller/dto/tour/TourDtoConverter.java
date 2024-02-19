@@ -21,6 +21,23 @@ public class TourDtoConverter {
 
     }
 
+    // 주소에서 '~구' 또는 '~시'만 추출하는 메소드
+    public static String extractDistrictOrCity(String address) {
+        // '구' 단위로 주소가 끝나는 부분을 찾아 해당 부분만 반환
+        int districtIndex = address.lastIndexOf("구");
+        if (districtIndex != -1) { // '구'가 발견되면
+            return address.substring(address.substring(0, districtIndex).lastIndexOf(" ") + 1, districtIndex + 1);
+        }
+
+        // '구' 단위가 없을 경우, '시' 단위로 주소를 잘라내어 반환
+        int cityIndex = address.lastIndexOf("시");
+        if (cityIndex != -1) { // '시'가 발견되면
+            return address.substring(address.substring(0, cityIndex).lastIndexOf(" ") + 1, cityIndex + 1);
+        }
+        // '구'나 '시' 단위가 없는 경우, 전체 주소 반환
+        return address;
+    }
+
     public static GetTourResponse tourToGetTourResponse(Tour tour, boolean isWished) {
         GetTourResponse getTourResponse = new GetTourResponse();
         getTourResponse.setTourId(tour.getId());
@@ -35,7 +52,7 @@ public class TourDtoConverter {
         // 투어에 속한 장소들을 PlaceInfoDto로 변환하여 추가
         List<PlaceInfoDto> placeInfoDtos = tour.getPlaces().stream()
                 .sorted(Comparator.comparingInt(Place::getOrder))
-                .map(place -> new PlaceInfoDto(place.getId(), place.getContent(), place.getImageUrls(), place.getAddress(), place.getLatLng(), place.getOrder()))
+                .map(place -> new PlaceInfoDto(place.getId(), place.getContent(), place.getImageUrls(), extractDistrictOrCity(place.getAddress()), place.getLatLng(), place.getOrder()))
                 .toList();
         getTourResponse.setPlaces(placeInfoDtos);
 

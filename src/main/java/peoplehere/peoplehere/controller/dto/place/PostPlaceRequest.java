@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.locationtech.jts.geom.Point;
 import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
 
 @Getter

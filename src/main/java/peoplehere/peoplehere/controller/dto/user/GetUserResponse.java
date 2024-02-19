@@ -17,7 +17,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetUserResponse extends UserInfoDto {
+public class GetUserResponse {
     private Long id;
     private String email;
     private String firstName;

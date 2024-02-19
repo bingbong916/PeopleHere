@@ -3,14 +3,12 @@ package peoplehere.peoplehere.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import peoplehere.peoplehere.common.exception.TourException;
 import peoplehere.peoplehere.common.exception.UserException;
-import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
-import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
-import peoplehere.peoplehere.controller.dto.place.PostPlaceRequest;
-import peoplehere.peoplehere.controller.dto.place.PostPlaceResponse;
+import peoplehere.peoplehere.controller.dto.place.*;
 import peoplehere.peoplehere.controller.dto.tour.GetTourResponse;
 import peoplehere.peoplehere.controller.dto.tour.PostTourRequest;
 import peoplehere.peoplehere.controller.dto.tour.PutTourRequest;
@@ -169,26 +167,24 @@ public class TourService {
         tourRepository.save(tour);
     }
 
-    private void updatePlaces(Tour tour, List<PlaceInfoDto> placeInfoDtos) {
+    private void updatePlaces(Tour tour, List<PutPlaceRequest> putPlaceRequests) {
         List<Place> updatedPlaces = new ArrayList<>();
         int order = 1;
 
-        for (PlaceInfoDto placeInfoDto : placeInfoDtos) {
+        for (PutPlaceRequest putPlaceRequest : putPlaceRequests) {
             Place place = tour.getPlaces().stream()
-                .filter(p -> p.getId() != null && p.getId().equals(placeInfoDto.getPlaceId()))
+                .filter(p -> p.getId() != null && p.getId().equals(putPlaceRequest.getPlaceId()))
                 .findFirst()
-                .orElseGet(() -> {
-                    Place newPlace = PlaceDtoConverter.placeInfoDtoToPlace(placeInfoDto);
-                    newPlace.setTour(tour);
-                    return newPlace;
-                });
+                .orElseGet(Place::new);
 
-            place.update(placeInfoDto);
+            place.update(putPlaceRequest);
             place.setOrder(order++);
+            place.setTour(tour);
             updatedPlaces.add(place);
         }
 
-        tour.setPlaces(updatedPlaces);
+        tour.getPlaces().clear();
+        tour.getPlaces().addAll(updatedPlaces);
     }
 
     private void deletePlaces(Tour tour, List<Long> deletedPlaceIds) {

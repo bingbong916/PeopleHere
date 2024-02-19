@@ -33,7 +33,7 @@ public class PlaceDtoConverter {
             point, postPlaceRequest.getPlaceOrder());
     }
 
-    private static Point convertLatLngDtoToPoint(LatLngDto latLngDto) {
+    public static Point convertLatLngDtoToPoint(LatLngDto latLngDto) {
         if (latLngDto == null) return null;
         return geometryFactory.createPoint(new Coordinate(latLngDto.getX(), latLngDto.getY()));
     }

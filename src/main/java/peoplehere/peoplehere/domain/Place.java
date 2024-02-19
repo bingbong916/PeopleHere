@@ -1,13 +1,13 @@
 package peoplehere.peoplehere.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.locationtech.jts.geom.Point;
-import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
+import peoplehere.peoplehere.controller.dto.image.PostImageRequest;
+import peoplehere.peoplehere.controller.dto.place.PlaceDtoConverter;
+import peoplehere.peoplehere.controller.dto.place.PutPlaceRequest;
 import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 
 import java.util.ArrayList;
@@ -67,15 +67,20 @@ public class Place extends BaseTimeEntity {
         tour.getPlaces().add(this);
     }
 
-    public void update(PlaceInfoDto placeInfoDto) {
-        if (placeInfoDto.getPlaceName() != null) {
-            this.content = placeInfoDto.getPlaceName();
+    public void update(PutPlaceRequest putPlaceRequest) {
+        if (putPlaceRequest.getPlaceName() != null) {
+            this.content = putPlaceRequest.getPlaceName();
         }
-        if (placeInfoDto.getPlaceImages() != null) {
-            this.imageUrls = placeInfoDto.getPlaceImages();
+        if (putPlaceRequest.getPlaceImage() != null && !putPlaceRequest.getPlaceImage().isEmpty()) {
+            this.imageUrls = putPlaceRequest.getPlaceImage().stream()
+                    .map(PostImageRequest::getOriginalFileName)
+                    .toList();
         }
-        if (placeInfoDto.getPlaceAddress() != null) {
-            this.address = placeInfoDto.getPlaceAddress();
+        if (putPlaceRequest.getPlaceAddress() != null) {
+            this.address = putPlaceRequest.getPlaceAddress();
+        }
+        if (putPlaceRequest.getLatLng() != null) {
+            this.latLng = PlaceDtoConverter.convertLatLngDtoToPoint(putPlaceRequest.getLatLng());
         }
     }
 }
