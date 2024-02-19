@@ -1,26 +1,22 @@
 package peoplehere.peoplehere.controller.dto.tour;
 
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
-import peoplehere.peoplehere.controller.dto.user.TourContentsUserInfoDto;
+import peoplehere.peoplehere.controller.dto.review.GetReviewResponse;
+import peoplehere.peoplehere.controller.dto.user.UserDetailInfoDto;
+import peoplehere.peoplehere.controller.dto.user.UserDtoConverter;
 import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
 import peoplehere.peoplehere.domain.Tour;
 import peoplehere.peoplehere.domain.Place;
-import peoplehere.peoplehere.domain.TourDate;
 import peoplehere.peoplehere.domain.TourHistory;
 import peoplehere.peoplehere.domain.User;
-import peoplehere.peoplehere.domain.UserLanguage;
-import peoplehere.peoplehere.domain.UserQuestion;
-import peoplehere.peoplehere.domain.enums.TourHistoryStatus;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+import peoplehere.peoplehere.domain.UserQuestion;
+import peoplehere.peoplehere.domain.UserReview;
 
 public class TourDtoConverter {
     public static Tour postTourRequestToTour(PostTourRequest postTourRequest) {
@@ -72,7 +68,7 @@ public class TourDtoConverter {
         getTourResponse.setCategoryNames(categoryNames);
 
         // 투어의 참여 유저 리스트 추가
-        List<TourContentsUserInfoDto> participants = new ArrayList<>();
+        List<UserDetailInfoDto> participants = new ArrayList<>();
         for (TourHistory tourHistory : tour.getTourHistories()) {
             User user = tourHistory.getUser();
             List<String> languages = user.getLanguages()
@@ -80,23 +76,40 @@ public class TourDtoConverter {
                 .map(language -> language.getLanguage().getKoreanName())
                 .collect(Collectors.toList());
 
-            Map<String, String> questions = user.getUserQuestions()
-                .stream()
-                .collect(Collectors.toMap(
-                    userQuestion -> userQuestion.getQuestion().getQuestion(),
-                    UserQuestion::getAnswer
-                ));
-
-            TourContentsUserInfoDto tourContentsUserInfoDto = new TourContentsUserInfoDto(user.getId(),
+            UserDetailInfoDto userDetailInfoDto = new UserDetailInfoDto(user.getId(),
                 user.getFirstName(), user.getImageUrl(),
-                languages, questions);
+                languages);
 
-            participants.add(tourContentsUserInfoDto);
+            participants.add(userDetailInfoDto);
         }
-
         getTourResponse.setParticipants(participants);
 
-        // 투어 상태, 생성 및 수정 날짜 설정
+        //투어 리더의 문답 추가
+        User leader = tour.getUser();
+        Map<String, String> questions = leader.getUserQuestions()
+            .stream()
+            .collect(Collectors.toMap(
+                userQuestion -> userQuestion.getQuestion().getQuestion(),
+                UserQuestion::getAnswer
+            ));
+        getTourResponse.setQuestions(questions);
+
+        //투어의 리뷰 추가
+        List<GetReviewResponse> reviews = new ArrayList<>();
+        List<UserReview> userReviews = leader.getUserReviews();
+        for (UserReview userReview : userReviews) {
+            User user = userReview.getUser();
+            UserInfoDto userInfoDto = new UserInfoDto(user.getId(), user.getFirstName(),
+                user.getImageUrl());
+            reviews.add(new GetReviewResponse(userReview.getId(), userInfoDto,
+                userReview.getReview().getContent(), userReview.getCreatedAt()));
+        }
+        getTourResponse.setGetReviewResponses(reviews);
+
+
+
+
+       // 투어 상태, 생성 및 수정 날짜 설정
         getTourResponse.setStatus(tour.getStatus());
 
         return getTourResponse;
