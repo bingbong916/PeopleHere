@@ -343,7 +343,7 @@ public class UserService {
      */
     public void addSearchHistory(Authentication authentication, PostSearchHistoryRequest request) {
         User user = getAuthenticatedUser(authentication);
-        SearchHistory searchHistory = new SearchHistory(user, request.getPlaceName(), request.getPlaceAddress());
+        SearchHistory searchHistory = new SearchHistory(user, request.getPlaceKey(), request.getPlaceName(), request.getPlaceAddress());
         searchHistoryRepository.save(searchHistory);
     }
 

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class GetSearchHistoryResponse {
-    private Long placeKey;
+    private String placeKey;
     private String placeName;
     private String placeAddress;
 }

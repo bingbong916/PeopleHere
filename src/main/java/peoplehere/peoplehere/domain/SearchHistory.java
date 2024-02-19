@@ -10,8 +10,9 @@ import peoplehere.peoplehere.domain.util.BaseTimeEntity;
 @RequiredArgsConstructor
 public class SearchHistory extends BaseTimeEntity {
 
-    public SearchHistory(User user, String placeName, String placeAddress) {
+    public SearchHistory(User user, String placeKey, String placeName, String placeAddress) {
         this.user = user;
+        this.placeKey = placeKey;
         this.placeName = placeName;
         this.placeAddress = placeAddress;
     }
@@ -24,6 +25,9 @@ public class SearchHistory extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(nullable = false)
+    private String placeKey;
 
     @Column(nullable = false)
     private String placeName;
