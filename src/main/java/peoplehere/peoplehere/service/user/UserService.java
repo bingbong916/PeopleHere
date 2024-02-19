@@ -356,6 +356,7 @@ public class UserService {
         List<GetSearchHistoryResponse> responses = new ArrayList<>();
         for (SearchHistory searchHistory : searchHistories) {
             GetSearchHistoryResponse response = new GetSearchHistoryResponse();
+            response.setPlaceKey(searchHistory.getPlaceKey());
             response.setPlaceName(searchHistory.getPlaceName());
             response.setPlaceAddress(searchHistory.getPlaceAddress());
             responses.add(response);
