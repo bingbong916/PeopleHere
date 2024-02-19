@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import peoplehere.peoplehere.controller.dto.place.PlaceInfoDto;
-import peoplehere.peoplehere.controller.dto.user.UserInfoDto;
+import peoplehere.peoplehere.controller.dto.user.TourContentsUserInfoDto;
 import peoplehere.peoplehere.domain.enums.Status;
 
 import java.util.List;
@@ -25,6 +25,6 @@ public class GetTourResponse {
     private String tourContent;
     private List<PlaceInfoDto> places;
     private List<String> categoryNames;
-    private List<UserInfoDto> participants;
+    private List<TourContentsUserInfoDto> participants;
     private Status status;
 }
